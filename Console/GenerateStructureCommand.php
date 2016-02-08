@@ -6,13 +6,12 @@ use Modules\Asgardgenerators\Generators\MigrationGenerator;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Config\Repository as Config;
-use Way\Generators\Commands\GeneratorCommand;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Generator;
 use Xethron\MigrationsGenerator\Generators\SchemaGenerator;
 
-class GenerateStructureCommand extends GeneratorCommand
+class GenerateStructureCommand extends Command
 {
 
     /**
@@ -29,16 +28,41 @@ class GenerateStructureCommand extends GeneratorCommand
      */
     protected $description = 'Command description.';
 
-    protected $config;
+    /**
+     * @var \Way\Generators\Generator
+     */
+    protected $generator;
 
+    /**
+     * @var \Way\Generators\Filesystem\Filesystem
+     */
     protected $filesystem;
 
+    /**
+     * @var \Way\Generators\Compilers\TemplateCompiler
+     */
     protected $compiler;
 
+    /**
+     * @var \Illuminate\Database\Migrations\MigrationRepositoryInterface
+     */
     protected $repository;
 
+    /**
+     * @var \Illuminate\Config\Repository
+     */
+    protected $config;
+
+    /**
+     * @var SchemaGenerator
+     */
     protected $schemaGenerator;
 
+    /**
+     * Tables the generators should work with
+     *
+     * @var null|array
+     */
     protected $tables = null;
 
     /**
@@ -53,7 +77,11 @@ class GenerateStructureCommand extends GeneratorCommand
     /**
      * Create a new command instance.
      *
-     * @return void
+     * @param \Way\Generators\Generator                                    $generator
+     * @param \Way\Generators\Filesystem\Filesystem                        $filesystem
+     * @param \Way\Generators\Compilers\TemplateCompiler                   $compiler
+     * @param \Illuminate\Database\Migrations\MigrationRepositoryInterface $repository
+     * @param \Illuminate\Config\Repository                                $config
      */
     public function __construct(
       Generator $generator,
@@ -62,15 +90,11 @@ class GenerateStructureCommand extends GeneratorCommand
       MigrationRepositoryInterface $repository,
       Config $config
     ) {
-        $this->compiler = $compiler;
-
-        $this->repository = $repository;
-
-        $this->config = $config;
-
+        $this->generator = $generator;
         $this->filesystem = $filesystem;
-
-        parent::__construct($generator);
+        $this->compiler = $compiler;
+        $this->repository = $repository;
+        $this->config = $config;
     }
 
     /**
@@ -214,35 +238,5 @@ class GenerateStructureCommand extends GeneratorCommand
             'Don\'t use db foreign key names for migrations'
           ],
         ];
-    }
-
-    /**
-     * Fetch the template data.
-     *
-     * @return array
-     */
-    protected function getTemplateData()
-    {
-        // TODO: Implement getTemplateData() method.
-    }
-
-    /**
-     * The path to where the file will be created.
-     *
-     * @return mixed
-     */
-    protected function getFileGenerationPath()
-    {
-        // TODO: Implement getFileGenerationPath() method.
-    }
-
-    /**
-     * Get the path to the generator template.
-     *
-     * @return mixed
-     */
-    protected function getTemplatePath()
-    {
-        // TODO: Implement getTemplatePath() method.
     }
 }
