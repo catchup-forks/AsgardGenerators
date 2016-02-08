@@ -1,11 +1,18 @@
 <?php namespace Modules\Asgardgenerators\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Migrations\MigrationRepositoryInterface;
+use Modules\Asgardgenerators\Generators\MigrationGenerator;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Config\Repository as Config;
+use Way\Generators\Commands\GeneratorCommand;
+use Way\Generators\Compilers\TemplateCompiler;
+use Way\Generators\Filesystem\Filesystem;
+use Way\Generators\Generator;
+use Xethron\MigrationsGenerator\Generators\SchemaGenerator;
 
-class GenerateStructureCommand extends Command
+class GenerateStructureCommand extends GeneratorCommand
 {
 
     /**
@@ -24,16 +31,46 @@ class GenerateStructureCommand extends Command
 
     protected $config;
 
+    protected $filesystem;
+
+    protected $compiler;
+
+    protected $repository;
+
+    protected $schemaGenerator;
+
+    protected $tables = null;
+
+    /**
+     * List of excluded tables
+     *
+     * @var array
+     */
+    protected $excludes = [
+      'migrations'
+    ];
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(Config $config)
-    {
+    public function __construct(
+      Generator $generator,
+      Filesystem $filesystem,
+      TemplateCompiler $compiler,
+      MigrationRepositoryInterface $repository,
+      Config $config
+    ) {
+        $this->compiler = $compiler;
+
+        $this->repository = $repository;
+
         $this->config = $config;
 
-        parent::__construct();
+        $this->filesystem = $filesystem;
+
+        parent::__construct($generator);
     }
 
     /**
@@ -43,7 +80,76 @@ class GenerateStructureCommand extends Command
      */
     public function fire()
     {
+        // generate the migrations
+        $migrationGenerator = new MigrationGenerator(
+          $this->generator,
+          $this->filesystem,
+          $this->config,
+          $this->getTables()
+        );
 
+        $migrationGenerator->execute();
+    }
+
+    /**
+     * Create a list of tables the structure should be generated for
+     *
+     * @return array
+     */
+    protected function getTables()
+    {
+        // check if the tables are set
+        // if so return the tables
+        if ($this->tables) {
+            return $this->tables;
+        }
+
+        // read the table argument
+        // if table argument empty get list of all tables in db
+        $this->schemaGenerator = new SchemaGenerator(
+          $this->option('connection'),
+          $this->option('defaultIndexNames'),
+          $this->option('defaultFKNames')
+        );
+
+        if ($this->argument('tables')) {
+            $tables = explode(',', $this->argument('tables'));
+        } else {
+            $tables = $this->schemaGenerator->getTables();
+        }
+
+        // return array of creatable tables
+        return $this->removeExcludedTables($tables);
+    }
+
+    /**
+     * Remove all the tables to exclude from the array of tables
+     *
+     * @param $tables
+     *
+     * @return array
+     */
+    protected function removeExcludedTables($tables)
+    {
+        $excludes = $this->getExcludedTables();
+        $tables = array_diff($tables, $excludes);
+
+        return $tables;
+    }
+
+    /**
+     * Get a list of tables to exclude
+     *
+     * @return array
+     */
+    protected function getExcludedTables()
+    {
+        $ignore = $this->option('ignore');
+        if (!empty($ignore)) {
+            return array_merge($this->excludes, explode(',', $ignore));
+        }
+
+        return $this->excludes;
     }
 
     /**
@@ -110,4 +216,33 @@ class GenerateStructureCommand extends Command
         ];
     }
 
+    /**
+     * Fetch the template data.
+     *
+     * @return array
+     */
+    protected function getTemplateData()
+    {
+        // TODO: Implement getTemplateData() method.
+    }
+
+    /**
+     * The path to where the file will be created.
+     *
+     * @return mixed
+     */
+    protected function getFileGenerationPath()
+    {
+        // TODO: Implement getFileGenerationPath() method.
+    }
+
+    /**
+     * Get the path to the generator template.
+     *
+     * @return mixed
+     */
+    protected function getTemplatePath()
+    {
+        // TODO: Implement getTemplatePath() method.
+    }
 }
