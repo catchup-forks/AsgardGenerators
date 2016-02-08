@@ -31,10 +31,19 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
     private function registerGenerateStructureCommand()
     {
 
+
         $this->app->bindShared('command.bitsoflove.structure', function ($app) {
             return new GenerateStructureCommand(
-              $app['config']
+              $app->make('Way\Generators\Generator'),
+              $app->make('Way\Generators\Filesystem\Filesystem'),
+              $app->make('Way\Generators\Compilers\TemplateCompiler'),
+              $app->make('migration.repository'),
+              $app->make('config')
             );
         });
+
+
+
+
     }
 }
