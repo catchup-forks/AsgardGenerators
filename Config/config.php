@@ -9,6 +9,11 @@ return [
     'template'    => "",
       // the output directory
     'output_path' => "",
+  ],
+  'models'    => [
+    'template'    => "",
+    'output_path' => "",
+
   ]
 
 ];
