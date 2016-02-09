@@ -13,7 +13,10 @@ return [
   'models'    => [
     'template'    => "",
     'output_path' => "",
-
+  ],
+  'views'     => [
+    'template'    => "",
+    'output_path' => "",
   ]
 
 ];

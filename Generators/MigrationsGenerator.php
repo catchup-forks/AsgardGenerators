@@ -14,8 +14,9 @@ use Xethron\MigrationsGenerator\Syntax\AddForeignKeysToTable;
 use Xethron\MigrationsGenerator\Syntax\AddToTable;
 use Xethron\MigrationsGenerator\Syntax\RemoveForeignKeysFromTable;
 
-class MigrationGenerator extends BaseGenerator implements GeneratorInterface
+class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
 {
+
     /**
      * @var \Xethron\MigrationsGenerator\Generators\SchemaGenerator
      */
@@ -25,7 +26,7 @@ class MigrationGenerator extends BaseGenerator implements GeneratorInterface
      * @param \Way\Generators\Generator             $generator
      * @param \Way\Generators\Filesystem\Filesystem $filesystem
      * @param \Illuminate\Config\Repository         $config
-     * @param array                                 $tables
+     * @param DatabaseInformation                   $tables
      * @param array                                 $options
      */
     public function __construct(
@@ -59,11 +60,11 @@ class MigrationGenerator extends BaseGenerator implements GeneratorInterface
     {
         echo "Setting up Tables and Index Migrations\n";
         $this->datePrefix = date('Y_m_d_His');
-        $this->generate('create', $this->tables);
+        $this->generate('create', $this->tables->getTables());
 
         echo "\nSetting up Foreign Key Migrations\n";
         $this->datePrefix = date('Y_m_d_His', strtotime('+1 second'));
-        $this->generate('foreign_keys', $this->tables);
+        $this->generate('foreign_keys', $this->tables->getTables());
         echo "\nFinished!\n";
     }
 

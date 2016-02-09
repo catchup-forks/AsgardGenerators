@@ -8,8 +8,9 @@ use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Generator;
 use User11001\EloquentModelGenerator\Console\SchemaGenerator;
+use \Illuminate\Config\Repository as Config;
 
-class EloquentModelGenerator extends BaseGenerator implements GeneratorInterface
+class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterface
 {
 
     /**
@@ -22,16 +23,16 @@ class EloquentModelGenerator extends BaseGenerator implements GeneratorInterface
     /**
      * @param \Way\Generators\Generator             $generator
      * @param \Way\Generators\Filesystem\Filesystem $filesystem
-     * @param \Illuminate\Config\Repository         $config
-     * @param array                                 $tables
+     * @param Config                                $config
+     * @param DatabaseInformation                   $tables
      * @param array                                 $options
      */
     public function __construct(
       Generator $generator,
       Filesystem $filesystem,
       TemplateCompiler $compiler,
-      $config,
-      $tables,
+      Config $config,
+      DatabaseInformation $tables,
       $options
     ) {
         parent::__construct(
@@ -63,12 +64,11 @@ class EloquentModelGenerator extends BaseGenerator implements GeneratorInterface
         //1. fetch all tables
         echo "\nFetching tables...\n";
 
-        $tables = $this->tables;
+        $tables = $this->tables->getTables();
 
         //2. for each table, fetch primary and foreign keys
         echo 'Fetching table columns, primary keys, foreign keys\n';
-        $prep = $this->getColumnsPrimaryAndForeignKeysPerTable($tables);
-
+        $prep = $this->tables->getInfo();
 
         //3. create an array of rules, holding the info for our Eloquent models to be
         echo 'Generating Eloquent rules\n';
@@ -100,40 +100,6 @@ class EloquentModelGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Retrieve the table keys
-     *
-     * @param array $tables
-     * @return array
-     */
-    private function getColumnsPrimaryAndForeignKeysPerTable($tables)
-    {
-        $prep = [];
-        foreach ($tables as $table) {
-            //get foreign keys
-            $foreignKeys = $this->schemaGenerator->getForeignKeyConstraints($table);
-
-            //get primary keys
-            $primaryKeys = $this->schemaGenerator->getPrimaryKeys($table);
-
-            // get columns lists
-            $__columns = $this->schemaGenerator->getSchema()
-              ->listTableColumns($table);
-            $columns = [];
-            foreach ($__columns as $col) {
-                $columns[] = $col->toArray()['name'];
-            }
-
-            $prep[$table] = [
-              'foreign' => $foreignKeys,
-              'primary' => $primaryKeys,
-              'columns' => $columns,
-            ];
-        }
-
-        return $prep;
-    }
-
-    /**
      * @param array $tables
      * @param array $prep
      * @return array
@@ -156,7 +122,7 @@ class EloquentModelGenerator extends BaseGenerator implements GeneratorInterface
         foreach ($prep as $table => $properties) {
             $foreign = $properties['foreign'];
             $primary = $properties['primary'];
-            $columns = $properties['columns'];
+            $columns = array_keys($properties['columns']);
 
             $this->setFillableProperties($table, $rules, $columns);
 
@@ -166,9 +132,11 @@ class EloquentModelGenerator extends BaseGenerator implements GeneratorInterface
                 $this->addManyToManyRules($tables, $table, $prep, $rules);
             }
 
-            //the below used to be in an ELSE clause but we should be as verbose as possible
-            //when we detect a many-to-many table, we still want to set relations on it
-            //else
+            /**
+             * the below used to be in an ELSE clause but we should be as verbose as possible
+             * when we detect a many-to-many table, we still want to set relations on it
+             * else
+             */
             {
                 foreach ($foreign as $fk) {
                     $isOneToOne = $this->detectOneToOne($fk, $primary);
@@ -298,10 +266,6 @@ class EloquentModelGenerator extends BaseGenerator implements GeneratorInterface
      */
     private function addManyToManyRules($tables, $table, $prep, &$rules)
     {
-
-        //$FK1 belongsToMany $FK2
-        //$FK2 belongsToMany $FK1
-
         $foreign = $prep[$table]['foreign'];
 
         $fk1 = $foreign[0];
@@ -404,7 +368,7 @@ class EloquentModelGenerator extends BaseGenerator implements GeneratorInterface
      * Generate the required models
      *
      * @param string $destinationFolder
-     * @param array $eloquentRules
+     * @param array  $eloquentRules
      * @return void
      */
     private function generateEloquentModels($destinationFolder, $eloquentRules)
@@ -553,7 +517,7 @@ class EloquentModelGenerator extends BaseGenerator implements GeneratorInterface
      *
      * @param string $destinationFolder
      * @param string $table
-     * @param array $rules
+     * @param array  $rules
      * @return void
      */
     private function generateEloquentModel($destinationFolder, $table, $rules)
