@@ -115,13 +115,16 @@ class GenerateStructureCommand extends Command
      */
     protected function initOptions()
     {
+//        var_dump($this->option('overwrite'));exit;
+
         $this->options = [
           'connection'        => $this->getOption('connection', null),
           'ignore'            => $this->getOption('ignore', []),
           'path'              => $this->getOption('path', ''),
           'templatePath'      => $this->getOption('templatePath', ''),
           'defaultIndexNames' => $this->getOption('defaultIndexNames', false),
-          'defaultFKNames'    => $this->getOption('defaultFKNames', false)
+          'defaultFKNames'    => $this->getOption('defaultFKNames', false),
+          'overwrite'         => $this->getOption('overwrite', false)
         ];
 
         return $this;
@@ -282,6 +285,13 @@ class GenerateStructureCommand extends Command
             null,
             InputOption::VALUE_NONE,
             'Don\'t use db foreign key names for migrations'
+          ],
+          [
+            'overwrite',
+            'o',
+            InputOption::VALUE_NONE,
+              // @todo: ensure migrations are deleted
+            'Overwrite existing generated files'
           ],
         ];
     }
