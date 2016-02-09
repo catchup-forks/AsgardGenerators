@@ -23,7 +23,7 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
         $this->registerGenerateStructureCommand();
 
         $this->commands([
-          'command.bitsoflove.structure'
+          'asgard.generate.structure'
         ]);
 
     }
@@ -32,7 +32,7 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
     {
 
 
-        $this->app->bindShared('command.bitsoflove.structure', function ($app) {
+        $this->app->bindShared('asgard.generate.structure', function ($app) {
             return new GenerateStructureCommand(
               $app->make('Way\Generators\Generator'),
               $app->make('Way\Generators\Filesystem\Filesystem'),
