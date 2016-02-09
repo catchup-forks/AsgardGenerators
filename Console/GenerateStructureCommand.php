@@ -3,6 +3,7 @@
 use Illuminate\Console\Command;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use Modules\Asgardgenerators\Generators\MigrationGenerator;
+use Modules\Asgardgenerators\Generators\EloquentModelGenerator;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Config\Repository as Config;
@@ -139,13 +140,25 @@ class GenerateStructureCommand extends Command
         $migrationGenerator = new MigrationGenerator(
           $this->generator,
           $this->filesystem,
-        $this->compiler,
+          $this->compiler,
           $this->config,
           $this->getTables(),
           $this->options
         );
 
         $migrationGenerator->execute();
+
+        // generate the models
+        $modelGenerator = new EloquentModelGenerator(
+          $this->generator,
+          $this->filesystem,
+          $this->compiler,
+          $this->config,
+          $this->getTables(),
+          $this->options
+        );
+
+        $modelGenerator->execute();
     }
 
     /**
