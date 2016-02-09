@@ -28,6 +28,11 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
 
     }
 
+    public function boot(){
+        $this->mergeConfigFrom(__DIR__ . '/../Config/config.php', 'asgard.generators.config');
+        $this->publishes([__DIR__ . '/../Config/config.php' => config_path('asgard.generators.config' . '.php'), ], 'config');
+    }
+
     private function registerGenerateStructureCommand()
     {
 
