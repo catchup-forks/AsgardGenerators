@@ -2,6 +2,7 @@
 
 namespace Modules\Asgardgenerators\Generators;
 
+use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
 use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
@@ -13,39 +14,8 @@ use Xethron\MigrationsGenerator\Syntax\AddForeignKeysToTable;
 use Xethron\MigrationsGenerator\Syntax\AddToTable;
 use Xethron\MigrationsGenerator\Syntax\RemoveForeignKeysFromTable;
 
-class MigrationGenerator implements GeneratorInterface
+class MigrationGenerator extends BaseGenerator implements GeneratorInterface
 {
-
-    /**
-     * @var \Way\Generators\Generator
-     */
-    protected $generator;
-
-    /**
-     * @var \Way\Generators\Filesystem\Filesystem
-     */
-    protected $filesystem;
-
-    /**
-     * @var \Modules\Asgardgenerators\Generators\TemplateCompiler
-     */
-    protected $compiler;
-
-    /**
-     * @var \Illuminate\Config\Repository
-     */
-    protected $config;
-
-    /**
-     * @var array
-     */
-    protected $tables;
-
-    /**
-     * @var array
-     */
-    protected $options;
-
     /**
      * @var \Xethron\MigrationsGenerator\Generators\SchemaGenerator
      */
@@ -66,12 +36,14 @@ class MigrationGenerator implements GeneratorInterface
       $tables,
       $options
     ) {
-        $this->generator = $generator;
-        $this->filesystem = $filesystem;
-        $this->compiler = $compiler;
-        $this->config = $config;
-        $this->tables = $tables ?: [];
-        $this->options = $options;
+        parent::__construct(
+          $generator,
+          $filesystem,
+          $compiler,
+          $config,
+          $tables,
+          $options
+        );
 
         $this->schemaGenerator = new SchemaGenerator(
           $this->options['connection'],
@@ -140,7 +112,7 @@ class MigrationGenerator implements GeneratorInterface
      *
      * @return string
      */
-    protected function getFileGenerationPath()
+    public function getFileGenerationPath()
     {
         // retrieve the generation path from the path option if exists
         if (!empty($this->options['path'])) {
@@ -160,7 +132,7 @@ class MigrationGenerator implements GeneratorInterface
      *
      * @return array
      */
-    protected function getTemplateData()
+    public function getTemplateData()
     {
         if ($this->method == 'create') {
             $up = (new AddToTable($this->filesystem,
@@ -185,7 +157,7 @@ class MigrationGenerator implements GeneratorInterface
      *
      * @return string
      */
-    protected function getTemplatePath()
+    public function getTemplatePath()
     {
         if (!empty($this->options['templatePath'])) {
             return $this->options['templatePath'];
