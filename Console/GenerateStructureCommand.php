@@ -2,15 +2,18 @@
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
-use Modules\Asgardgenerators\Generators\MigrationGenerator;
-use Modules\Asgardgenerators\Generators\EloquentModelGenerator;
+use Modules\Asgardgenerators\Generators\DatabaseInformation;
+use Modules\Asgardgenerators\Generators\MigrationsGenerator;
+use Modules\Asgardgenerators\Generators\EloquentModelsGenerator;
+use Modules\Asgardgenerators\Generators\ViewsGenerator;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Config\Repository as Config;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Generator;
-use Xethron\MigrationsGenerator\Generators\SchemaGenerator;
+//use Xethron\MigrationsGenerator\Generators\SchemaGenerator;
+use User11001\EloquentModelGenerator\Console\SchemaGenerator;
 
 class GenerateStructureCommand extends Command
 {
@@ -58,6 +61,11 @@ class GenerateStructureCommand extends Command
      * @var SchemaGenerator
      */
     protected $schemaGenerator;
+
+    /**
+     * @var DatabaseInformation
+     */
+    protected $databaseInformation;
 
     /**
      * Tables the generators should work with
@@ -135,31 +143,53 @@ class GenerateStructureCommand extends Command
      */
     public function fire()
     {
+        // initialize the options with their default values
         $this->initOptions();
 
+        // create a schema generator
+        $this->initSchemaGenerator();
+
+        // create a new database information instance
+        $this->databaseInformation = new DatabaseInformation(
+          $this->schemaGenerator,
+          $this->getTables()
+        );
+
         // generate the migrations
-        $migrationGenerator = new MigrationGenerator(
+        $migrationGenerator = new MigrationsGenerator(
           $this->generator,
           $this->filesystem,
           $this->compiler,
           $this->config,
-          $this->getTables(),
+          $this->databaseInformation,
           $this->options
         );
 
         $migrationGenerator->execute();
 
         // generate the models
-        $modelGenerator = new EloquentModelGenerator(
+        $modelGenerator = new EloquentModelsGenerator(
           $this->generator,
           $this->filesystem,
           $this->compiler,
           $this->config,
-          $this->getTables(),
+          $this->databaseInformation,
           $this->options
         );
 
         $modelGenerator->execute();
+
+        // generate the models
+        $viewGenerator = new ViewsGenerator(
+          $this->generator,
+          $this->filesystem,
+          $this->compiler,
+          $this->config,
+          $this->databaseInformation,
+          $this->options
+        );
+
+        $viewGenerator->execute();
     }
 
     /**
@@ -177,11 +207,7 @@ class GenerateStructureCommand extends Command
 
         // read the table argument
         // if table argument empty get list of all tables in db
-        $this->schemaGenerator = new SchemaGenerator(
-          $this->option('connection'),
-          $this->option('defaultIndexNames'),
-          $this->option('defaultFKNames')
-        );
+        $this->initSchemaGenerator();
 
         if ($this->argument('tables')) {
             $tables = explode(',', $this->argument('tables'));
@@ -304,5 +330,23 @@ class GenerateStructureCommand extends Command
     private function getOption($key, $default = null)
     {
         return $this->option($key) ?: $default;
+    }
+
+    /**
+     * Initialize a schemaGenerator object
+     *
+     * @return \User11001\EloquentModelGenerator\Console\SchemaGenerator
+     */
+    private function initSchemaGenerator()
+    {
+        if (!$this->schemaGenerator) {
+            $this->schemaGenerator = new SchemaGenerator(
+              $this->option('connection'),
+              $this->option('defaultIndexNames'),
+              $this->option('defaultFKNames')
+            );
+        }
+
+        return $this->schemaGenerator;
     }
 }
