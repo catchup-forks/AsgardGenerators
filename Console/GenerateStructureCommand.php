@@ -19,14 +19,14 @@ class GenerateStructureCommand extends Command
      *
      * @var string
      */
-    protected $name = 'bitsoflove:structure';
+    protected $name = 'asgard:generate:structure';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description.';
+    protected $description = 'Generate migration, entities and resources for a list of given comma seperated tables eg: users,comments.';
 
     /**
      * @var \Way\Generators\Generator
@@ -75,6 +75,13 @@ class GenerateStructureCommand extends Command
     ];
 
     /**
+     * List of options provided by the user
+     *
+     * @var array
+     */
+    protected $options = [];
+
+    /**
      * Create a new command instance.
      *
      * @param \Way\Generators\Generator                                    $generator
@@ -95,6 +102,28 @@ class GenerateStructureCommand extends Command
         $this->compiler = $compiler;
         $this->repository = $repository;
         $this->config = $config;
+
+
+        parent::__construct();
+    }
+
+    /**
+     * Initialize a list of given command options with their default values
+     *
+     * @return $this
+     */
+    protected function initOptions()
+    {
+        $this->options = [
+          'connection'        => $this->getOption('connection', null),
+          'ignore'            => $this->getOption('ignore', []),
+          'path'              => $this->getOption('path', ''),
+          'templatePath'      => $this->getOption('templatePath', ''),
+          'defaultIndexNames' => $this->getOption('defaultIndexNames', false),
+          'defaultFKNames'    => $this->getOption('defaultFKNames', false)
+        ];
+
+        return $this;
     }
 
     /**
@@ -104,12 +133,15 @@ class GenerateStructureCommand extends Command
      */
     public function fire()
     {
+        $this->initOptions();
+
         // generate the migrations
         $migrationGenerator = new MigrationGenerator(
           $this->generator,
           $this->filesystem,
           $this->config,
-          $this->getTables()
+          $this->getTables(),
+          $this->options
         );
 
         $migrationGenerator->execute();
@@ -238,5 +270,17 @@ class GenerateStructureCommand extends Command
             'Don\'t use db foreign key names for migrations'
           ],
         ];
+    }
+
+    /**
+     * Retrieve the value of an option or default value for the key
+     *
+     * @param string $key
+     * @param null   $default
+     * @return null
+     */
+    private function getOption($key, $default = null)
+    {
+        return $this->option($key) ?: $default;
     }
 }
