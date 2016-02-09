@@ -139,6 +139,7 @@ class GenerateStructureCommand extends Command
         $migrationGenerator = new MigrationGenerator(
           $this->generator,
           $this->filesystem,
+        $this->compiler,
           $this->config,
           $this->getTables(),
           $this->options
