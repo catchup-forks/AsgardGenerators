@@ -115,8 +115,6 @@ class GenerateStructureCommand extends Command
      */
     protected function initOptions()
     {
-//        var_dump($this->option('overwrite'));exit;
-
         $this->options = [
           'connection'        => $this->getOption('connection', null),
           'ignore'            => $this->getOption('ignore', []),
