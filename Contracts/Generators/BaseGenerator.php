@@ -63,5 +63,19 @@ abstract class BaseGenerator
         $this->options = $options;
     }
 
+    /**
+     * Get an option if it's defined in the options bag
+     *
+     * @param string     $key
+     * @param null|mixed $default
+     */
+    public function getOption($key, $default = null)
+    {
+        if (isset($this->options[$key]) && !empty($this->options[$key])) {
+            return $this->options[$key];
+        }
+
+        return $default;
+    }
 
 }
