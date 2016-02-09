@@ -5,8 +5,10 @@ return [
 
     // migration path
   'migration' => [
-    'template' => "/home/vagrant/apps/asgard/Modules/Asgardgenerators/templates/migration.txt",
-    'output_path' => "/home/vagrant/apps/asgard/Modules/Asgardgenerators/Migrations",
+      // the full path (path + filename) pointing to the template file
+    'template'    => "",
+      // the output directory
+    'output_path' => "",
   ]
 
 ];
