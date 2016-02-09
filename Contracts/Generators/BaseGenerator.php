@@ -2,6 +2,8 @@
 
 namespace Modules\Asgardgenerators\Contracts\Generators;
 
+use Modules\Asgardgenerators\Generators\DatabaseInformation;
+use \Illuminate\Config\Repository as Config;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Generator;
@@ -20,17 +22,17 @@ abstract class BaseGenerator
     protected $filesystem;
 
     /**
-     * @var \Modules\Asgardgenerators\Generators\TemplateCompiler
+     * @var TemplateCompiler
      */
     protected $compiler;
 
     /**
-     * @var \Illuminate\Config\Repository
+     * @var Config
      */
     protected $config;
 
     /**
-     * @var array
+     * @var DatabaseInformation
      */
     protected $tables;
 
@@ -40,26 +42,26 @@ abstract class BaseGenerator
     protected $options;
 
     /**
-     * @param \Way\Generators\Generator                  $generator
-     * @param \Way\Generators\Filesystem\Filesystem      $filesystem
-     * @param \Way\Generators\Compilers\TemplateCompiler $compiler
-     * @param \Illuminate\Config\Repository              $config
-     * @param array                                      $tables
-     * @param array                                      $options
+     * @param Generator           $generator
+     * @param Filesystem          $filesystem
+     * @param TemplateCompiler    $compiler
+     * @param Config              $config
+     * @param DatabaseInformation $tables
+     * @param array               $options
      */
     public function __construct(
       Generator $generator,
       Filesystem $filesystem,
       TemplateCompiler $compiler,
-      \Illuminate\Config\Repository $config,
-      array $tables,
+      Config $config,
+      DatabaseInformation $tables,
       array $options
     ) {
         $this->generator = $generator;
         $this->filesystem = $filesystem;
         $this->compiler = $compiler;
         $this->config = $config;
-        $this->tables = $tables ?: [];
+        $this->tables = $tables;
         $this->options = $options;
     }
 
@@ -68,6 +70,7 @@ abstract class BaseGenerator
      *
      * @param string     $key
      * @param null|mixed $default
+     * @return null|mixed
      */
     public function getOption($key, $default = null)
     {
