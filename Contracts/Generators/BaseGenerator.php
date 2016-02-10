@@ -4,12 +4,15 @@ namespace Modules\Asgardgenerators\Contracts\Generators;
 
 use Modules\Asgardgenerators\Generators\DatabaseInformation;
 use \Illuminate\Config\Repository as Config;
+use Pingpong\Modules\Module;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Generator;
 
 abstract class BaseGenerator
 {
+
+    protected $module;
 
     /**
      * @var \Way\Generators\Generator
@@ -42,14 +45,16 @@ abstract class BaseGenerator
     protected $options;
 
     /**
-     * @param Generator           $generator
-     * @param Filesystem          $filesystem
-     * @param TemplateCompiler    $compiler
-     * @param Config              $config
-     * @param DatabaseInformation $tables
-     * @param array               $options
+     * @param \Pingpong\Modules\Module $module
+     * @param Generator                $generator
+     * @param Filesystem               $filesystem
+     * @param TemplateCompiler         $compiler
+     * @param Config                   $config
+     * @param DatabaseInformation      $tables
+     * @param array                    $options
      */
     public function __construct(
+      Module $module,
       Generator $generator,
       Filesystem $filesystem,
       TemplateCompiler $compiler,
@@ -57,6 +62,7 @@ abstract class BaseGenerator
       DatabaseInformation $tables,
       array $options
     ) {
+        $this->module = $module;
         $this->generator = $generator;
         $this->filesystem = $filesystem;
         $this->compiler = $compiler;
@@ -105,7 +111,8 @@ abstract class BaseGenerator
      * @param string $table
      * @return string
      */
-    protected function entityNameFromTable($table){
+    protected function entityNameFromTable($table)
+    {
         $table = camel_case(str_singular($table));
 
         return ucwords($table);

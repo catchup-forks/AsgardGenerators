@@ -8,6 +8,7 @@ use Modules\Asgardgenerators\Generators\MigrationsGenerator;
 use Modules\Asgardgenerators\Generators\EloquentModelsGenerator;
 use Modules\Asgardgenerators\Generators\RepositoryGenerator;
 use Modules\Asgardgenerators\Generators\ViewsGenerator;
+use Pingpong\Modules\Module;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Config\Repository as Config;
@@ -33,6 +34,11 @@ class GenerateStructureCommand extends Command
      * @var string
      */
     protected $description = 'Generate migration, entities and resources for a list of given comma seperated tables eg: users,comments.';
+
+    /**
+     * @var Module
+     */
+    protected $module;
 
     /**
      * @var \Way\Generators\Generator
@@ -130,6 +136,8 @@ class GenerateStructureCommand extends Command
           'ignore'            => $this->getOption('ignore', []),
           'path'              => $this->getOption('path', ''),
           'templatePath'      => $this->getOption('templatePath', ''),
+          'namespace'         => $this->getOption('namespace',
+            env('APP_NAME', 'App')),
           'defaultIndexNames' => $this->getOption('defaultIndexNames', false),
           'defaultFKNames'    => $this->getOption('defaultFKNames', false),
           'overwrite'         => $this->getOption('overwrite', false)
@@ -145,6 +153,10 @@ class GenerateStructureCommand extends Command
      */
     public function fire()
     {
+        // create a module object
+        // or fail (stop execution)
+        $this->module = \Module::findOrFail($this->argument('module'));
+
         // initialize the options with their default values
         $this->initOptions();
 
@@ -159,6 +171,7 @@ class GenerateStructureCommand extends Command
 
         // generate the migrations
         $migrationGenerator = new MigrationsGenerator(
+          $this->module,
           $this->generator,
           $this->filesystem,
           $this->compiler,
@@ -171,6 +184,7 @@ class GenerateStructureCommand extends Command
 
         // generate the models
         $modelGenerator = new EloquentModelsGenerator(
+          $this->module,
           $this->generator,
           $this->filesystem,
           $this->compiler,
@@ -183,6 +197,7 @@ class GenerateStructureCommand extends Command
 
         // generate the repositories
         $repositoryGenerator = new RepositoryGenerator(
+          $this->module,
           $this->generator,
           $this->filesystem,
           $this->compiler,
@@ -195,6 +210,7 @@ class GenerateStructureCommand extends Command
 
         // generate the views
         $viewGenerator = new ViewsGenerator(
+          $this->module,
           $this->generator,
           $this->filesystem,
           $this->compiler,
@@ -207,6 +223,7 @@ class GenerateStructureCommand extends Command
 
         // generate the controllers
         $controllerGenerator = new ControllersGenerator(
+          $this->module,
           $this->generator,
           $this->filesystem,
           $this->compiler,
@@ -235,8 +252,8 @@ class GenerateStructureCommand extends Command
         // if table argument empty get list of all tables in db
         $this->initSchemaGenerator();
 
-        if ($this->argument('tables')) {
-            $tables = explode(',', $this->argument('tables'));
+        if ($this->option('tables')) {
+            $tables = explode(',', $this->option('tables'));
         } else {
             $tables = $this->schemaGenerator->getTables();
         }
@@ -283,10 +300,15 @@ class GenerateStructureCommand extends Command
     protected function getArguments()
     {
         return [
+//          [
+//            'tables',
+//            InputArgument::OPTIONAL,
+//            'A list of Tables you wish to Generate Migrations for separated by a comma: users,posts,comments'
+//          ],
           [
-            'tables',
-            InputArgument::OPTIONAL,
-            'A list of Tables you wish to Generate Migrations for separated by a comma: users,posts,comments'
+            'module',
+            InputArgument::REQUIRED,
+            'The module you would like to generate the resources for.'
           ],
         ];
     }
@@ -307,6 +329,12 @@ class GenerateStructureCommand extends Command
             $this->config->get('database.default')
           ],
           [
+            'tables',
+            't',
+            InputOption::VALUE_OPTIONAL,
+            'A list of Tables you wish to Generate Migrations for separated by a comma: users,posts,comments'
+          ],
+          [
             'ignore',
             'i',
             InputOption::VALUE_OPTIONAL,
@@ -323,6 +351,12 @@ class GenerateStructureCommand extends Command
             'tp',
             InputOption::VALUE_OPTIONAL,
             'The location of the template for this generator'
+          ],
+          [
+            'namespace',
+            'ns',
+            InputOption::VALUE_OPTIONAL,
+            'The base namespace the files should adhere to'
           ],
           [
             'defaultIndexNames',

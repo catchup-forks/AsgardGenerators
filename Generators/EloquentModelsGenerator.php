@@ -4,6 +4,7 @@ namespace Modules\Asgardgenerators\Generators;
 
 use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
 use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
+use Pingpong\Modules\Module;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Generator;
@@ -21,13 +22,16 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     public static $namespace;
 
     /**
-     * @param \Way\Generators\Generator             $generator
-     * @param \Way\Generators\Filesystem\Filesystem $filesystem
-     * @param Config                                $config
-     * @param DatabaseInformation                   $tables
-     * @param array                                 $options
+     * @param \Pingpong\Modules\Module                   $module
+     * @param \Way\Generators\Generator                  $generator
+     * @param \Way\Generators\Filesystem\Filesystem      $filesystem
+     * @param \Way\Generators\Compilers\TemplateCompiler $compiler
+     * @param Config                                     $config
+     * @param DatabaseInformation                        $tables
+     * @param array                                      $options
      */
     public function __construct(
+      Module $module,
       Generator $generator,
       Filesystem $filesystem,
       TemplateCompiler $compiler,
@@ -36,6 +40,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
       $options
     ) {
         parent::__construct(
+          $module,
           $generator,
           $filesystem,
           $compiler,

@@ -4,6 +4,7 @@ namespace Modules\Asgardgenerators\Generators;
 
 use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
 use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
+use Pingpong\Modules\Module;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Generator;
@@ -30,6 +31,7 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
      * @param array                                 $options
      */
     public function __construct(
+      Module $module,
       Generator $generator,
       Filesystem $filesystem,
       TemplateCompiler $compiler,
@@ -38,6 +40,7 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
       $options
     ) {
         parent::__construct(
+          $module,
           $generator,
           $filesystem,
           $compiler,
@@ -122,6 +125,9 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
             $path = config('asgard.asgardgenerators.config.migration.output_path',
               "");
         }
+
+//        $path =
+
 
         $fileName = $this->getDatePrefix() . '_' . $this->migrationName . '.php';
 
