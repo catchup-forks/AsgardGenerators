@@ -130,13 +130,16 @@ class GenerateStructureCommand extends Command
      */
     protected function initOptions()
     {
+        $module = $this->module->getStudlyName();
+        $ns = "Modules\\{$module}";
+
         $this->options = [
           'connection'        => $this->getOption('connection', null),
           'ignore'            => $this->getOption('ignore', []),
           'path'              => $this->getOption('path', ''),
           'templatePath'      => $this->getOption('templatePath', ''),
           'namespace'         => $this->getOption('namespace',
-            env('APP_NAME', 'App')),
+            $ns),
           'defaultIndexNames' => $this->getOption('defaultIndexNames', false),
           'defaultFKNames'    => $this->getOption('defaultFKNames', false),
           'overwrite'         => $this->getOption('overwrite', false)
@@ -227,7 +230,7 @@ class GenerateStructureCommand extends Command
 
             $viewGenerator->execute();
         }
-        
+
         if ($this->shouldGenerate('controllers')) {
             // generate the controllers
             $controllerGenerator = new ControllersGenerator(
