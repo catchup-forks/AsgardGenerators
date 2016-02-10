@@ -1,0 +1,16 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use $REPOSITORY_NAMESPACE$\$CLASS_NAME$Repository;
+use Modules\Core\Repositories\Cache\BaseCacheDecorator;
+
+class Cache$CLASS_NAME$Decorator extends BaseCacheDecorator implements $CLASS_NAME$Repository
+{
+    public function __construct($CLASS_NAME$Repository $$LOWERCASE_CLASS_NAME$)
+    {
+        parent::__construct();
+        $this->entityName = '$PLURAL_LOWERCASE_CLASS_NAME$';
+        $this->repository = $$LOWERCASE_CLASS_NAME$;
+    }
+}
