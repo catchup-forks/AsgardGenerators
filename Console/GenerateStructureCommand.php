@@ -120,7 +120,6 @@ class GenerateStructureCommand extends Command
         $this->repository = $repository;
         $this->config = $config;
 
-
         parent::__construct();
     }
 
@@ -169,70 +168,80 @@ class GenerateStructureCommand extends Command
           $this->getTables()
         );
 
-        // generate the migrations
-        $migrationGenerator = new MigrationsGenerator(
-          $this->module,
-          $this->generator,
-          $this->filesystem,
-          $this->compiler,
-          $this->config,
-          $this->databaseInformation,
-          $this->options
-        );
+        if ($this->shouldGenerate('migrations')) {
+            // generate the migrations
+            $migrationGenerator = new MigrationsGenerator(
+              $this->module,
+              $this->generator,
+              $this->filesystem,
+              $this->compiler,
+              $this->config,
+              $this->databaseInformation,
+              $this->options
+            );
 
-        $migrationGenerator->execute();
+            $migrationGenerator->execute();
+        }
 
-        // generate the models
-        $modelGenerator = new EloquentModelsGenerator(
-          $this->module,
-          $this->generator,
-          $this->filesystem,
-          $this->compiler,
-          $this->config,
-          $this->databaseInformation,
-          $this->options
-        );
+        if ($this->shouldGenerate('models')) {
+            // generate the models
+            $modelGenerator = new EloquentModelsGenerator(
+              $this->module,
+              $this->generator,
+              $this->filesystem,
+              $this->compiler,
+              $this->config,
+              $this->databaseInformation,
+              $this->options
+            );
 
-        $modelGenerator->execute();
+            $modelGenerator->execute();
+        }
 
-        // generate the repositories
-        $repositoryGenerator = new RepositoryGenerator(
-          $this->module,
-          $this->generator,
-          $this->filesystem,
-          $this->compiler,
-          $this->config,
-          $this->databaseInformation,
-          $this->options
-        );
+        if ($this->shouldGenerate('repositories')) {
+            // generate the repositories
+            $repositoryGenerator = new RepositoryGenerator(
+              $this->module,
+              $this->generator,
+              $this->filesystem,
+              $this->compiler,
+              $this->config,
+              $this->databaseInformation,
+              $this->options
+            );
 
-        $repositoryGenerator->execute();
+            $repositoryGenerator->execute();
+        }
 
-        // generate the views
-        $viewGenerator = new ViewsGenerator(
-          $this->module,
-          $this->generator,
-          $this->filesystem,
-          $this->compiler,
-          $this->config,
-          $this->databaseInformation,
-          $this->options
-        );
+        if ($this->shouldGenerate('views')) {
+            // generate the views
+            $viewGenerator = new ViewsGenerator(
+              $this->module,
+              $this->generator,
+              $this->filesystem,
+              $this->compiler,
+              $this->config,
+              $this->databaseInformation,
+              $this->options
+            );
 
-        $viewGenerator->execute();
+            $viewGenerator->execute();
+        }
+        
+        if ($this->shouldGenerate('controllers')) {
+            // generate the controllers
+            $controllerGenerator = new ControllersGenerator(
+              $this->module,
+              $this->generator,
+              $this->filesystem,
+              $this->compiler,
+              $this->config,
+              $this->databaseInformation,
+              $this->options
+            );
 
-        // generate the controllers
-        $controllerGenerator = new ControllersGenerator(
-          $this->module,
-          $this->generator,
-          $this->filesystem,
-          $this->compiler,
-          $this->config,
-          $this->databaseInformation,
-          $this->options
-        );
-
-        $controllerGenerator->execute();
+            $controllerGenerator->execute();
+        }
     }
 
     /**
@@ -300,11 +309,6 @@ class GenerateStructureCommand extends Command
     protected function getArguments()
     {
         return [
-//          [
-//            'tables',
-//            InputArgument::OPTIONAL,
-//            'A list of Tables you wish to Generate Migrations for separated by a comma: users,posts,comments'
-//          ],
           [
             'module',
             InputArgument::REQUIRED,
@@ -322,11 +326,10 @@ class GenerateStructureCommand extends Command
     {
         return [
           [
-            'connection',
-            'c',
+            'only',
+            'only',
             InputOption::VALUE_OPTIONAL,
-            'The database connection to use.',
-            $this->config->get('database.default')
+            'A comma separated list of generators to run: migrations,models,views,controllers,repositories'
           ],
           [
             'tables',
@@ -339,6 +342,13 @@ class GenerateStructureCommand extends Command
             'i',
             InputOption::VALUE_OPTIONAL,
             'A list of Tables you wish to ignore, separated by a comma: users,posts,comments'
+          ],
+          [
+            'overwrite',
+            'o',
+            InputOption::VALUE_NONE,
+              // @todo: ensure migrations are deleted
+            'Overwrite existing generated files'
           ],
           [
             'path',
@@ -359,6 +369,13 @@ class GenerateStructureCommand extends Command
             'The base namespace the files should adhere to'
           ],
           [
+            'connection',
+            'c',
+            InputOption::VALUE_OPTIONAL,
+            'The database connection to use.',
+            $this->config->get('database.default')
+          ],
+          [
             'defaultIndexNames',
             null,
             InputOption::VALUE_NONE,
@@ -369,13 +386,6 @@ class GenerateStructureCommand extends Command
             null,
             InputOption::VALUE_NONE,
             'Don\'t use db foreign key names for migrations'
-          ],
-          [
-            'overwrite',
-            'o',
-            InputOption::VALUE_NONE,
-              // @todo: ensure migrations are deleted
-            'Overwrite existing generated files'
           ],
         ];
     }
@@ -408,5 +418,28 @@ class GenerateStructureCommand extends Command
         }
 
         return $this->schemaGenerator;
+    }
+
+    /**
+     * Check if the requested migration should be run or skipped
+     *
+     * @param string $string
+     * @return bool
+     */
+    private function shouldGenerate($string)
+    {
+        $only_generate = $this->getOption('only', null);
+
+        // no restriction was provided
+        // generate everything
+        if (is_null($only_generate)) {
+            return true;
+        }
+
+        // because the input is a comma separated string force to an array
+        $only_generate = explode(",", $only_generate);
+
+        // check if the string is in the array
+        return in_array($string, $only_generate);
     }
 }
