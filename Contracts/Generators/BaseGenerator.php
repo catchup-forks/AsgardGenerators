@@ -81,4 +81,22 @@ abstract class BaseGenerator
         return $default;
     }
 
+    /**
+     * Determine the namespace for generation
+     *
+     * @return string
+     */
+    protected function getNamespace()
+    {
+        $ns = isset($this->options['namespace']) ?: "";
+        if (empty($ns)) {
+            $ns = env('APP_NAME', 'App\Models');
+        }
+
+        //convert forward slashes in the namespace to backslashes
+        $ns = str_replace('/', '\\', $ns);
+        return $ns;
+
+    }
+
 }
