@@ -90,7 +90,7 @@ abstract class BaseGenerator
     {
         $ns = isset($this->options['namespace']) ?: "";
         if (empty($ns)) {
-            $ns = env('APP_NAME', 'App\Models');
+            $ns = env('APP_NAME', 'App');
         }
 
         //convert forward slashes in the namespace to backslashes
@@ -99,4 +99,38 @@ abstract class BaseGenerator
 
     }
 
+    /**
+     * Create an entity name for the given table
+     *
+     * @param string $table
+     * @return string
+     */
+    protected function entityNameFromTable($table){
+        $table = camel_case(str_singular($table));
+
+        return ucwords($table);
+    }
+
+    /**
+     * @param string $file
+     * @param bool   $overwrite
+     * @return bool
+     */
+    protected function canGenerate($file, $overwrite = false, $type)
+    {
+        if (file_exists($file)) {
+            if ($overwrite) {
+                $deleted = unlink($file);
+                if (!$deleted) {
+                    echo "\nFailed to delete existing model $file\n";
+                    return false;
+                }
+            } else {
+                echo "\nSkipped {$type} generation, file already exists. (force using --overwrite) {$file}\n";
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
