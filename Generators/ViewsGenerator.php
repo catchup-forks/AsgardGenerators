@@ -75,14 +75,12 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      */
     public function getFileGenerationPath()
     {
-        $path = $this->getOption('path', null);
+        $path = $this->module->getPath() . DIRECTORY_SEPARATOR;
 
-        if (is_null($path)) {
-            $path = config('asgard.asgardgenerators.config.views.output_path',
-              "");
-        } else {
-            $path .= "/Views";
-        }
+        $path .= implode(DIRECTORY_SEPARATOR, [
+          "Resources",
+          "views"
+        ]);
 
         return $path;
     }
@@ -103,7 +101,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
           $file_to_generate,
           $this->getOption('overwrite', false),
           'view'
-        )) {
+        )
+        ) {
             $this->generator->make(
               $this->getTemplatePath() . DIRECTORY_SEPARATOR . "$name.txt",
               $this->createData($table, $columns, $name),

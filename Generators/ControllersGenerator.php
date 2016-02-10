@@ -58,14 +58,12 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
      */
     public function getFileGenerationPath()
     {
-        $path = $this->getOption('path', null);
+        $path = $this->module->getPath() . DIRECTORY_SEPARATOR;
 
-        if (is_null($path)) {
-            $path = config('asgard.asgardgenerators.config.controllers.output_path',
-              "");
-        } else {
-            $path .= "/Controllers";
-        }
+        $path .= implode(DIRECTORY_SEPARATOR, [
+          "Http",
+          "Controllers"
+        ]);
 
         return $path;
     }
@@ -109,10 +107,11 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
      */
     private function createData($entity)
     {
+        // @todo: update config to retrieve entities, repos namespace
         return [
           'NAMESPACE'                   => $this->getNamespace() . "\\Http\\Controllers\\Admin",
           'CLASS_NAME'                  => $entity,
-          'ENTITIES_NAMESPACE'          => $this->getNamespace() . "\\Models",
+          'ENTITIES_NAMESPACE'          => $this->getNamespace() . "\\Entities",
           'REPOSITORIES_NAMESPACE'      => $this->getNamespace() . "\\Repositories",
           'LOWERCASE_CLASS_NAME'        => camel_case($entity),
           'LOWERCASE_MODULE_NAME'       => "module",

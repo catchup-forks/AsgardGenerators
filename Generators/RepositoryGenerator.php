@@ -59,14 +59,7 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
      */
     public function getFileGenerationPath()
     {
-        $path = $this->getOption('path', null);
-
-        if (is_null($path)) {
-            $path = config('asgard.asgardgenerators.config.repositories.output_path',
-              "");
-        } else {
-            $path .= "/Repositories";
-        }
+        $path = $this->module->getPath() . DIRECTORY_SEPARATOR . "Repositories";
 
         return $path;
     }

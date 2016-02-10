@@ -119,15 +119,7 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
     public function getFileGenerationPath()
     {
         // retrieve the generation path from the path option if exists
-        if (!empty($this->options['path'])) {
-            $path = $this->options['path'];
-        } else {
-            $path = config('asgard.asgardgenerators.config.migration.output_path',
-              "");
-        }
-
-//        $path =
-
+        $path = $this->module->getPath() . DIRECTORY_SEPARATOR . "Migrations";
 
         $fileName = $this->getDatePrefix() . '_' . $this->migrationName . '.php';
 

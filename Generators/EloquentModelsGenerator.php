@@ -619,8 +619,26 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      */
     public function getFileGenerationPath()
     {
-        return $this->getOption('path',
-          config('asgard.asgardgenerators.config.models.output_path',
-            ""));
+        return $this->module->getPath() . DIRECTORY_SEPARATOR . "Entities";
     }
+
+    /**
+     * Create the namespace for Model generation
+     *
+     * @return string
+     */
+    protected function getNamespace()
+    {
+        $ns = $this->options['namespace'];
+
+        if (empty($ns)) {
+            $ns = env('APP_NAME', 'App');
+        }
+
+        //convert forward slashes in the namespace to backslashes
+        $ns = str_replace('/', '\\', $ns);
+
+        return $ns . "\\Entities";
+    }
+
 }
