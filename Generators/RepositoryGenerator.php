@@ -19,8 +19,6 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
             $entity = $this->entityNameFromTable($table);
 
             $this->generateRepositoriesFor($entity);
-
-
         }
     }
 
@@ -51,7 +49,6 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
     public function getTemplateData()
     {
         return [
-          'PATH' => '17'
         ];
     }
 
