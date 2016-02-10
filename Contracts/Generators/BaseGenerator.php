@@ -94,15 +94,16 @@ abstract class BaseGenerator
      */
     protected function getNamespace()
     {
-        $ns = isset($this->options['namespace']) ?: "";
+        $ns = $this->options['namespace'];
+
         if (empty($ns)) {
             $ns = env('APP_NAME', 'App');
         }
 
         //convert forward slashes in the namespace to backslashes
         $ns = str_replace('/', '\\', $ns);
-        return $ns;
 
+        return $ns;
     }
 
     /**
