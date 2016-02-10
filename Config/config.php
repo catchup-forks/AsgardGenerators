@@ -3,20 +3,23 @@
 return [
   'name'      => 'Asgardgenerators',
 
-    // migration path
+    // migration
   'migration' => [
-      // the full path (path + filename) pointing to the template file
-    'template'    => "",
-      // the output directory
-    'output_path' => "",
+    'template'    => base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "migration.txt",
+    'output_path' => database_path("migrations"),
+
   ],
+    // models
   'models'    => [
-    'template'    => "",
-    'output_path' => "",
+    'template'    => base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "model.txt",
+    'output_path' => app_path("Models"),
   ],
+    // views
   'views'     => [
-    'template'    => "",
-    'output_path' => "",
+    'template'    => base_path("Modules/Asgardgenerators/templates/views"),
+    'output_path' => base_path("resource/views"),
+    'base_template_name' => 'app',
   ]
+
 
 ];
