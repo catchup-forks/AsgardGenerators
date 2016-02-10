@@ -24,7 +24,12 @@ return [
     'template'           => base_path("Modules/Asgardgenerators/templates/views"),
     'output_path'        => base_path("resource/views"),
     'base_template_name' => 'app',
-  ]
+  ],
+    // controllers
+  'controllers'  => [
+    'template'    => base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "admin-controller.txt",
+    'output_path' => app_path("Http/Controllers"),
+  ],
 
 
 ];
