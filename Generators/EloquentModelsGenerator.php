@@ -82,24 +82,6 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Determine the namespace for Model generation
-     *
-     * @return string
-     */
-    private function getNamespace()
-    {
-        $ns = isset($this->options['namespace']) ?: "";
-        if (empty($ns)) {
-            $ns = env('APP_NAME', 'App\Models');
-        }
-
-        //convert forward slashes in the namespace to backslashes
-        $ns = str_replace('/', '\\', $ns);
-        return $ns;
-
-    }
-
-    /**
      * @param array $tables
      * @param array $prep
      * @return array
