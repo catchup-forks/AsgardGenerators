@@ -5,6 +5,7 @@ use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use Modules\Asgardgenerators\Generators\DatabaseInformation;
 use Modules\Asgardgenerators\Generators\MigrationsGenerator;
 use Modules\Asgardgenerators\Generators\EloquentModelsGenerator;
+use Modules\Asgardgenerators\Generators\RepositoryGenerator;
 use Modules\Asgardgenerators\Generators\ViewsGenerator;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -179,7 +180,19 @@ class GenerateStructureCommand extends Command
 
         $modelGenerator->execute();
 
-        // generate the models
+        // generate the repositories
+        $repositoryGenerator = new RepositoryGenerator(
+          $this->generator,
+          $this->filesystem,
+          $this->compiler,
+          $this->config,
+          $this->databaseInformation,
+          $this->options
+        );
+
+        $repositoryGenerator->execute();
+
+        // generate the views
         $viewGenerator = new ViewsGenerator(
           $this->generator,
           $this->filesystem,
