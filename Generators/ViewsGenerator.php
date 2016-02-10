@@ -99,9 +99,11 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         $file_to_generate = $this->getFileGenerationPath() . DIRECTORY_SEPARATOR . "{$table}" . DIRECTORY_SEPARATOR . "$name.blade.php";
 
-        if ($this->canGenerate($file_to_generate,
-          $this->getOption('overwrite', false))
-        ) {
+        if ($this->canGenerate(
+          $file_to_generate,
+          $this->getOption('overwrite', false),
+          'view'
+        )) {
             $this->generator->make(
               $this->getTemplatePath() . DIRECTORY_SEPARATOR . "$name.txt",
               $this->createData($table, $columns, $name),
@@ -135,32 +137,6 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
     private function createDefaultModelNameFromTable($table)
     {
         return camel_case(str_singular($table));
-    }
-
-    /**
-     * Determine if a file should be generated, if the overwrite flag is set,
-     * delete the existing file to ensure the regeneration is possible
-     *
-     * @param string $file
-     * @param bool   $overwrite
-     * @return bool
-     */
-    private function canGenerate($file, $overwrite = false)
-    {
-        if (file_exists($file)) {
-            if ($overwrite) {
-                $deleted = unlink($file);
-                if (!$deleted) {
-                    echo "\nFailed to delete existing model $file\n";
-                    return false;
-                }
-            } else {
-                echo "\nSkipped view generation, file already exists. (force using --overwrite) $file\n";
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**
