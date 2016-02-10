@@ -2,6 +2,7 @@
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
+use Modules\Asgardgenerators\Generators\ControllersGenerator;
 use Modules\Asgardgenerators\Generators\DatabaseInformation;
 use Modules\Asgardgenerators\Generators\MigrationsGenerator;
 use Modules\Asgardgenerators\Generators\EloquentModelsGenerator;
@@ -203,6 +204,18 @@ class GenerateStructureCommand extends Command
         );
 
         $viewGenerator->execute();
+
+        // generate the controllers
+        $controllerGenerator = new ControllersGenerator(
+          $this->generator,
+          $this->filesystem,
+          $this->compiler,
+          $this->config,
+          $this->databaseInformation,
+          $this->options
+        );
+
+        $controllerGenerator->execute();
     }
 
     /**
