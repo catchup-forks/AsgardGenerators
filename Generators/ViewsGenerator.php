@@ -41,7 +41,9 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                        'index',
                        'show',
                        'edit',
-                       'edit-fields'
+                       'create',
+                       'edit-fields',
+                       'create-fields',
                      ] as $item) {
                 $this->generate($table, $columns, $item);
             }
@@ -188,11 +190,13 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                 ];
                 break;
             case 'edit':
+            case 'create':
                 $data += [
 
                 ];
                 break;
             case 'edit-fields':
+            case 'create-fields':
                 $data += [
                   'FIELDS' => $this->createFieldsForForm($table, $columns),
                 ];
@@ -258,6 +262,13 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         return $columns;
     }
 
+    /**
+     * Create the field partials replacement string
+     *
+     * @param string $table
+     * @param array $columns
+     * @return string
+     */
     private function createFieldsForForm($table, $columns)
     {
         $stub = "";
@@ -265,7 +276,6 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $module = $this->module->getLowerName();
 
         foreach ($columns['columns'] as $column => $type) {
-            var_dump($type);
             switch (strtolower($type)) {
                 case "text":
                     $stub .= "@include('$module::partials.fields.textarea', [
@@ -292,15 +302,9 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                   'placeholder' => ''
                 ])\n\n";
             }
-
-
         }
 
-
         return $stub;
-
-//        return "insert field information here";
     }
-
 
 }
