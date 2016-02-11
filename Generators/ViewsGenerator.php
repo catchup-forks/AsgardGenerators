@@ -39,12 +39,12 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
             foreach ([
                        'index',
-                       'show'
+                       'show',
+                       'edit',
+                       'edit-fields'
                      ] as $item) {
                 $this->generate($table, $columns, $item);
             }
-
-
         }
     }
 
@@ -127,10 +127,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
             echo "File {$file_to_generate} generated.\n";
         }
-
-
     }
-
 
     /**
      * @param string $table
@@ -166,11 +163,12 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $model = $this->createDefaultModelNameFromTable($table);
 
         $data = [
-          'BASE_LAYOUT' => config('asgard.asgardgenerators.config.views.base_template_name',
-            ""),
-          'NAMESPACE'   => $this->getNamespace(),
-          'MODEL'       => $model,
-          'MODELS'      => camel_case($table),
+          'NAMESPACE'                   => $this->getNamespace(),
+          'MODEL'                       => $model,
+          'MODELS'                      => camel_case($table),
+          'LOWERCASE_MODULE_NAME'       => $this->module->getLowerName(),
+          'PLURAL_LOWERCASE_CLASS_NAME' => str_plural(strtolower($model)),
+          'LOWERCASE_CLASS_NAME'        => strtolower($model),
         ];
 
         $columns = $this->removeExcluded($columns);
@@ -178,13 +176,10 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         switch ($type) {
             case 'index':
                 $data += [
-                  'TABLE_HEADERS'               => $this->createIndexTableHeaderData($table,
+                  'TABLE_HEADERS' => $this->createIndexTableHeaderData($table,
                     $columns),
-                  'TABLE_CONTENT'               => $this->createIndexTableContentData($table,
+                  'TABLE_CONTENT' => $this->createIndexTableContentData($table,
                     $columns),
-                  'LOWERCASE_MODULE_NAME'       => $this->module->getLowerName(),
-                  'PLURAL_LOWERCASE_CLASS_NAME' => str_plural(strtolower($model)),
-                  'LOWERCASE_CLASS_NAME'        => strtolower($model),
                 ];
                 break;
             case 'show':
@@ -192,6 +187,15 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                   'TITLE' => 'id'
                 ];
                 break;
+            case 'edit':
+                $data += [
+
+                ];
+                break;
+            case 'edit-fields':
+                $data += [
+                  'FIELDS' => $this->createFieldsForForm($table, $columns),
+                ];
         }
 
 
@@ -252,6 +256,50 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         return $columns;
+    }
+
+    private function createFieldsForForm($table, $columns)
+    {
+        $stub = "";
+
+        $module = $this->module->getLowerName();
+
+        foreach ($columns['columns'] as $column => $type) {
+            var_dump($type);
+            switch (strtolower($type)) {
+                case "text":
+                    $stub .= "@include('$module::partials.fields.textarea', [
+                  'title' => '$column',
+                  'name' => '$column',
+                  'value' => '',
+                  'placeholder' => ''
+                ])\n\n";
+                    break;
+                case "datetime":
+                    $stub .= "@include('$module::partials.fields.date', [
+                  'title' => '$column',
+                  'name' => '$column',
+                  'value' => '',
+                  'placeholder' => ''
+                ])\n\n";
+                    break;
+                case "string":
+                default:
+                    $stub .= "@include('$module::partials.fields.text', [
+                  'title' => '$column',
+                  'name' => '$column',
+                  'value' => '',
+                  'placeholder' => ''
+                ])\n\n";
+            }
+
+
+        }
+
+
+        return $stub;
+
+//        return "insert field information here";
     }
 
 
