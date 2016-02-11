@@ -1,12 +1,10 @@
-<?php
-
-namespace $NAMESPACE$;
+<?php namespace Modules\$MODULE_NAME$\Http\Controllers\Admin;
 
 use Laracasts\Flash\Flash;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use $ENTITIES_NAMESPACE$\$CLASS_NAME$;
-use $REPOSITORIES_NAMESPACE$\$CLASS_NAME$Repository;
+use Modules\$MODULE_NAME$\Entities\$CLASS_NAME$;
+use Modules\$MODULE_NAME$\Repositories\$CLASS_NAME$Repository;
 use Modules\Core\Http\Controllers\Admin\AdminBaseController;
 
 class $CLASS_NAME$Controller extends AdminBaseController
