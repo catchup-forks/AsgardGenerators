@@ -122,11 +122,10 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         return [
           'NAMESPACE'                   => $this->getNamespace() . "\\Http\\Controllers\\Admin",
           'CLASS_NAME'                  => $entity,
-          'ENTITIES_NAMESPACE'          => $this->getNamespace() . "\\Entities",
-          'REPOSITORIES_NAMESPACE'      => $this->getNamespace() . "\\Repositories",
           'LOWERCASE_CLASS_NAME'        => camel_case($entity),
-          'LOWERCASE_MODULE_NAME'       => "module",
-          'PLURAL_LOWERCASE_CLASS_NAME' => camel_case(str_plural($entity))
+          'PLURAL_LOWERCASE_CLASS_NAME' => camel_case(str_plural($entity)),
+          'MODULE_NAME'                 => $this->module->getStudlyName(),
+          'LOWERCASE_MODULE_NAME'       => $this->module->getLowerName()
         ];
     }
 
