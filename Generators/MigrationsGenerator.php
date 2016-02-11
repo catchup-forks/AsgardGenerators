@@ -119,7 +119,11 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
     public function getFileGenerationPath()
     {
         // retrieve the generation path from the path option if exists
-        $path = $this->module->getPath() . DIRECTORY_SEPARATOR . "Migrations";
+        $path = $this->module->getPath() . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR,
+            [
+              "Database",
+              "Migrations"
+            ]);
 
         $fileName = $this->getDatePrefix() . '_' . $this->migrationName . '.php';
 
