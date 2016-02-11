@@ -2,6 +2,7 @@
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
+use Modules\Asgardgenerators\Exceptions\NothingToGenerateException;
 use Modules\Asgardgenerators\Generators\ControllersGenerator;
 use Modules\Asgardgenerators\Generators\DatabaseInformation;
 use Modules\Asgardgenerators\Generators\MigrationsGenerator;
@@ -15,7 +16,6 @@ use Illuminate\Config\Repository as Config;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Generator;
-//use Xethron\MigrationsGenerator\Generators\SchemaGenerator;
 use User11001\EloquentModelGenerator\Console\SchemaGenerator;
 
 class GenerateStructureCommand extends Command
@@ -264,14 +264,27 @@ class GenerateStructureCommand extends Command
         // if table argument empty get list of all tables in db
         $this->initSchemaGenerator();
 
+        $tables_in_db = $this->schemaGenerator->getTables();
+
         if ($this->option('tables')) {
             $tables = explode(',', $this->option('tables'));
+
+            foreach($tables as $index=>$table){
+                if(!in_array($table, $tables_in_db)){
+                    unset($tables[$index]);
+                }
+            }
         } else {
-            $tables = $this->schemaGenerator->getTables();
+            $tables = $tables_in_db;
         }
 
         // return array of creatable tables
-        return $this->removeExcludedTables($tables);
+        $tables =  $this->removeExcludedTables($tables);
+
+        if(empty($tables))
+            throw new NothingToGenerateException("There is nothing to generate.");
+
+        return $tables;
     }
 
     /**
