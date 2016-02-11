@@ -9,6 +9,13 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 {
 
     /**
+     * List of entities which where created
+     *
+     * @var array
+     */
+    protected $generated = [];
+
+    /**
      * Execute the generator
      *
      * @return void
@@ -19,6 +26,8 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
             $entity = $this->entityNameFromTable($table);
             $this->generate($entity);
         }
+
+        $this->createRoutes();
     }
 
     /**
@@ -95,6 +104,8 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
               $file
             );
 
+            $this->generated[] = $entity;
+
             echo "File {$file} generated.\n";
         }
     }
@@ -117,5 +128,54 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
           'LOWERCASE_MODULE_NAME'       => "module",
           'PLURAL_LOWERCASE_CLASS_NAME' => camel_case(str_plural($entity))
         ];
+    }
+
+    /**
+     * Create the resource routes
+     *
+     * @throws \Way\Generators\Filesystem\FileAlreadyExists
+     * @throws \Way\Generators\Filesystem\FileNotFound
+     */
+    private function createRoutes()
+    {
+        // get stub data
+        $path = config('asgard.asgardgenerators.config.controllers.route_template',
+          base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "route-resource.txt");
+
+        $stub = $this->filesystem->get($path);
+
+        $data = "";
+
+        // replace the keyed values with their actual value
+        foreach ($this->generated as $entity) {
+            $data .= str_replace([
+                '$CLASS_NAME$',
+                '$PLURAL_LOWERCASE_CLASS_NAME$',
+                '$MODULE_NAME$',
+                '$LOWERCASE_MODULE_NAME$',
+                '$LOWERCASE_CLASS_NAME$',
+              ], [
+                $entity,
+                str_plural(strtolower($entity)),
+                $this->module->getStudlyName(),
+                $this->module->getLowerName(),
+                strtolower($entity),
+              ], $stub) . "\n";
+        }
+
+        // add a replacement pointer to the end of the file to ensure further changes
+        $data .= "\n// append\n";
+
+        // write the file
+        $file = $this->module->getPath() . DIRECTORY_SEPARATOR . "Http" . DIRECTORY_SEPARATOR . "backendRoutes.php";
+
+        $content = $this->filesystem->get($file);
+        $content = str_replace("// append", $data, $content);
+
+        if ($this->filesystem->exists($file)) {
+            unlink($file);
+        }
+
+        $this->filesystem->make($file, $content);
     }
 }
