@@ -20,6 +20,7 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->registerBindings();
         $this->registerGenerateStructureCommand();
 
         $this->commands([
@@ -35,8 +36,6 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
 
     private function registerGenerateStructureCommand()
     {
-
-
         $this->app->bindShared('asgard.generate.structure', function ($app) {
             return new GenerateStructureCommand(
               $app->make('Way\Generators\Generator'),
@@ -47,8 +46,10 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
             );
         });
 
+    }
 
-
-
+    private function registerBindings()
+    {
+// add bindings
     }
 }
