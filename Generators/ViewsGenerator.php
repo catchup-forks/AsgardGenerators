@@ -10,6 +10,17 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 {
 
     /**
+     * List of columns taht should not be included in the views
+     *
+     * @var array
+     */
+    protected $excluded_columns = [
+      'created_at',
+      'updated_at',
+      'password'
+    ];
+
+    /**
      * Execute the generator
      *
      * @return void
@@ -64,7 +75,6 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
     public function getTemplateData()
     {
         return [
-          'PATH' => '17'
         ];
     }
 
@@ -157,15 +167,18 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
           'MODELS'      => camel_case($table),
         ];
 
+        $columns = $this->removeExcluded($columns);
+
         switch ($type) {
             case 'index':
                 $data += [
-                  'TITLE'         => $this->createTitleFromTable($table),
-                  'TABLE_HEADERS' => $this->createIndexTableHeaderData($table,
+                  'TABLE_HEADERS'               => $this->createIndexTableHeaderData($table,
                     $columns),
-                  'TABLE_CONTENT' => $this->createIndexTableContentData($table,
+                  'TABLE_CONTENT'               => $this->createIndexTableContentData($table,
                     $columns),
-                  'BASE_ROUTE'    => "admin.$model.$model",
+                  'LOWERCASE_MODULE_NAME'       => $this->module->getLowerName(),
+                  'PLURAL_LOWERCASE_CLASS_NAME' => str_plural(strtolower($model)),
+                  'LOWERCASE_CLASS_NAME'        => strtolower($model),
                 ];
                 break;
             case 'show':
@@ -216,6 +229,23 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         return implode("\n", $line);
+    }
+
+    /**
+     * Remove excluded columns from a given list of columns
+     *
+     * @param array $columns
+     * @return array
+     */
+    private function removeExcluded($columns)
+    {
+        foreach (array_keys($columns['columns']) as $column) {
+            if (in_array($column, $this->excluded_columns)) {
+                unset($columns['columns'][$column]);
+            }
+        }
+
+        return $columns;
     }
 
 
