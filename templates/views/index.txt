@@ -1,4 +1,4 @@
-@extends('$BASE_LAYOUT$')
+@extends('layouts.master')
 
 @section('content-header')
     <h1>
