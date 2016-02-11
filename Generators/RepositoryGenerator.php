@@ -8,6 +8,8 @@ use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
 class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
 {
 
+    protected $generated = [];
+
     /**
      * Execute the generator
      *
@@ -19,7 +21,11 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
             $entity = $this->entityNameFromTable($table);
 
             $this->generateRepositoriesFor($entity);
+
+            $this->generated[] = $entity;
         }
+
+        $this->registerWithProvider();
     }
 
     /**
@@ -169,6 +175,52 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
 
 
         return $data;
+    }
+
+    /**
+     * Register the created repositories with the service provider
+     *
+     * @throws \Way\Generators\Filesystem\FileAlreadyExists
+     * @throws \Way\Generators\Filesystem\FileNotFound
+     */
+    private function registerWithProvider()
+    {
+        // get stub data
+        $path = config('asgard.asgardgenerators.config.repositories.bindings_template',
+          base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "bindings.txt");
+
+        $stub = $this->filesystem->get($path);
+
+        $data = "";
+
+        // replace the keyed values with their actual value
+        foreach ($this->generated as $entity) {
+            $data .= str_replace([
+                '$CLASS_NAME$',
+                '$MODULE_NAME$',
+                '$ENTITY_TYPE$'
+              ], [
+                $entity,
+                $this->module->getStudlyName(),
+                'Eloquent'
+              ], $stub) . "\n";
+        }
+
+        // add a replacement pointer to the end of the file to ensure further changes
+        $data .= "\n// add bindings\n";
+
+        // write the file
+        $file = $this->module->getPath() . DIRECTORY_SEPARATOR . "Providers" . DIRECTORY_SEPARATOR . $this->module->getName() . "ServiceProvider.php";
+
+        $content = $this->filesystem->get($file);
+        $content = str_replace("// add bindings", $data, $content);
+
+        if ($this->filesystem->exists($file)) {
+            unlink($file);
+        }
+
+        $this->filesystem->make($file, $content);
+
     }
 
 }
