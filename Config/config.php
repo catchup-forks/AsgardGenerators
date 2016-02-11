@@ -29,6 +29,7 @@ return [
   'controllers'  => [
     'template'    => base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "admin-controller.txt",
     'output_path' => app_path("Http/Controllers"),
+    'route_template' => base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "route-resource.txt",
   ],
 
 
