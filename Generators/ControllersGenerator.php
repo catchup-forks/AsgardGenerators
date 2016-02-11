@@ -28,6 +28,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         $this->createRoutes();
+        $this->createPermissions();
     }
 
     /**
@@ -176,5 +177,57 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         $this->filesystem->make($file, $content);
+    }
+
+    private function createPermissions()
+    {
+        // get stub data
+        $path = config('asgard.asgardgenerators.config.controllers.permissions_template',
+          base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "permissions-append.txt");
+
+        $stub = $this->filesystem->get($path);
+
+        $data = "";
+
+
+        // replace the keyed values with their actual value
+        foreach ($this->generated as $entity) {
+            $data .= str_replace([
+                '$LOWERCASE_MODULE_NAME$',
+                '$PLURAL_LOWERCASE_CLASS_NAME$',
+              ], [
+                $this->module->getLowerName(),
+                str_plural(strtolower($entity)),
+              ], $stub) . "\n";
+        }
+
+        // add a replacement pointer to the end of the file to ensure further changes
+        $data .= "\n// append\n";
+
+        // write the file
+        $file = $this->module->getPath() . DIRECTORY_SEPARATOR . "Config" . DIRECTORY_SEPARATOR . "permissions.php";
+
+        $content = $this->filesystem->get($file);
+        $content = str_replace("// append", $data, $content);
+
+        if ($this->filesystem->exists($file)) {
+            unlink($file);
+        }
+
+        $this->filesystem->make($file, $content);
+
+        // publish the newly created permissions file
+        $publish_location = config_path() . DIRECTORY_SEPARATOR . implode(".", [
+            'asgard',
+            $this->module->getLowerName(),
+            'permissions',
+            'php'
+          ]);
+
+        if ($this->filesystem->exists($publish_location)) {
+            unlink($publish_location);
+        }
+
+        $this->filesystem->make($publish_location, $content);
     }
 }
