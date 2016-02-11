@@ -89,8 +89,14 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         $path .= implode(DIRECTORY_SEPARATOR, [
           "Resources",
-          "views"
+          "views",
+          "admin"
         ]);
+
+        // ensure the basedir exists
+        if (!file_exists($path)) {
+            mkdir($path);
+        }
 
         return $path;
     }
