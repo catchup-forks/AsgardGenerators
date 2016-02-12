@@ -21,6 +21,7 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerBindings();
+        $this->registerViews();
         $this->registerGenerateStructureCommand();
 
         $this->commands([
@@ -34,6 +35,11 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
         $this->publishes([__DIR__ . '/../Config/config.php' => config_path('asgard.generators.config' . '.php'), ], 'config');
     }
 
+    /**
+     * Register the asgard:generate:structure command
+     *
+     * return @void
+     */
     private function registerGenerateStructureCommand()
     {
         $this->app->bindShared('asgard.generate.structure', function ($app) {
@@ -48,8 +54,30 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
 
     }
 
+    /**
+     * Register the views for publication
+     *
+     * @return void
+     */
+    private function registerViews()
+    {
+        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'asgardgenerators');
+
+        $views = realpath(__DIR__.'/../Resources/views');
+
+        $this->publishes([
+          $views => $this->app->basePath().'/resources/views/vendor/asgardgenerators',
+        ]);
+    }
+
+    /**
+     * Register bindings for this module
+     *
+     * @return void
+     */
     private function registerBindings()
     {
-// add bindings
+        // add bindings
     }
+
 }
