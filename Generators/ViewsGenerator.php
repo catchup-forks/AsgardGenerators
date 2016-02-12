@@ -276,10 +276,13 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $module = $this->module->getLowerName();
 
         foreach ($columns['columns'] as $column => $type) {
+            // create the title from a given column
+            $title = $this->createTitleFromColumn($column);
+
             switch (strtolower($type)) {
                 case "text":
                     $stub .= "@include('$module::partials.fields.textarea', [
-                  'title' => '$column',
+                  'title' => '$title',
                   'name' => '$column',
                   'value' => '',
                   'placeholder' => ''
@@ -287,7 +290,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                     break;
                 case "datetime":
                     $stub .= "@include('$module::partials.fields.date', [
-                  'title' => '$column',
+                  'title' => '$title',
                   'name' => '$column',
                   'value' => '',
                   'placeholder' => ''
@@ -296,7 +299,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                 case "string":
                 default:
                     $stub .= "@include('$module::partials.fields.text', [
-                  'title' => '$column',
+                  'title' => '$title',
                   'name' => '$column',
                   'value' => '',
                   'placeholder' => ''
@@ -305,6 +308,20 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         return $stub;
+    }
+
+    /**
+     * Create a title from a given table column name
+     *
+     * @param string $column
+     * @return string
+     */
+    private function createTitleFromColumn($column){
+        // ensure only the first letter is upper case
+        $column = ucfirst(strtolower($column));
+
+        // replace the _ by a space
+        return str_replace("_", " ", $column);
     }
 
 }
