@@ -30,13 +30,6 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         echo "\nGenerating Views:\n";
         // create the index view per table
         foreach ($this->tables->getInfo() as $table => $columns) {
-            // create the base dir for the views
-            $base_dir = $this->getFileGenerationPath() . DIRECTORY_SEPARATOR . "{$table}";
-            if (!file_exists($base_dir)) {
-                mkdir($base_dir);
-            }
-
-
             foreach ([
                        'index',
                        'show',
@@ -112,8 +105,16 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      */
     private function generate($table, $columns = [], $name = "index")
     {
+        // create the base dir for the views
+        $entity = $this->entityNameFromTable($table);
+        $entity = str_plural($entity);
 
-        $file_to_generate = $this->getFileGenerationPath() . DIRECTORY_SEPARATOR . "{$table}" . DIRECTORY_SEPARATOR . "$name.blade.php";
+        $base_dir = $this->getFileGenerationPath() . DIRECTORY_SEPARATOR . "{$entity}";
+        if (!file_exists($base_dir)) {
+            mkdir($base_dir);
+        }
+
+        $file_to_generate = $base_dir . DIRECTORY_SEPARATOR . "$name.blade.php";
 
         if ($this->canGenerate(
           $file_to_generate,
@@ -257,7 +258,10 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         // don't include the primary key in the forms
         if (preg_match("/-fields$/", $type)) {
-            $excluded = array_merge($excluded, $columns['primary']);
+            // @todo: this is only for testing
+            if (count($columns['primary']) == 1) {
+                $excluded = array_merge($excluded, $columns['primary']);
+            }
         }
 
         foreach (array_keys($columns['columns']) as $column) {
