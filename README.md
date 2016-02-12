@@ -15,11 +15,7 @@ dev
 
 ### Installation
 
-Install using composer
- 
-```sh
- composer require-dev bitsoflove/asgardgenerators
-```
+Clone this repo in the Modules directory of your AsgardCMS project.
 
 #### Add the dependencies
 
