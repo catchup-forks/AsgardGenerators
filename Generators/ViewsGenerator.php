@@ -273,7 +273,9 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
     {
         $stub = "";
 
-        $module = $this->module->getLowerName();
+        // @todo:
+//        $module = $this->module->getLowerName();
+        $module = "asgardgenerators";
 
         foreach ($columns['columns'] as $column => $type) {
             // create the title from a given column
