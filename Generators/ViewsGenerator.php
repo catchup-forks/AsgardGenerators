@@ -173,7 +173,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
           'LOWERCASE_CLASS_NAME'        => strtolower($model),
         ];
 
-        $columns = $this->removeExcluded($columns);
+        $columns = $this->removeExcluded($columns, $type);
 
         switch ($type) {
             case 'index':
@@ -251,10 +251,17 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      * @param array $columns
      * @return array
      */
-    private function removeExcluded($columns)
+    private function removeExcluded($columns, $type = 'index')
     {
+        $excluded = $this->excluded_columns;
+
+        // don't include the primary key in the forms
+        if (preg_match("/-fields$/", $type)) {
+            $excluded = array_merge($excluded, $columns['primary']);
+        }
+
         foreach (array_keys($columns['columns']) as $column) {
-            if (in_array($column, $this->excluded_columns)) {
+            if (in_array($column, $excluded)) {
                 unset($columns['columns'][$column]);
             }
         }
@@ -266,7 +273,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      * Create the field partials replacement string
      *
      * @param string $table
-     * @param array $columns
+     * @param array  $columns
      * @return string
      */
     private function createFieldsForForm($table, $columns)
@@ -318,7 +325,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      * @param string $column
      * @return string
      */
-    private function createTitleFromColumn($column){
+    private function createTitleFromColumn($column)
+    {
         // ensure only the first letter is upper case
         $column = ucfirst(strtolower($column));
 
