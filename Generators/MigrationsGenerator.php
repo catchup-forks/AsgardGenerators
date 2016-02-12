@@ -69,6 +69,8 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
         $this->datePrefix = date('Y_m_d_His', strtotime('+1 second'));
         $this->generate('foreign_keys', $this->tables->getTables());
         echo "\nFinished!\n";
+
+        $this->addToPublishList();
     }
 
     /**
@@ -177,5 +179,36 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
     protected function getDatePrefix()
     {
         return $this->datePrefix;
+    }
+
+    /**
+     * Ensure the database migrations are being publishable
+     *
+     * @throws \Way\Generators\Filesystem\FileAlreadyExists
+     * @throws \Way\Generators\Filesystem\FileNotFound
+     */
+    private function addToPublishList()
+    {
+        $replace = "// add bindings";
+
+        $data = "\$migrations = realpath(__DIR__.'/../Database/Migrations');\n\n"
+          . "\$this->publishes([
+          \$migrations => \$this->app->databasePath().'/migrations',
+        ], 'migrations');\n\n";
+
+        // add a replacement pointer to the end of the file to ensure further changes
+        $data .= "\n$replace\n";
+
+        // write the file
+        $file = $this->module->getPath() . DIRECTORY_SEPARATOR . "Providers" . DIRECTORY_SEPARATOR . $this->module->getName() . "ServiceProvider.php";
+
+        $content = $this->filesystem->get($file);
+        $content = str_replace("$replace", $data, $content);
+
+        if ($this->filesystem->exists($file)) {
+            unlink($file);
+        }
+
+        $this->filesystem->make($file, $content);
     }
 }
