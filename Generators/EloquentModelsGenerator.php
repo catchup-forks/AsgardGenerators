@@ -107,34 +107,12 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         }
 
         foreach ($prep as $table => $properties) {
-            $foreign = $properties['foreign'];
-            $primary = $properties['primary'];
             $columns = array_keys($properties['columns']);
 
             $this->setFillableProperties($table, $rules, $columns);
 
-            $isManyToMany = $this->detectManyToMany($prep, $table);
-
-            if ($isManyToMany === true) {
-                $this->addManyToManyRules($tables, $table, $prep, $rules);
-            }
-
-            /**
-             * the below used to be in an ELSE clause but we should be as verbose as possible
-             * when we detect a many-to-many table, we still want to set relations on it
-             * else
-             */
-            {
-                foreach ($foreign as $fk) {
-                    $isOneToOne = $this->detectOneToOne($fk, $primary);
-
-                    if ($isOneToOne) {
-                        $this->addOneToOneRules($tables, $table, $rules, $fk);
-                    } else {
-                        $this->addOneToManyRules($tables, $table, $rules, $fk);
-                    }
-                }
-            }
+            // add relationships below
+            $rules[$table] = array_merge($rules[$table], $this->tables->getRelationships($table));
         }
 
         return $rules;
@@ -191,164 +169,6 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
             }
         }
         $rules[$table]['fillable'] = $fillable;
-    }
-
-    /**
-     * Determine if the given table has many to many relationships
-     *
-     * @param array  $prep
-     * @param string $table
-     * @return bool
-     */
-    private function detectManyToMany($prep, $table)
-    {
-        $properties = $prep[$table];
-        $foreignKeys = $properties['foreign'];
-        $primaryKeys = $properties['primary'];
-
-        //ensure we only have two foreign keys
-        if (count($foreignKeys) === 2) {
-
-            //ensure our foreign keys are not also defined as primary keys
-            $primaryKeyCountThatAreAlsoForeignKeys = 0;
-            foreach ($foreignKeys as $foreign) {
-                foreach ($primaryKeys as $primary) {
-                    if ($primary === $foreign['name']) {
-                        ++$primaryKeyCountThatAreAlsoForeignKeys;
-                    }
-                }
-            }
-
-            if ($primaryKeyCountThatAreAlsoForeignKeys === 1) {
-                //one of the keys foreign keys was also a primary key
-                //this is not a many to many. (many to many is only possible when both or none of the foreign keys are also primary)
-                return false;
-            }
-
-            //ensure no other tables refer to this one
-            foreach ($prep as $compareTable => $properties) {
-                if ($table !== $compareTable) {
-                    foreach ($properties['foreign'] as $prop) {
-                        if ($prop['on'] === $table) {
-                            return false;
-                        }
-                    }
-                }
-            }
-            //this is a many to many table!
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Create required many to many relationships
-     *
-     * @param array  $tables
-     * @param string $table
-     * @param array  $prep
-     * @param array  $rules
-     * @return void
-     */
-    private function addManyToManyRules($tables, $table, $prep, &$rules)
-    {
-        $foreign = $prep[$table]['foreign'];
-
-        $fk1 = $foreign[0];
-        $fk1Table = $fk1['on'];
-        $fk1Field = $fk1['field'];
-        //$fk1References = $fk1['references'];
-
-        $fk2 = $foreign[1];
-        $fk2Table = $fk2['on'];
-        $fk2Field = $fk2['field'];
-        //$fk2References = $fk2['references'];
-
-        //User belongstomany groups user_group, user_id, group_id
-        if (in_array($fk1Table, $tables)) {
-            $rules[$fk1Table]['belongsToMany'][] = [
-              $fk2Table,
-              $table,
-              $fk1Field,
-              $fk2Field
-            ];
-        }
-        if (in_array($fk2Table, $tables)) {
-            $rules[$fk2Table]['belongsToMany'][] = [
-              $fk1Table,
-              $table,
-              $fk2Field,
-              $fk1Field
-            ];
-        }
-    }
-
-    /**
-     * Determine if the given foreign key is used in a one to one relationship
-     *
-     * @param array $fk
-     * @param array $primary
-     * @return bool
-     */
-    private function detectOneToOne($fk, $primary)
-    {
-        if (count($primary) === 1) {
-            foreach ($primary as $prim) {
-                if ($prim === $fk['field']) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Create the required one to many relationship
-     *
-     * @param array  $tables
-     * @param string $table
-     * @param array  $rules
-     * @param array  $fk
-     * @return void
-     */
-    private function addOneToManyRules($tables, $table, &$rules, $fk)
-    {
-        //$table belongs to $FK
-        //FK hasMany $table
-
-        $fkTable = $fk['on'];
-        $field = $fk['field'];
-        $references = $fk['references'];
-        if (in_array($fkTable, $tables)) {
-            $rules[$fkTable]['hasMany'][] = [$table, $field, $references];
-        }
-        if (in_array($table, $tables)) {
-            $rules[$table]['belongsTo'][] = [$fkTable, $field, $references];
-        }
-    }
-
-    /**
-     * Create the required one to one relationship
-     *
-     * @param array $tables
-     * @param array $table
-     * @param array $rules
-     * @param array $fk
-     * @return void
-     */
-    private function addOneToOneRules($tables, $table, &$rules, $fk)
-    {
-        $fkTable = $fk['on'];
-        $field = $fk['field'];
-        $references = $fk['references'];
-        if (in_array($fkTable, $tables)) {
-            $rules[$fkTable]['hasOne'][] = [$table, $field, $references];
-        }
-        if (in_array($table, $tables)) {
-            $rules[$table]['belongsTo'][] = [$fkTable, $field, $references];
-        }
     }
 
     /**
@@ -607,8 +427,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     public function getTemplateData()
     {
         return [
-          'NAME'      => ucwords($this->argument('modelName')),
-          'NAMESPACE' => env('APP_NAME', 'App\Models'),
+          'NAMESPACE' => $this->getNamespace(),
         ];
     }
 
