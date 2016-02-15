@@ -171,79 +171,29 @@ class GenerateStructureCommand extends Command
           $this->getTables()
         );
 
-        if ($this->shouldGenerate('migrations')) {
-            // generate the migrations
-            $migrationGenerator = new MigrationsGenerator(
-              $this->module,
-              $this->generator,
-              $this->filesystem,
-              $this->compiler,
-              $this->config,
-              $this->databaseInformation,
-              $this->options
-            );
+        // the available generators
+        $generators = [
+          'migrations'   => MigrationsGenerator::class,
+          'models'       => EloquentModelsGenerator::class,
+          'repositories' => RepositoryGenerator::class,
+          'views'        => ViewsGenerator::class,
+          'controllers'  => ControllersGenerator::class,
+        ];
 
-            $migrationGenerator->execute();
-        }
+        foreach ($generators as $name => $class) {
+            if ($this->shouldGenerate($name)) {
+                $generator = new $class(
+                  $this->module,
+                  $this->generator,
+                  $this->filesystem,
+                  $this->compiler,
+                  $this->config,
+                  $this->databaseInformation,
+                  $this->options
+                );
 
-        if ($this->shouldGenerate('models')) {
-            // generate the models
-            $modelGenerator = new EloquentModelsGenerator(
-              $this->module,
-              $this->generator,
-              $this->filesystem,
-              $this->compiler,
-              $this->config,
-              $this->databaseInformation,
-              $this->options
-            );
-
-            $modelGenerator->execute();
-        }
-
-        if ($this->shouldGenerate('repositories')) {
-            // generate the repositories
-            $repositoryGenerator = new RepositoryGenerator(
-              $this->module,
-              $this->generator,
-              $this->filesystem,
-              $this->compiler,
-              $this->config,
-              $this->databaseInformation,
-              $this->options
-            );
-
-            $repositoryGenerator->execute();
-        }
-
-        if ($this->shouldGenerate('views')) {
-            // generate the views
-            $viewGenerator = new ViewsGenerator(
-              $this->module,
-              $this->generator,
-              $this->filesystem,
-              $this->compiler,
-              $this->config,
-              $this->databaseInformation,
-              $this->options
-            );
-
-            $viewGenerator->execute();
-        }
-
-        if ($this->shouldGenerate('controllers')) {
-            // generate the controllers
-            $controllerGenerator = new ControllersGenerator(
-              $this->module,
-              $this->generator,
-              $this->filesystem,
-              $this->compiler,
-              $this->config,
-              $this->databaseInformation,
-              $this->options
-            );
-
-            $controllerGenerator->execute();
+                $generator->execute();
+            }
         }
     }
 
@@ -269,8 +219,8 @@ class GenerateStructureCommand extends Command
         if ($this->option('tables')) {
             $tables = explode(',', $this->option('tables'));
 
-            foreach($tables as $index=>$table){
-                if(!in_array($table, $tables_in_db)){
+            foreach ($tables as $index => $table) {
+                if (!in_array($table, $tables_in_db)) {
                     unset($tables[$index]);
                 }
             }
@@ -279,10 +229,11 @@ class GenerateStructureCommand extends Command
         }
 
         // return array of creatable tables
-        $tables =  $this->removeExcludedTables($tables);
+        $tables = $this->removeExcludedTables($tables);
 
-        if(empty($tables))
+        if (empty($tables)) {
             throw new NothingToGenerateException("There is nothing to generate.");
+        }
 
         return $tables;
     }
