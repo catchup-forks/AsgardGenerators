@@ -16,7 +16,7 @@ return [
   ],
     // repositories
   'repositories' => [
-    'template'          => base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "repository.txt",
+    'template'          => base_path("Modules/Asgardgenerators/templates"),
     'bindings_template' => base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "bindings.txt",
     'output_path'       => app_path("Repositories"),
   ],
@@ -29,8 +29,8 @@ return [
     // controllers
   'controllers'  => [
     'template'       => base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "admin-controller.txt",
-    'output_path'    => app_path("Http/Controllers"),
     'route_template' => base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "route-resource.txt",
+    'output_path'    => app_path("Http/Controllers"),
   ],
 
 
