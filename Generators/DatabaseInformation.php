@@ -113,7 +113,7 @@ class DatabaseInformation
      */
     public function primaryKey($table){
         $info = $this->getInfo($table);
-        
+
         if(!isset($info['primary'])){
             throw new DatabaseInformationException("Primary key for table: {$table} could not be detected.");
         }

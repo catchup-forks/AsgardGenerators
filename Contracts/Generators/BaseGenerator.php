@@ -141,4 +141,25 @@ abstract class BaseGenerator
 
         return true;
     }
+
+    /**
+     * Create a printable string from a given array
+     *
+     * @param array $array
+     * @return string
+     */
+    protected function arrayToString($array = [])
+    {
+        // should never happen but just to be sure
+        if (!is_array($array)) {
+            $array = [$array];
+        }
+
+        // add quotes
+        $array = array_map(function ($item) {
+            return "\"$item\"";
+        }, $array);
+
+        return "[" . implode(",", $array) . "]";
+    }
 }
