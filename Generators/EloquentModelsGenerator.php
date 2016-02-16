@@ -178,13 +178,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         $fillable = [];
 
         // exclude the globally excluded field + primary key(s)
-        $primary_key = $this->tables->primaryKey($table);
-
-        if (!is_array($primary_key)) {
-            $primary_key = [$primary_key];
-        }
-
-        $excluded = array_merge($this->excluded_columns, $primary_key);
+        $excluded = $this->excludedFieldsForTable($table);
 
         foreach ($columns as $column_name) {
             if (!in_array($column_name, $excluded)) {
@@ -550,8 +544,13 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         $columns = $this->schemaGenerator->getSchema()
           ->listTableColumns($translate_table);
 
+        // exclude the globally excluded field + primary key(s)
+        $excluded = $this->excludedFieldsForTable($translate_table);
+
         foreach ($columns as $column) {
-            $translatable[] = $column->getName();
+            if (!in_array($column->getName(), $excluded)) {
+                $translatable[] = $column->getName();
+            }
         }
 
         return $translatable;
@@ -569,6 +568,23 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         $traits .= "use \\Dimsav\\Translatable\\Translatable;\n\n"
           . "public \$translatedAttributes = " . $this->arrayToString($translatable) . ";"
           . "\n";
+    }
+
+    /**
+     * @param $table
+     * @return array
+     * @throws \Modules\Asgardgenerators\Exceptions\DatabaseInformationException
+     */
+    private function excludedFieldsForTable($table)
+    {
+        $primary_key = $this->tables->primaryKey($table);
+
+        if (!is_array($primary_key)) {
+            $primary_key = [$primary_key];
+        }
+
+        $excluded = array_merge($this->excluded_columns, $primary_key);
+        return $excluded;
     }
 
 }
