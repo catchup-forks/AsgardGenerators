@@ -94,8 +94,12 @@ class DatabaseInformation
      *
      * @return array
      */
-    public function getInfo()
+    public function getInfo($table = null)
     {
+        if (!is_null($table) && isset($this->tableInformation[$table])) {
+            return $this->tableInformation[$table];
+        }
+
         return $this->tableInformation;
     }
 
@@ -166,7 +170,7 @@ class DatabaseInformation
     /**
      * Detect if the requested table has many to many relationships defined
      *
-     * @param array $info
+     * @param array  $info
      * @param string $table
      * @return bool
      */
@@ -236,10 +240,10 @@ class DatabaseInformation
     /**
      * Add a one to many relationship
      *
-     * @param array $tables
+     * @param array  $tables
      * @param string $table
-     * @param array $rules
-     * @param array $foreign_key
+     * @param array  $rules
+     * @param array  $foreign_key
      */
     private function addOneToManyRules($tables, $table, &$rules, $foreign_key)
     {
@@ -260,10 +264,10 @@ class DatabaseInformation
     /**
      * Add a one to one relationship
      *
-     * @param array $tables
+     * @param array  $tables
      * @param string $table
-     * @param array $rules
-     * @param array $foreign_key
+     * @param array  $rules
+     * @param array  $foreign_key
      */
     private function addOneToOneRules($tables, $table, &$rules, $foreign_key)
     {
@@ -281,10 +285,10 @@ class DatabaseInformation
     /**
      * Add a many to many relationship to the table
      *
-     * @param array $tables
+     * @param array  $tables
      * @param string $table
-     * @param array $info
-     * @param array $rules
+     * @param array  $info
+     * @param array  $rules
      */
     private function addManyToManyRules($tables, $table, $info, &$rules)
     {
@@ -318,7 +322,6 @@ class DatabaseInformation
             ];
         }
     }
-
 
 
 }
