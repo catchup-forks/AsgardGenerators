@@ -336,28 +336,33 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
             switch ($relationship) {
                 case "belongstomany":
+                case "hasmany":
+                    $view_name = "select-multiple";
+                    break;
                 case "belongsto":
                 case "hasone":
-                case "hasmany":
-                    foreach ($data as $row) {
-                        // determine the primary key(s)
-                        $primary_key = $this->tables->primaryKey($row[0]);
-                        $primary_key = $this->arrayToString($primary_key);
+                default:
+                    $view_name = "select";
+                    break;
+            }
 
-                        $single = $this->entityNameFromTable($row[0]);
-                        $plurar = camel_case(str_plural($single));
+            foreach ($data as $row) {
+                // determine the primary key(s)
+                $primary_key = $this->tables->primaryKey($row[0]);
+                $primary_key = $this->arrayToString($primary_key);
 
-                        $stub .= "@include('$module::partials.fields.select', [
+                $single = $this->entityNameFromTable($row[0]);
+                $plurar = camel_case(str_plural($single));
+
+                $stub .= "@include('$module::partials.fields.{$view_name}', [
                               'title' => '{$single}',
                               'name' => '{$row[0]}',
                               'options' => \${$plurar},
                               'primary_key' => {$primary_key},
                               'selected' => ''
                             ])\n\n";
-                    }
-
-                    break;
             }
+
         }
 
         return $stub;
