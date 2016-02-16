@@ -61,14 +61,12 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
      */
     public function execute()
     {
-        echo "Setting up Tables and Index Migrations\n";
+        echo "\nGenerating Migrations\n";
         $this->datePrefix = date('Y_m_d_His');
         $this->generate('create', $this->tables->getTables());
 
-        echo "\nSetting up Foreign Key Migrations\n";
         $this->datePrefix = date('Y_m_d_His', strtotime('+1 second'));
         $this->generate('foreign_keys', $this->tables->getTables());
-        echo "\nFinished!\n";
 
         $this->addToPublishList();
     }
@@ -108,7 +106,7 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
                   $filePathToGenerate
                 );
 
-                echo "Generated {$filePathToGenerate} \n";
+                echo "File {$filePathToGenerate} generated.\n";
             }
         }
     }

@@ -23,6 +23,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
      */
     public function execute()
     {
+        echo "\nGenerating Admin Controllers\n";
         foreach ($this->tables->getInfo() as $table => $columns) {
             $entity = $this->entityNameFromTable($table);
             $this->generate($entity, $table);
