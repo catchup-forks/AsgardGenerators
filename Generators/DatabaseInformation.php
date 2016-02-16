@@ -2,6 +2,7 @@
 
 namespace Modules\Asgardgenerators\Generators;
 
+use Modules\Asgardgenerators\Exceptions\DatabaseInformationException;
 use User11001\EloquentModelGenerator\Console\SchemaGenerator;
 
 class DatabaseInformation
@@ -103,7 +104,33 @@ class DatabaseInformation
         return $this->tableInformation;
     }
 
+    /**
+     * Determine the primary key for a given table
+     *
+     * @param string $table
+     * @return array|string
+     * @throws \Modules\Asgardgenerators\Exceptions\DatabaseInformationException
+     */
+    public function primaryKey($table){
+        $info = $this->getInfo($table);
+        
+        if(!isset($info['primary'])){
+            throw new DatabaseInformationException("Primary key for table: {$table} could not be detected.");
+        }
 
+        // single key, we don't need the array returned
+        if(count($info['primary']) === 1){
+            return reset($info['primary']);
+        }
+
+        return $info['primary'];
+    }
+
+    /**
+     * Create the relationship information if it not exists allready
+     *
+     * @return array
+     */
     public function relationships()
     {
         if (!is_null($this->relationships)) {
