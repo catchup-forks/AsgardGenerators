@@ -40,7 +40,13 @@ class $CLASS_NAME$Controller extends AdminBaseController
      */
     public function create()
     {
-        return view('$LOWERCASE_MODULE_NAME$::admin.$PLURAL_LOWERCASE_CLASS_NAME$.create');
+        $RELATIONSHIPS$
+
+        $variables = [
+            $VARIABLES$
+        ];
+
+        return view('$LOWERCASE_MODULE_NAME$::admin.$PLURAL_LOWERCASE_CLASS_NAME$.create', $variables);
     }
 
     /**
@@ -66,7 +72,14 @@ class $CLASS_NAME$Controller extends AdminBaseController
      */
     public function edit($CLASS_NAME$ $$LOWERCASE_CLASS_NAME$)
     {
-        return view('$LOWERCASE_MODULE_NAME$::admin.$PLURAL_LOWERCASE_CLASS_NAME$.edit', compact('$LOWERCASE_CLASS_NAME$'));
+        $RELATIONSHIPS$
+
+        $variables = [
+        '$LOWERCASE_CLASS_NAME$' => $$LOWERCASE_CLASS_NAME$,
+            $VARIABLES$
+        ];
+
+        return view('$LOWERCASE_MODULE_NAME$::admin.$PLURAL_LOWERCASE_CLASS_NAME$.edit', $variables);
     }
 
     /**
