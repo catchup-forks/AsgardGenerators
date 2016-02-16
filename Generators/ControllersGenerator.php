@@ -4,6 +4,7 @@ namespace Modules\Asgardgenerators\Generators;
 
 use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
 use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
+use Modules\Asgardgenerators\Exceptions\DatabaseInformationException;
 
 class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 {
@@ -24,7 +25,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     {
         foreach ($this->tables->getInfo() as $table => $columns) {
             $entity = $this->entityNameFromTable($table);
-            $this->generate($entity);
+            $this->generate($entity, $table);
         }
 
         $this->createRoutes();
@@ -83,7 +84,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
      *
      * @param string $entity
      */
-    private function generate($entity)
+    private function generate($entity, $table)
     {
         $file = $this->getFileGenerationPath() . DIRECTORY_SEPARATOR . "Admin" . DIRECTORY_SEPARATOR . "{$entity}Controller.php";
 
@@ -101,7 +102,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         ) {
             $this->generator->make(
               $this->getTemplatePath(),
-              $this->createData($entity),
+              $this->createData($entity, $table),
               $file
             );
 
@@ -117,8 +118,10 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
      * @param string $entity
      * @return array
      */
-    private function createData($entity)
+    private function createData($entity, $table)
     {
+        list($relationships, $variables) = $this->createRelationshipsData($table);
+
         // @todo: update config to retrieve entities, repos namespace
         return [
           'NAMESPACE'                   => $this->getNamespace() . "\\Http\\Controllers\\Admin",
@@ -126,7 +129,56 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
           'LOWERCASE_CLASS_NAME'        => camel_case($entity),
           'PLURAL_LOWERCASE_CLASS_NAME' => camel_case(str_plural($entity)),
           'MODULE_NAME'                 => $this->module->getStudlyName(),
-          'LOWERCASE_MODULE_NAME'       => $this->module->getLowerName()
+          'LOWERCASE_MODULE_NAME'       => $this->module->getLowerName(),
+          'RELATIONSHIPS'               => $relationships,
+          'VARIABLES'                   => $variables
+        ];
+    }
+
+    private function createRelationshipsData($table)
+    {
+        // init the required values
+        $relationship_data = "";
+        $variables = [];
+
+        $module = $this->module->getStudlyName();
+
+        // get a list of all relationships for the currently given table
+        $relationships = $this->tables->getRelationships($table);
+        
+        foreach ($relationships as $relationship => $data) {
+            // ensure lowercase
+            $relationship = strtolower($relationship);
+
+            switch ($relationship) {
+                case "belongstomany":
+                case "belongsto":
+                case "hasone":
+                case "hasmany":
+                    foreach ($data as $row) {
+                        $single = $this->entityNameFromTable($row[0]);
+                        $plurar = str_plural($single);
+                        $plurar_lowercase = camel_case($plurar);
+
+                        $relationship_data .= "\${$plurar_lowercase}_repository = app(\\Modules\\{$module}\\Repositories\\{$single}Repository::class);\n";
+                        $relationship_data .= "\${$plurar_lowercase} = \${$plurar_lowercase}_repository->all();\n";
+
+                        $variables[] = $plurar_lowercase;
+                    }
+                    break;
+                default:
+                    throw new DatabaseInformationException("Unsupported relationship. {$relationship}");
+            }
+        }
+
+        // create the variables line
+        $variables = array_map(function ($item) {
+            return "'$item' => \${$item}";
+        }, $variables);
+
+        return [
+          $relationship_data,
+          implode(",\n", $variables)
         ];
     }
 
