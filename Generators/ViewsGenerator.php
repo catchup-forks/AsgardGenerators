@@ -330,77 +330,116 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
             // simpler to work with lower case
             $relationship = strtolower($relationship);
 
+            if (empty($data)) {
+                continue;
+            }
+
             switch ($relationship) {
-                case 'hasmany':
-                    if (!empty($data)) {
-                        $stub .= "\n$relationship\n";
+                case "belongstomany":
+                case "belongsto":
+                case "hasone":
+                case "hasmany":
 
-                        foreach ($data as $row) {
-                            $options = [];
+                    foreach ($data as $row) {
 
-                            $stub .= "@include('$module::partials.fields.select', [
-                              'title' => '{$row[0]}',
+                        $single = $this->entityNameFromTable($row[0]);
+                        $plurar = str_plural($single);
+                        $plurar_lowercase = camel_case($plurar);
+
+                        $stub .= "@include('$module::partials.fields.select', [
+                              'title' => '{$single}',
                               'name' => '{$row[0]}',
-                              'options' => ['" . implode("','", $options) . "'],
+                              'options' => \${$plurar_lowercase},
                               'selected' => ''
                             ])\n\n";
-                        }
 
-
+//                    $single = $this->entityNameFromTable($row[0]);
+//                    $plurar = str_plural($single);
+//                    $plurar_lowercase = camel_case($plurar);
+//
+//                    $relationship_data .= "\${$plurar_lowercase}_repository = app(\\Modules\\{$module}\\Repositories\\{$single}Repository::class);\n";
+//                    $relationship_data .= "\${$plurar_lowercase} = \${$plurar_lowercase}_repository->all();\n";
+//
+//                    $variables[] = $plurar_lowercase;
                     }
-                    break;
-                case 'hasone':
-                    if (!empty($data)) {
-                        $stub .= "\n$relationship\n";
-
-                        foreach ($data as $row) {
-                            $options = [];
 
 
-                            $stub .= "@include('$module::partials.fields.select', [
-                              'title' => '{$row[0]}',
-                              'name' => '{$row[0]}',
-                              'options' => ['" . implode("','", $options) . "'],
-                              'selected' => ''
-                            ])\n\n";
-                        }
-                    }
-                    break;
-                case 'belongsto':
-                    if (!empty($data)) {
-                        $stub .= "\n$relationship\n";
-
-                        foreach ($data as $row) {
-                            $options = [];
-
-
-                            $stub .= "@include('$module::partials.fields.select', [
-                              'title' => '{$row[0]}',
-                              'name' => '{$row[0]}',
-                              'options' => ['" . implode("','", $options) . "'],
-                              'selected' => ''
-                            ])\n\n";
-                        }
-                    }
-                    break;
-                case 'belongstomany':
-                    if (!empty($data)) {
-                        $stub .= "\n$relationship\n";
-
-                        foreach ($data as $row) {
-                            $options = [];
-
-                            $stub .= "@include('$module::partials.fields.select', [
-                              'title' => '{$row[0]}',
-                              'name' => '{$row[0]}',
-                              'options' => ['" . implode("','", $options) . "'],
-                              'selected' => ''
-                            ])\n\n";
-                        }
-                    }
                     break;
             }
         }
+
+
+//            switch ($relationship) {
+//                case 'hasmany':
+//                    if (!empty($data)) {
+//                        $stub .= "\n$relationship\n";
+//
+//                        foreach ($data as $row) {
+//                            $options = [];
+//
+//                            $stub .= "@include('$module::partials.fields.select', [
+//                              'title' => '{$row[0]}',
+//                              'name' => '{$row[0]}',
+//                              'options' => ['" . implode("','", $options) . "'],
+//                              'selected' => ''
+//                            ])\n\n";
+//                        }
+//
+//
+//                    }
+//                    break;
+//                case 'hasone':
+//                    if (!empty($data)) {
+//                        $stub .= "\n$relationship\n";
+//
+//                        foreach ($data as $row) {
+//                            $options = [];
+//
+//
+//                            $stub .= "@include('$module::partials.fields.select', [
+//                              'title' => '{$row[0]}',
+//                              'name' => '{$row[0]}',
+//                              'options' => ['" . implode("','", $options) . "'],
+//                              'selected' => ''
+//                            ])\n\n";
+//                        }
+//                    }
+//                    break;
+//                case 'belongsto':
+//                    if (!empty($data)) {
+//                        $stub .= "\n$relationship\n";
+//
+//                        foreach ($data as $row) {
+//                            $options = [];
+//
+//
+//                            $stub .= "@include('$module::partials.fields.select', [
+//                              'title' => '{$row[0]}',
+//                              'name' => '{$row[0]}',
+//                              'options' => ['" . implode("','", $options) . "'],
+//                              'selected' => ''
+//                            ])\n\n";
+//                        }
+//                    }
+//                    break;
+//                case 'belongstomany':
+//                    if (!empty($data)) {
+//                        $stub .= "\n$relationship\n";
+//
+//                        foreach ($data as $row) {
+//                            $options = [];
+//
+//                            $stub .= "@include('$module::partials.fields.select', [
+//                              'title' => '{$row[0]}',
+//                              'name' => '{$row[0]}',
+//                              'options' => ['" . implode("','", $options) . "'],
+//                              'selected' => ''
+//                            ])\n\n";
+//                        }
+//                    }
+//                    break;
+//            }
+//        }
 
         return $stub;
     }

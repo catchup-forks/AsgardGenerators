@@ -145,7 +145,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         // get a list of all relationships for the currently given table
         $relationships = $this->tables->getRelationships($table);
-        
+
         foreach ($relationships as $relationship => $data) {
             // ensure lowercase
             $relationship = strtolower($relationship);
