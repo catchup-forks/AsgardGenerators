@@ -15,6 +15,18 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
 {
 
     /**
+     * List of columns that should not be included in the fillable or
+     * translatable fields list
+     *
+     * @var array
+     */
+    protected $excluded_columns = [
+      'created_at',
+      'updated_at',
+      'locale',
+    ];
+
+    /**
      * @var \Xethron\MigrationsGenerator\Generators\SchemaGenerator
      */
     protected $schemaGenerator;
@@ -66,24 +78,17 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         //0. determine destination folder
         $destinationFolder = $this->getFileGenerationPath();
 
-        //1. fetch all tables
-        echo "\nFetching tables...\n";
-
         $tables = $this->tables->getTables();
 
         //2. for each table, fetch primary and foreign keys
-        echo 'Fetching table columns, primary keys, foreign keys\n';
         $prep = $this->tables->getInfo();
 
         //3. create an array of rules, holding the info for our Eloquent models to be
-        echo 'Generating Eloquent rules\n';
         $eloquentRules = $this->getEloquentRules($tables, $prep);
 
         //4. Generate our Eloquent Models
         echo "\nGenerating Eloquent models\n";
         $this->generateEloquentModels($destinationFolder, $eloquentRules);
-
-        echo "\nAll done!";
     }
 
     /**
@@ -112,7 +117,8 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
             $this->setFillableProperties($table, $rules, $columns);
 
             // add relationships below
-            $rules[$table] = array_merge($rules[$table], $this->tables->getRelationships($table));
+            $rules[$table] = array_merge($rules[$table],
+              $this->tables->getRelationships($table));
         }
 
         return $rules;
@@ -162,9 +168,26 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      */
     private function setFillableProperties($table, &$rules, $columns)
     {
+        // if the table has translation add the required information to the
+        // fillable fields
+        if ($this->tableHasTranslation($table)) {
+            $rules[$table]['translatedAttributes'] = $this->setTranslatable($table);
+            $columns = array_merge($columns,
+              $rules[$table]['translatedAttributes']);
+        }
         $fillable = [];
+
+        // exclude the globally excluded field + primary key(s)
+        $primary_key = $this->tables->primaryKey($table);
+
+        if (!is_array($primary_key)) {
+            $primary_key = [$primary_key];
+        }
+
+        $excluded = array_merge($this->excluded_columns, $primary_key);
+
         foreach ($columns as $column_name) {
-            if ($column_name !== 'created_at' && $column_name !== 'updated_at') {
+            if (!in_array($column_name, $excluded)) {
                 $fillable[] = "'$column_name'";
             }
         }
@@ -346,7 +369,6 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         $belongsTo = $rules['belongsTo'];
         $belongsToMany = $rules['belongsToMany'];
 
-
         $fillable = implode(', ', $rules['fillable']);
 
         $belongsToFunctions = $this->generateBelongsToFunctions($belongsTo);
@@ -361,11 +383,21 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
           $hasOneFunctions,
         ]);
 
+        // init the traits replacement so empty traits will be replaced by an
+        // empty string
+        $traits = "";
+
+        if (isset($rules['translatedAttributes'])) {
+            $this->addTranslationTrait($traits, $table,
+              $rules['translatedAttributes']);
+        }
+
         //3. prepare template data
         $templateData = array(
           'NAMESPACE' => self::$namespace,
           'NAME'      => $modelName,
           'TABLENAME' => $table,
+          'TRAITS'    => $traits,
           'FILLABLE'  => $fillable,
           'FUNCTIONS' => $functions
         );
@@ -378,7 +410,8 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
           $templateData,
           $filePathToGenerate
         );
-        echo "Generated model for table $table\n";
+
+        echo "File {$filePathToGenerate} generated.\n";
     }
 
     /**
@@ -458,6 +491,84 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         $ns = str_replace('/', '\\', $ns);
 
         return $ns . "\\Entities";
+    }
+
+
+    /**
+     * Check if a given table has a translation table available
+     *
+     * @param string $table
+     * @return bool
+     */
+    private function tableHasTranslation($table)
+    {
+        return (bool)$this->getTranslationTable($table);
+    }
+
+    /**
+     * Retrieve the translation table for a given table, false if not found
+     *
+     * @param string $table
+     * @return string|bool
+     */
+    private function getTranslationTable($table)
+    {
+        // the check should not be executed for a translation table
+        if (preg_match("/_translations$/", $table)) {
+            return false;
+        }
+
+        // list all the tables
+        $tables = $this->schemaGenerator->getTables();
+
+        $singular = str_singular($table) . "_translations";
+        $plural = str_plural($table) . "_translations";
+
+        // check if the translation tables exists
+        foreach ($tables as $table_name) {
+            if ($table_name == $singular || $table_name == $plural) {
+                return $table_name;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Create a list of columns available on the given table's translation table
+     *
+     * @param string $table
+     * @return array
+     */
+    private function setTranslatable($table)
+    {
+        $translate_table = $this->getTranslationTable($table);
+
+        $translatable = [];
+
+        // get a list of columns
+        $columns = $this->schemaGenerator->getSchema()
+          ->listTableColumns($translate_table);
+
+        foreach ($columns as $column) {
+            $translatable[] = $column->getName();
+        }
+
+        return $translatable;
+    }
+
+    /**
+     * Add the translation trait and property needed for translation
+     *
+     * @param string $traits
+     * @param string $table
+     * @param array  $translatable
+     */
+    private function addTranslationTrait(&$traits, $table, $translatable = [])
+    {
+        $traits .= "use \\Dimsav\\Translatable\\Translatable;\n\n"
+          . "public \$translatedAttributes = " . $this->arrayToString($translatable) . ";"
+          . "\n";
     }
 
 }
