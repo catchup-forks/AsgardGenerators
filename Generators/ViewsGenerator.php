@@ -199,10 +199,17 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                 ];
                 break;
             case 'edit-fields':
+                $data += [
+                  'FIELDS' => $this->createFieldsForForm($table, $columns,
+                    'edit'),
+                ];
+                break;
             case 'create-fields':
                 $data += [
-                  'FIELDS' => $this->createFieldsForForm($table, $columns),
+                  'FIELDS' => $this->createFieldsForForm($table, $columns,
+                    'create'),
                 ];
+                break;
         }
 
 
@@ -282,25 +289,37 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      * @param array  $columns
      * @return string
      */
-    private function createFieldsForForm($table, $columns)
-    {
+    private function createFieldsForForm(
+      $table,
+      $columns,
+      $type_to_create = 'create'
+    ) {
         $stub = "";
 
         // @todo:
 //        $module = $this->module->getLowerName();
         $module = "asgardgenerators";
 
+        // entity name for use in the views
+        $entity = camel_case($this->entityNameFromTable($table));
+
         // add the "normal fields"
         foreach ($columns['columns'] as $column => $type) {
             // create the title from a given column
             $title = $this->createTitleFromColumn($column);
+
+            $value = "''";
+
+            if ($type_to_create == 'edit') {
+                $value = "\${$entity}->{$column}";
+            }
 
             switch (strtolower($type)) {
                 case "text":
                     $stub .= "@include('$module::partials.fields.textarea', [
                   'title' => '$title',
                   'name' => '$column',
-                  'value' => '',
+                  'value' => $value,
                   'placeholder' => ''
                 ])\n\n";
                     break;
@@ -308,7 +327,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                     $stub .= "@include('$module::partials.fields.date', [
                   'title' => '$title',
                   'name' => '$column',
-                  'value' => '',
+                  'value' => $value,
                   'placeholder' => ''
                 ])\n\n";
                     break;
@@ -317,7 +336,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                     $stub .= "@include('$module::partials.fields.text', [
                   'title' => '$title',
                   'name' => '$column',
-                  'value' => '',
+                  'value' => $value,
                   'placeholder' => ''
                 ])\n\n";
             }
@@ -338,11 +357,13 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                 case "belongstomany":
                 case "hasmany":
                     $view_name = "select-multiple";
+                    $selected = "[]";
                     break;
                 case "belongsto":
                 case "hasone":
                 default:
                     $view_name = "select";
+                    $selected = "";
                     break;
             }
 
@@ -354,17 +375,31 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                     // fallback to the default id primary key name
                     $primary_key = 'id';
                 }
+
+                if ($type_to_create == 'edit') {
+                    $function = camel_case($row[0]);
+
+                    if(is_array($primary_key) && !empty($primary_key)){
+                        $list_keys = "'" . implode("','", $primary_key) . "'";
+                    }else{
+                        $list_keys = "'$primary_key'";
+                    }
+
+                    $selected = "\${$entity}->{$function}()->lists($list_keys)->toArray()";
+                }
+
                 $primary_key = $this->arrayToString($primary_key);
 
                 $single = $this->entityNameFromTable($row[0]);
                 $plurar = camel_case(str_plural($single));
+
 
                 $stub .= "@include('$module::partials.fields.{$view_name}', [
                               'title' => '{$single}',
                               'name' => '{$row[0]}',
                               'options' => \${$plurar},
                               'primary_key' => {$primary_key},
-                              'selected' => ''
+                              'selected' => $selected
                             ])\n\n";
             }
 
