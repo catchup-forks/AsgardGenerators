@@ -380,9 +380,11 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                 if ($type_to_create == 'edit') {
                     $function = camel_case($row[0]);
 
+                    $list_keys = '';
+                    
                     if (is_array($primary_key) && !empty($primary_key)) {
                         $list_keys = "'".implode("','", $primary_key)."'";
-                    } else {
+                    }elseif(!is_array($primary_key)){
                         $list_keys = "'$primary_key'";
                     }
 
