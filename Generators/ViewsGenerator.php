@@ -348,7 +348,12 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
             foreach ($data as $row) {
                 // determine the primary key(s)
-                $primary_key = $this->tables->primaryKey($row[0]);
+                try {
+                    $primary_key = $this->tables->primaryKey($row[0]);
+                } catch (DatabaseInformationException $e) {
+                    // fallback to the default id primary key name
+                    $primary_key = 'id';
+                }
                 $primary_key = $this->arrayToString($primary_key);
 
                 $single = $this->entityNameFromTable($row[0]);

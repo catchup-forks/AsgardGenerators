@@ -4,6 +4,7 @@ namespace Modules\Asgardgenerators\Generators;
 
 use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
 use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
+use Modules\Asgardgenerators\Exceptions\DatabaseInformationException;
 use Pingpong\Modules\Module;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
@@ -577,7 +578,12 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      */
     private function excludedFieldsForTable($table)
     {
-        $primary_key = $this->tables->primaryKey($table);
+        try{
+            $primary_key = $this->tables->primaryKey($table);
+        } catch(DatabaseInformationException $e){
+            // fallback to the default id primary key name
+            $primary_key = 'id';
+        }
 
         if (!is_array($primary_key)) {
             $primary_key = [$primary_key];
