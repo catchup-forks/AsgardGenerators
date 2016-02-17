@@ -138,10 +138,10 @@ class DatabaseInformation
             return $this->relationships;
         }
 
+        // get a list of all tables in the database
+        $tables = $this->schemaGenerator->getTables();
+        $db_info = [];
         $rules = [];
-
-        $tables = $this->getTables();
-        $info = $this->getInfo();
 
         // init the table information
         foreach ($tables as $tableName) {
@@ -151,16 +151,18 @@ class DatabaseInformation
               'belongsTo'     => [],
               'belongsToMany' => [],
             ];
+
+            $db_info[$tableName] = $this->getTableInformation($tableName);
         }
 
-        foreach ($info as $table => $properties) {
+        foreach ($db_info as $table => $properties) {
             $foreign = $properties['foreign'];
             $primary = $properties['primary'];
 
-            $isManyToMany = $this->detectManyToMany($info, $table);
+            $isManyToMany = $this->detectManyToMany($db_info, $table);
 
             if ($isManyToMany === true) {
-                $this->addManyToManyRules($tables, $table, $info, $rules);
+                $this->addManyToManyRules($tables, $table, $db_info, $rules);
             }
 
             /**
@@ -179,7 +181,10 @@ class DatabaseInformation
             }
         }
 
-        $this->relationships = $rules;
+        // filter out the required tables
+        $requested_tables = array_flip($this->getTables());
+
+        $this->relationships = array_intersect_key($rules, $requested_tables);
     }
 
     /**
