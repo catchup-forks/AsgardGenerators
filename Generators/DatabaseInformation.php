@@ -111,15 +111,16 @@ class DatabaseInformation
      * @return array|string
      * @throws \Modules\Asgardgenerators\Exceptions\DatabaseInformationException
      */
-    public function primaryKey($table){
+    public function primaryKey($table)
+    {
         $info = $this->getInfo($table);
 
-        if(!isset($info['primary'])){
+        if (!isset($info['primary'])) {
             throw new DatabaseInformationException("Primary key for table: {$table} could not be detected.");
         }
 
         // single key, we don't need the array returned
-        if(count($info['primary']) === 1){
+        if (count($info['primary']) === 1) {
             return reset($info['primary']);
         }
 
@@ -142,16 +143,19 @@ class DatabaseInformation
         $tables = $this->getTables();
         $info = $this->getInfo();
 
-        foreach ($info as $table => $properties) {
-            $foreign = $properties['foreign'];
-            $primary = $properties['primary'];
-
-            $rules[$table] = [
+        // init the table information
+        foreach ($tables as $tableName) {
+            $rules[$tableName] = [
               'hasMany'       => [],
               'hasOne'        => [],
               'belongsTo'     => [],
               'belongsToMany' => [],
             ];
+        }
+
+        foreach ($info as $table => $properties) {
+            $foreign = $properties['foreign'];
+            $primary = $properties['primary'];
 
             $isManyToMany = $this->detectManyToMany($info, $table);
 
