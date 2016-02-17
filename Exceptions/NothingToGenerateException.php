@@ -2,6 +2,6 @@
 
 namespace Modules\Asgardgenerators\Exceptions;
 
-class NothingToGenerateException extends \Exception {
-
+class NothingToGenerateException extends \Exception
+{
 }

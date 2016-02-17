@@ -7,13 +7,10 @@ use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
 
 class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
 {
-
     protected $generated = [];
 
     /**
-     * Execute the generator
-     *
-     * @return void
+     * Execute the generator.
      */
     public function execute()
     {
@@ -29,7 +26,7 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Full path to the required template file
+     * Full path to the required template file.
      *
      * @return string
      */
@@ -39,16 +36,16 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
 
         if (is_null($path)) {
             $path = config('asgard.asgardgenerators.config.repositories.template',
-              "");
+              '');
         } else {
-            $path .= "repository";
+            $path .= 'repository';
         }
 
         return $path;
     }
 
     /**
-     * Create the data used in the template file
+     * Create the data used in the template file.
      *
      * @return array
      */
@@ -59,22 +56,19 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Full path to the output file
+     * Full path to the output file.
      *
      * @return string
      */
     public function getFileGenerationPath()
     {
-        $path = $this->module->getPath() . DIRECTORY_SEPARATOR . "Repositories";
+        $path = $this->module->getPath().DIRECTORY_SEPARATOR.'Repositories';
 
         return $path;
     }
 
     /**
-     *
-     *
      * @param string $entity
-     * @return void
      */
     public function generateRepositoriesFor($entity)
     {
@@ -82,35 +76,34 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
         $this->generate(
           $entity,
           'interface',
-          $this->getFileGenerationPath() . DIRECTORY_SEPARATOR . $entity . "Repository.php",
-          $this->getTemplatePath() . DIRECTORY_SEPARATOR . "repository-interface.txt"
+          $this->getFileGenerationPath().DIRECTORY_SEPARATOR.$entity.'Repository.php',
+          $this->getTemplatePath().DIRECTORY_SEPARATOR.'repository-interface.txt'
         );
 
         // decorator
         $this->generate(
           $entity,
           'decorator',
-          $this->getFileGenerationPath() . DIRECTORY_SEPARATOR . "Cache" . DIRECTORY_SEPARATOR . "Cache{$entity}Decorator.php",
-          $this->getTemplatePath() . DIRECTORY_SEPARATOR . "cache-repository-decorator.txt"
+          $this->getFileGenerationPath().DIRECTORY_SEPARATOR.'Cache'.DIRECTORY_SEPARATOR."Cache{$entity}Decorator.php",
+          $this->getTemplatePath().DIRECTORY_SEPARATOR.'cache-repository-decorator.txt'
         );
 
         // repository
         $this->generate(
           $entity,
           'eloquent',
-          $this->getFileGenerationPath() . DIRECTORY_SEPARATOR . "Eloquent" . DIRECTORY_SEPARATOR . "Eloquent{$entity}Repository.php",
-          $this->getTemplatePath() . DIRECTORY_SEPARATOR . "eloquent-repository.txt"
+          $this->getFileGenerationPath().DIRECTORY_SEPARATOR.'Eloquent'.DIRECTORY_SEPARATOR."Eloquent{$entity}Repository.php",
+          $this->getTemplatePath().DIRECTORY_SEPARATOR.'eloquent-repository.txt'
         );
     }
 
     /**
-     * Create the actual files
+     * Create the actual files.
      *
      * @param string $entity
      * @param string $type
      * @param string $file
      * @param string $template
-     * @return void
      */
     private function generate($entity, $type, $file, $template)
     {
@@ -138,12 +131,12 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
         }
     }
 
-
     /**
-     * Create the data to generate the requested file
+     * Create the data to generate the requested file.
      *
      * @param string $table
      * @param array  $columms
+     *
      * @return array
      */
     private function createData($entity, $type = 'interface')
@@ -155,30 +148,29 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
         switch ($type) {
             case 'interface':
                 $data += [
-                  'NAMESPACE' => $this->getNamespace() . "\\Repositories",
+                  'NAMESPACE' => $this->getNamespace().'\\Repositories',
                 ];
                 break;
             case 'eloquent':
                 $data += [
-                  'NAMESPACE'           => $this->getNamespace() . "\\Repositories\\Eloquent",
-                  'INTERFACE_NAMESPACE' => $this->getNamespace() . "\\Repositories",
+                  'NAMESPACE' => $this->getNamespace().'\\Repositories\\Eloquent',
+                  'INTERFACE_NAMESPACE' => $this->getNamespace().'\\Repositories',
                 ];
                 break;
             case 'decorator':
                 $data += [
-                  'LOWERCASE_CLASS_NAME'        => camel_case($entity),
-                  'NAMESPACE'                   => $this->getNamespace() . "\\Repositories\\Cache",
-                  'REPOSITORY_NAMESPACE'        => $this->getNamespace() . "\\Repositories",
+                  'LOWERCASE_CLASS_NAME' => camel_case($entity),
+                  'NAMESPACE' => $this->getNamespace().'\\Repositories\\Cache',
+                  'REPOSITORY_NAMESPACE' => $this->getNamespace().'\\Repositories',
                   'PLURAL_LOWERCASE_CLASS_NAME' => str_plural(strtolower($entity)),
                 ];
         }
-
 
         return $data;
     }
 
     /**
-     * Register the created repositories with the service provider
+     * Register the created repositories with the service provider.
      *
      * @throws \Way\Generators\Filesystem\FileAlreadyExists
      * @throws \Way\Generators\Filesystem\FileNotFound
@@ -187,40 +179,38 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
     {
         // get stub data
         $path = config('asgard.asgardgenerators.config.repositories.bindings_template',
-          base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "bindings.txt");
+          base_path('Modules/Asgardgenerators/templates').DIRECTORY_SEPARATOR.'bindings.txt');
 
         $stub = $this->filesystem->get($path);
 
-        $data = "";
+        $data = '';
 
         // replace the keyed values with their actual value
         foreach ($this->generated as $entity) {
             $data .= str_replace([
                 '$CLASS_NAME$',
                 '$MODULE_NAME$',
-                '$ENTITY_TYPE$'
+                '$ENTITY_TYPE$',
               ], [
                 $entity,
                 $this->module->getStudlyName(),
-                'Eloquent'
-              ], $stub) . "\n";
+                'Eloquent',
+              ], $stub)."\n";
         }
 
         // add a replacement pointer to the end of the file to ensure further changes
         $data .= "\n// add bindings\n";
 
         // write the file
-        $file = $this->module->getPath() . DIRECTORY_SEPARATOR . "Providers" . DIRECTORY_SEPARATOR . $this->module->getName() . "ServiceProvider.php";
+        $file = $this->module->getPath().DIRECTORY_SEPARATOR.'Providers'.DIRECTORY_SEPARATOR.$this->module->getName().'ServiceProvider.php';
 
         $content = $this->filesystem->get($file);
-        $content = str_replace("// add bindings", $data, $content);
+        $content = str_replace('// add bindings', $data, $content);
 
         if ($this->filesystem->exists($file)) {
             unlink($file);
         }
 
         $this->filesystem->make($file, $content);
-
     }
-
 }

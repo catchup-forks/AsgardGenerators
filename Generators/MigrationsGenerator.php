@@ -17,7 +17,6 @@ use Xethron\MigrationsGenerator\Syntax\RemoveForeignKeysFromTable;
 
 class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
 {
-
     /**
      * @var \Xethron\MigrationsGenerator\Generators\SchemaGenerator
      */
@@ -72,10 +71,11 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Generate the migration for the given tables
+     * Generate the migration for the given tables.
      *
      * @param string $method
      * @param array  $tables
+     *
      * @throws \Xethron\MigrationsGenerator\MethodNotFoundException
      */
     protected function generate($method, $tables)
@@ -92,7 +92,7 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         foreach ($tables as $table) {
-            $this->migrationName = $prefix . '_' . $table . '_table';
+            $this->migrationName = $prefix.'_'.$table.'_table';
             $this->method = $method;
             $this->table = $table;
             $this->fields = $this->schemaGenerator->{$function}($table);
@@ -112,26 +112,26 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Create a full path + filename for the to generate
+     * Create a full path + filename for the to generate.
      *
      * @return string
      */
     public function getFileGenerationPath()
     {
         // retrieve the generation path from the path option if exists
-        $path = $this->module->getPath() . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR,
+        $path = $this->module->getPath().DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR,
             [
-              "Database",
-              "Migrations"
+              'Database',
+              'Migrations',
             ]);
 
-        $fileName = $this->getDatePrefix() . '_' . $this->migrationName . '.php';
+        $fileName = $this->getDatePrefix().'_'.$this->migrationName.'.php';
 
         return "{$path}/{$fileName}";
     }
 
     /**
-     * Create the needed data
+     * Create the needed data.
      *
      * @return array
      */
@@ -140,7 +140,7 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
         if ($this->method == 'create') {
             $up = (new AddToTable($this->filesystem,
               $this->compiler))->run($this->fields, $this->table, 'create');
-            $down = (new DroppedTable)->drop($this->table);
+            $down = (new DroppedTable())->drop($this->table);
         } else {
             $up = (new AddForeignKeysToTable($this->filesystem,
               $this->compiler))->run($this->fields, $this->table);
@@ -150,13 +150,13 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
 
         return [
           'CLASS' => ucwords(camel_case($this->migrationName)),
-          'UP'    => $up,
-          'DOWN'  => $down
+          'UP' => $up,
+          'DOWN' => $down,
         ];
     }
 
     /**
-     * Get path to template for generator
+     * Get path to template for generator.
      *
      * @return string
      */
@@ -166,7 +166,7 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
             return $this->options['templatePath'];
         }
 
-        return config('asgard.asgardgenerators.config.migration.template', "");
+        return config('asgard.asgardgenerators.config.migration.template', '');
     }
 
     /**
@@ -180,17 +180,17 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Ensure the database migrations are being publishable
+     * Ensure the database migrations are being publishable.
      *
      * @throws \Way\Generators\Filesystem\FileAlreadyExists
      * @throws \Way\Generators\Filesystem\FileNotFound
      */
     private function addToPublishList()
     {
-        $replace = "// add bindings";
+        $replace = '// add bindings';
 
         $data = "\$migrations = realpath(__DIR__.'/../Database/Migrations');\n\n"
-          . "\$this->publishes([
+          ."\$this->publishes([
           \$migrations => \$this->app->databasePath().'/migrations',
         ], 'migrations');\n\n";
 
@@ -198,7 +198,7 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
         $data .= "\n$replace\n";
 
         // write the file
-        $file = $this->module->getPath() . DIRECTORY_SEPARATOR . "Providers" . DIRECTORY_SEPARATOR . $this->module->getName() . "ServiceProvider.php";
+        $file = $this->module->getPath().DIRECTORY_SEPARATOR.'Providers'.DIRECTORY_SEPARATOR.$this->module->getName().'ServiceProvider.php';
 
         $content = $this->filesystem->get($file);
         $content = str_replace("$replace", $data, $content);

@@ -1,7 +1,7 @@
-<?php namespace Modules\Asgardgenerators\Sidebar;
+<?php
 
-use Maatwebsite\Sidebar\Group;
-use Maatwebsite\Sidebar\Item;
+namespace Modules\Asgardgenerators\Sidebar;
+
 use Maatwebsite\Sidebar\Menu;
 use Modules\Core\Contracts\Authentication;
 

@@ -3,7 +3,7 @@
 namespace Modules\Asgardgenerators\Contracts\Generators;
 
 use Modules\Asgardgenerators\Generators\DatabaseInformation;
-use \Illuminate\Config\Repository as Config;
+use Illuminate\Config\Repository as Config;
 use Pingpong\Modules\Module;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
@@ -11,7 +11,6 @@ use Way\Generators\Generator;
 
 abstract class BaseGenerator
 {
-
     protected $module;
 
     /**
@@ -72,10 +71,11 @@ abstract class BaseGenerator
     }
 
     /**
-     * Get an option if it's defined in the options bag
+     * Get an option if it's defined in the options bag.
      *
      * @param string     $key
      * @param null|mixed $default
+     *
      * @return null|mixed
      */
     public function getOption($key, $default = null)
@@ -88,7 +88,7 @@ abstract class BaseGenerator
     }
 
     /**
-     * Determine the namespace for generation
+     * Determine the namespace for generation.
      *
      * @return string
      */
@@ -107,9 +107,10 @@ abstract class BaseGenerator
     }
 
     /**
-     * Create an entity name for the given table
+     * Create an entity name for the given table.
      *
      * @param string $table
+     *
      * @return string
      */
     protected function entityNameFromTable($table)
@@ -122,6 +123,7 @@ abstract class BaseGenerator
     /**
      * @param string $file
      * @param bool   $overwrite
+     *
      * @return bool
      */
     protected function canGenerate($file, $overwrite = false, $type)
@@ -131,10 +133,12 @@ abstract class BaseGenerator
                 $deleted = unlink($file);
                 if (!$deleted) {
                     echo "\nFailed to delete existing model $file\n";
+
                     return false;
                 }
             } else {
                 echo "\nSkipped {$type} generation, file already exists. (force using --overwrite) {$file}\n";
+
                 return false;
             }
         }
@@ -143,9 +147,10 @@ abstract class BaseGenerator
     }
 
     /**
-     * Create a printable string from a given array
+     * Create a printable string from a given array.
      *
      * @param array $array
+     *
      * @return string
      */
     protected function arrayToString($array = [])
@@ -160,6 +165,6 @@ abstract class BaseGenerator
             return "\"$item\"";
         }, $array);
 
-        return "[" . implode(",", $array) . "]";
+        return '['.implode(',', $array).']';
     }
 }

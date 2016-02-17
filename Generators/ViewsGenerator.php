@@ -2,30 +2,25 @@
 
 namespace Modules\Asgardgenerators\Generators;
 
-
-use Illuminate\Support\Collection;
 use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
 use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
 use Modules\Asgardgenerators\Exceptions\DatabaseInformationException;
 
 class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 {
-
     /**
-     * List of columns taht should not be included in the views
+     * List of columns taht should not be included in the views.
      *
      * @var array
      */
     protected $excluded_columns = [
       'created_at',
       'updated_at',
-      'password'
+      'password',
     ];
 
     /**
-     * Execute the generator
-     *
-     * @return void
+     * Execute the generator.
      */
     public function execute()
     {
@@ -46,7 +41,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Full path to the required template file
+     * Full path to the required template file.
      *
      * @return string
      */
@@ -56,16 +51,16 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         if (is_null($path)) {
             $path = config('asgard.asgardgenerators.config.views.template',
-              "");
+              '');
         } else {
-            $path .= "views";
+            $path .= 'views';
         }
 
         return $path;
     }
 
     /**
-     * Create the data used in the template file
+     * Create the data used in the template file.
      *
      * @return array
      */
@@ -76,18 +71,18 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Full path to the output file
+     * Full path to the output file.
      *
      * @return string
      */
     public function getFileGenerationPath()
     {
-        $path = $this->module->getPath() . DIRECTORY_SEPARATOR;
+        $path = $this->module->getPath().DIRECTORY_SEPARATOR;
 
         $path .= implode(DIRECTORY_SEPARATOR, [
-          "Resources",
-          "views",
-          "admin"
+          'Resources',
+          'views',
+          'admin',
         ]);
 
         // ensure the basedir exists
@@ -99,24 +94,24 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Generate the requested view
+     * Generate the requested view.
      *
      * @param string $table
      * @param array  $columns
      * @param string $name
      */
-    private function generate($table, $columns = [], $name = "index")
+    private function generate($table, $columns = [], $name = 'index')
     {
         // create the base dir for the views
         $entity = $this->entityNameFromTable($table);
         $entity = str_plural($entity);
 
-        $base_dir = $this->getFileGenerationPath() . DIRECTORY_SEPARATOR . "{$entity}";
+        $base_dir = $this->getFileGenerationPath().DIRECTORY_SEPARATOR."{$entity}";
         if (!file_exists($base_dir)) {
             mkdir($base_dir);
         }
 
-        $file_to_generate = $base_dir . DIRECTORY_SEPARATOR . "$name.blade.php";
+        $file_to_generate = $base_dir.DIRECTORY_SEPARATOR."$name.blade.php";
 
         if ($this->canGenerate(
           $file_to_generate,
@@ -125,7 +120,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         )
         ) {
             $this->generator->make(
-              $this->getTemplatePath() . DIRECTORY_SEPARATOR . "$name.txt",
+              $this->getTemplatePath().DIRECTORY_SEPARATOR."$name.txt",
               $this->createData($table, $columns, $name),
               $file_to_generate
             );
@@ -136,19 +131,21 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
     /**
      * @param string $table
+     *
      * @return string
      */
     private function createTitleFromTable($table)
     {
         $table = ucwords(str_singular($table));
 
-        return str_replace("_", " ", $table);
+        return str_replace('_', ' ', $table);
     }
 
     /**
-     * Create the default model name from a given table name
+     * Create the default model name from a given table name.
      *
      * @param string $table
+     *
      * @return string
      */
     private function createDefaultModelNameFromTable($table)
@@ -160,6 +157,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      * @param string $table
      * @param array  $columns
      * @param string $type
+     *
      * @return array
      */
     private function createData($table, $columns = [], $type = 'index')
@@ -168,12 +166,12 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $model = $this->createDefaultModelNameFromTable($table);
 
         $data = [
-          'NAMESPACE'                   => $this->getNamespace(),
-          'MODEL'                       => $model,
-          'MODELS'                      => camel_case($table),
-          'LOWERCASE_MODULE_NAME'       => $this->module->getLowerName(),
+          'NAMESPACE' => $this->getNamespace(),
+          'MODEL' => $model,
+          'MODELS' => camel_case($table),
+          'LOWERCASE_MODULE_NAME' => $this->module->getLowerName(),
           'PLURAL_LOWERCASE_CLASS_NAME' => str_plural(strtolower($model)),
-          'LOWERCASE_CLASS_NAME'        => strtolower($model),
+          'LOWERCASE_CLASS_NAME' => strtolower($model),
         ];
 
         $columns = $this->removeExcluded($columns, $type);
@@ -189,7 +187,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                 break;
             case 'show':
                 $data += [
-                  'TITLE' => 'id'
+                  'TITLE' => 'id',
                 ];
                 break;
             case 'edit':
@@ -212,15 +210,15 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                 break;
         }
 
-
         return $data;
     }
 
     /**
-     * Create the table header for the index view
+     * Create the table header for the index view.
      *
      * @param string $table
      * @param array  $columns
+     *
      * @return string
      */
     private function createIndexTableHeaderData($table, $columns)
@@ -235,10 +233,11 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Create the table content for the index view
+     * Create the table content for the index view.
      *
      * @param string $table
      * @param array  $columns
+     *
      * @return string
      */
     private function createIndexTableContentData($table, $columns)
@@ -256,9 +255,10 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Remove excluded columns from a given list of columns
+     * Remove excluded columns from a given list of columns.
      *
      * @param array $columns
+     *
      * @return array
      */
     private function removeExcluded($columns, $type = 'index')
@@ -266,7 +266,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $excluded = $this->excluded_columns;
 
         // don't include the primary key in the forms
-        if (preg_match("/-fields$/", $type)) {
+        if (preg_match('/-fields$/', $type)) {
             // @todo: this is only for testing
             if (count($columns['primary']) == 1) {
                 $excluded = array_merge($excluded, $columns['primary']);
@@ -283,10 +283,11 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Create the field partials replacement string
+     * Create the field partials replacement string.
      *
      * @param string $table
      * @param array  $columns
+     *
      * @return string
      */
     private function createFieldsForForm(
@@ -294,11 +295,11 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
       $columns,
       $type_to_create = 'create'
     ) {
-        $stub = "";
+        $stub = '';
 
         // @todo:
 //        $module = $this->module->getLowerName();
-        $module = "asgardgenerators";
+        $module = 'asgardgenerators';
 
         // entity name for use in the views
         $entity = camel_case($this->entityNameFromTable($table));
@@ -315,7 +316,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
             }
 
             switch (strtolower($type)) {
-                case "text":
+                case 'text':
                     $stub .= "@include('$module::partials.fields.textarea', [
                   'title' => '$title',
                   'name' => '$column',
@@ -323,7 +324,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                   'placeholder' => ''
                 ])\n\n";
                     break;
-                case "datetime":
+                case 'datetime':
                     $stub .= "@include('$module::partials.fields.date', [
                   'title' => '$title',
                   'name' => '$column',
@@ -331,7 +332,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                   'placeholder' => ''
                 ])\n\n";
                     break;
-                case "string":
+                case 'string':
                 default:
                     $stub .= "@include('$module::partials.fields.text', [
                   'title' => '$title',
@@ -354,16 +355,16 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
             }
 
             switch ($relationship) {
-                case "belongstomany":
-                case "hasmany":
-                    $view_name = "select-multiple";
-                    $selected = "[]";
+                case 'belongstomany':
+                case 'hasmany':
+                    $view_name = 'select-multiple';
+                    $selected = '[]';
                     break;
-                case "belongsto":
-                case "hasone":
+                case 'belongsto':
+                case 'hasone':
                 default:
-                    $view_name = "select";
-                    $selected = "";
+                    $view_name = 'select';
+                    $selected = '';
                     break;
             }
 
@@ -379,9 +380,9 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                 if ($type_to_create == 'edit') {
                     $function = camel_case($row[0]);
 
-                    if(is_array($primary_key) && !empty($primary_key)){
-                        $list_keys = "'" . implode("','", $primary_key) . "'";
-                    }else{
+                    if (is_array($primary_key) && !empty($primary_key)) {
+                        $list_keys = "'".implode("','", $primary_key)."'";
+                    } else {
                         $list_keys = "'$primary_key'";
                     }
 
@@ -393,7 +394,6 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                 $single = $this->entityNameFromTable($row[0]);
                 $plurar = camel_case(str_plural($single));
 
-
                 $stub .= "@include('$module::partials.fields.{$view_name}', [
                               'title' => '{$single}',
                               'name' => '{$row[0]}',
@@ -402,16 +402,16 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                               'selected' => $selected
                             ])\n\n";
             }
-
         }
 
         return $stub;
     }
 
     /**
-     * Create a title from a given table column name
+     * Create a title from a given table column name.
      *
      * @param string $column
+     *
      * @return string
      */
     private function createTitleFromColumn($column)
@@ -420,7 +420,6 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $column = ucfirst(strtolower($column));
 
         // replace the _ by a space
-        return str_replace("_", " ", $column);
+        return str_replace('_', ' ', $column);
     }
-
 }

@@ -8,25 +8,22 @@ use Modules\Asgardgenerators\Exceptions\DatabaseInformationException;
 
 class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 {
-
     /**
-     * List of entities which where created
+     * List of entities which where created.
      *
      * @var array
      */
     protected $generated = [];
 
     /**
-     * Maximum length of the resource route pattern
+     * Maximum length of the resource route pattern.
      *
      * @var int
      */
     protected $maxResourceRouteLength = 32;
 
     /**
-     * Execute the generator
-     *
-     * @return void
+     * Execute the generator.
      */
     public function execute()
     {
@@ -41,7 +38,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Full path to the required template file
+     * Full path to the required template file.
      *
      * @return string
      */
@@ -51,16 +48,16 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         if (is_null($path)) {
             $path = config('asgard.asgardgenerators.config.controllers.template',
-              "");
+              '');
         } else {
-            $path .= "admin-controller.txt";
+            $path .= 'admin-controller.txt';
         }
 
         return $path;
     }
 
     /**
-     * Create the data used in the template file
+     * Create the data used in the template file.
      *
      * @return array
      */
@@ -71,30 +68,30 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Full path to the output file
+     * Full path to the output file.
      *
      * @return string
      */
     public function getFileGenerationPath()
     {
-        $path = $this->module->getPath() . DIRECTORY_SEPARATOR;
+        $path = $this->module->getPath().DIRECTORY_SEPARATOR;
 
         $path .= implode(DIRECTORY_SEPARATOR, [
-          "Http",
-          "Controllers"
+          'Http',
+          'Controllers',
         ]);
 
         return $path;
     }
 
     /**
-     * Generate the actual controller file
+     * Generate the actual controller file.
      *
      * @param string $entity
      */
     private function generate($entity, $table)
     {
-        $file = $this->getFileGenerationPath() . DIRECTORY_SEPARATOR . "Admin" . DIRECTORY_SEPARATOR . "{$entity}Controller.php";
+        $file = $this->getFileGenerationPath().DIRECTORY_SEPARATOR.'Admin'.DIRECTORY_SEPARATOR."{$entity}Controller.php";
 
         $dir = dirname($file);
 
@@ -121,9 +118,10 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Create the data for controller generation
+     * Create the data for controller generation.
      *
      * @param string $entity
+     *
      * @return array
      */
     private function createData($entity, $table)
@@ -132,21 +130,21 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         // @todo: update config to retrieve entities, repos namespace
         return [
-          'NAMESPACE'                   => $this->getNamespace() . "\\Http\\Controllers\\Admin",
-          'CLASS_NAME'                  => $entity,
-          'LOWERCASE_CLASS_NAME'        => camel_case($entity),
+          'NAMESPACE' => $this->getNamespace().'\\Http\\Controllers\\Admin',
+          'CLASS_NAME' => $entity,
+          'LOWERCASE_CLASS_NAME' => camel_case($entity),
           'PLURAL_LOWERCASE_CLASS_NAME' => camel_case(str_plural($entity)),
-          'MODULE_NAME'                 => $this->module->getStudlyName(),
-          'LOWERCASE_MODULE_NAME'       => $this->module->getLowerName(),
-          'RELATIONSHIPS'               => $relationships,
-          'VARIABLES'                   => $variables
+          'MODULE_NAME' => $this->module->getStudlyName(),
+          'LOWERCASE_MODULE_NAME' => $this->module->getLowerName(),
+          'RELATIONSHIPS' => $relationships,
+          'VARIABLES' => $variables,
         ];
     }
 
     private function createRelationshipsData($table)
     {
         // init the required values
-        $relationship_data = "";
+        $relationship_data = '';
         $variables = [];
 
         $module = $this->module->getStudlyName();
@@ -159,10 +157,10 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
             $relationship = strtolower($relationship);
 
             switch ($relationship) {
-                case "belongstomany":
-                case "belongsto":
-                case "hasone":
-                case "hasmany":
+                case 'belongstomany':
+                case 'belongsto':
+                case 'hasone':
+                case 'hasmany':
                     foreach ($data as $row) {
                         $single = $this->entityNameFromTable($row[0]);
                         $plurar = str_plural($single);
@@ -186,12 +184,12 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         return [
           $relationship_data,
-          implode(",\n", $variables)
+          implode(",\n", $variables),
         ];
     }
 
     /**
-     * Create the resource routes
+     * Create the resource routes.
      *
      * @throws \Way\Generators\Filesystem\FileAlreadyExists
      * @throws \Way\Generators\Filesystem\FileNotFound
@@ -200,11 +198,11 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     {
         // get stub data
         $path = config('asgard.asgardgenerators.config.controllers.route_template',
-          base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "route-resource.txt");
+          base_path('Modules/Asgardgenerators/templates').DIRECTORY_SEPARATOR.'route-resource.txt');
 
         $stub = $this->filesystem->get($path);
 
-        $data = "";
+        $data = '';
 
         // replace the keyed values with their actual value
         foreach ($this->generated as $entity) {
@@ -221,8 +219,8 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
                     $this->module->getStudlyName(),
                     $this->module->getLowerName(),
                     strtolower($entity),
-                  ], $stub) . "\n";
-            }else{
+                  ], $stub)."\n";
+            } else {
                 $data .= "\n// @todo: create routes for {$entity} manually\n";
             }
         }
@@ -231,10 +229,10 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         $data .= "\n// append\n";
 
         // write the file
-        $file = $this->module->getPath() . DIRECTORY_SEPARATOR . "Http" . DIRECTORY_SEPARATOR . "backendRoutes.php";
+        $file = $this->module->getPath().DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'backendRoutes.php';
 
         $content = $this->filesystem->get($file);
-        $content = str_replace("// append", $data, $content);
+        $content = str_replace('// append', $data, $content);
 
         if ($this->filesystem->exists($file)) {
             unlink($file);
@@ -244,20 +242,17 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Create the permissions for the generated controller classes
-     *
-     * @return void
+     * Create the permissions for the generated controller classes.
      */
     private function createPermissions()
     {
         // get stub data
         $path = config('asgard.asgardgenerators.config.controllers.permissions_template',
-          base_path("Modules/Asgardgenerators/templates") . DIRECTORY_SEPARATOR . "permissions-append.txt");
+          base_path('Modules/Asgardgenerators/templates').DIRECTORY_SEPARATOR.'permissions-append.txt');
 
         $stub = $this->filesystem->get($path);
 
-        $data = "";
-
+        $data = '';
 
         // replace the keyed values with their actual value
         foreach ($this->generated as $entity) {
@@ -267,17 +262,17 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
               ], [
                 $this->module->getLowerName(),
                 str_plural(strtolower($entity)),
-              ], $stub) . "\n";
+              ], $stub)."\n";
         }
 
         // add a replacement pointer to the end of the file to ensure further changes
         $data .= "\n// append\n";
 
         // write the file
-        $file = $this->module->getPath() . DIRECTORY_SEPARATOR . "Config" . DIRECTORY_SEPARATOR . "permissions.php";
+        $file = $this->module->getPath().DIRECTORY_SEPARATOR.'Config'.DIRECTORY_SEPARATOR.'permissions.php';
 
         $content = $this->filesystem->get($file);
-        $content = str_replace("// append", $data, $content);
+        $content = str_replace('// append', $data, $content);
 
         if ($this->filesystem->exists($file)) {
             unlink($file);
@@ -286,11 +281,11 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         $this->filesystem->make($file, $content);
 
         // publish the newly created permissions file
-        $publish_location = config_path() . DIRECTORY_SEPARATOR . implode(".", [
+        $publish_location = config_path().DIRECTORY_SEPARATOR.implode('.', [
             'asgard',
             $this->module->getLowerName(),
             'permissions',
-            'php'
+            'php',
           ]);
 
         if ($this->filesystem->exists($publish_location)) {
@@ -301,9 +296,10 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Check if the resource routes should be generated for a given entityname
+     * Check if the resource routes should be generated for a given entityname.
      *
      * @param string $entity
+     *
      * @return bool
      */
     private function shouldGenerateRoutesForEntity($entityName)

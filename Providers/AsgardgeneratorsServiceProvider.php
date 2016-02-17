@@ -1,11 +1,12 @@
-<?php namespace Modules\Asgardgenerators\Providers;
+<?php
+
+namespace Modules\Asgardgenerators\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Modules\Asgardgenerators\Console\GenerateStructureCommand;
 
 class AsgardgeneratorsServiceProvider extends ServiceProvider
 {
-
     /**
      * Indicates if loading of the provider is deferred.
      *
@@ -15,8 +16,6 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
 
     /**
      * Register the service provider.
-     *
-     * @return void
      */
     public function register()
     {
@@ -25,18 +24,18 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
         $this->registerGenerateStructureCommand();
 
         $this->commands([
-          'asgard.generate.structure'
+          'asgard.generate.structure',
         ]);
-
     }
 
-    public function boot(){
-        $this->mergeConfigFrom(__DIR__ . '/../Config/config.php', 'asgard.generators.config');
-        $this->publishes([__DIR__ . '/../Config/config.php' => config_path('asgard.generators.config' . '.php'), ], 'config');
+    public function boot()
+    {
+        $this->mergeConfigFrom(__DIR__.'/../Config/config.php', 'asgard.generators.config');
+        $this->publishes([__DIR__.'/../Config/config.php' => config_path('asgard.generators.config'.'.php')], 'config');
     }
 
     /**
-     * Register the asgard:generate:structure command
+     * Register the asgard:generate:structure command.
      *
      * return @void
      */
@@ -51,13 +50,10 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
               $app->make('config')
             );
         });
-
     }
 
     /**
-     * Register the views for publication
-     *
-     * @return void
+     * Register the views for publication.
      */
     private function registerViews()
     {
@@ -71,13 +67,10 @@ class AsgardgeneratorsServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register bindings for this module
-     *
-     * @return void
+     * Register bindings for this module.
      */
     private function registerBindings()
     {
         // add bindings
     }
-
 }

@@ -2,6 +2,6 @@
 
 namespace Modules\Asgardgenerators\Exceptions;
 
-class DatabaseInformationException extends \Exception {
-
+class DatabaseInformationException extends \Exception
+{
 }

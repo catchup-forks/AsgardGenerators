@@ -7,7 +7,6 @@ use User11001\EloquentModelGenerator\Console\SchemaGenerator;
 
 class DatabaseInformation
 {
-
     /**
      * @var array
      */
@@ -25,6 +24,7 @@ class DatabaseInformation
 
     /**
      * DatabaseInformation constructor.
+     *
      * @param SchemaGenerator $schemaGenerator
      * @param array           $tables
      */
@@ -50,9 +50,10 @@ class DatabaseInformation
     }
 
     /**
-     * Get all table information from the requested table
+     * Get all table information from the requested table.
      *
      * @param string $table
+     *
      * @return array
      */
     private function getTableInformation($table)
@@ -70,7 +71,7 @@ class DatabaseInformation
         foreach ($__columns as $col) {
             $col = $col->toArray();
 
-            $columns[$col['name']] = (string)$col['type'];
+            $columns[$col['name']] = (string) $col['type'];
         }
 
         return [
@@ -81,7 +82,7 @@ class DatabaseInformation
     }
 
     /**
-     * Get a flat list of tables
+     * Get a flat list of tables.
      *
      * @return array
      */
@@ -91,7 +92,7 @@ class DatabaseInformation
     }
 
     /**
-     * Get all information for the tables
+     * Get all information for the tables.
      *
      * @return array
      */
@@ -105,10 +106,12 @@ class DatabaseInformation
     }
 
     /**
-     * Determine the primary key for a given table
+     * Determine the primary key for a given table.
      *
      * @param string $table
+     *
      * @return array|string
+     *
      * @throws \Modules\Asgardgenerators\Exceptions\DatabaseInformationException
      */
     public function primaryKey($table)
@@ -128,7 +131,7 @@ class DatabaseInformation
     }
 
     /**
-     * Create the relationship information if it not exists allready
+     * Create the relationship information if it not exists allready.
      *
      * @return array
      */
@@ -146,9 +149,9 @@ class DatabaseInformation
         // init the table information
         foreach ($tables as $tableName) {
             $rules[$tableName] = [
-              'hasMany'       => [],
-              'hasOne'        => [],
-              'belongsTo'     => [],
+              'hasMany' => [],
+              'hasOne' => [],
+              'belongsTo' => [],
               'belongsToMany' => [],
             ];
 
@@ -165,7 +168,7 @@ class DatabaseInformation
                 $this->addManyToManyRules($tables, $table, $db_info, $rules);
             }
 
-            /**
+            /*
              * the below used to be in an ELSE clause but we should be as verbose as possible
              * when we detect a many-to-many table, we still want to set relations on it
              * else
@@ -189,9 +192,10 @@ class DatabaseInformation
 
     /**
      * Retrieve relationship information for a given table or all tables if none
-     * defined
+     * defined.
      *
      * @param null|string $table
+     *
      * @return array
      */
     public function getRelationships($table = null)
@@ -204,10 +208,11 @@ class DatabaseInformation
     }
 
     /**
-     * Detect if the requested table has many to many relationships defined
+     * Detect if the requested table has many to many relationships defined.
      *
      * @param array  $info
      * @param string $table
+     *
      * @return bool
      */
     private function detectManyToMany($info, $table)
@@ -254,10 +259,11 @@ class DatabaseInformation
 
     /**
      * Detect if a provided foreign key has is a member of a one to one
-     * relationship
+     * relationship.
      *
      * @param array $foreign_key
      * @param array $primary_key
+     *
      * @return bool
      */
     private function detectOneToOne($foreign_key, $primary_key)
@@ -274,7 +280,7 @@ class DatabaseInformation
     }
 
     /**
-     * Add a one to many relationship
+     * Add a one to many relationship.
      *
      * @param array  $tables
      * @param string $table
@@ -298,7 +304,7 @@ class DatabaseInformation
     }
 
     /**
-     * Add a one to one relationship
+     * Add a one to one relationship.
      *
      * @param array  $tables
      * @param string $table
@@ -319,7 +325,7 @@ class DatabaseInformation
     }
 
     /**
-     * Add a many to many relationship to the table
+     * Add a many to many relationship to the table.
      *
      * @param array  $tables
      * @param string $table
@@ -346,7 +352,7 @@ class DatabaseInformation
               $fk2Table,
               $table,
               $fk1Field,
-              $fk2Field
+              $fk2Field,
             ];
         }
         if (in_array($fk2Table, $tables)) {
@@ -354,10 +360,8 @@ class DatabaseInformation
               $fk1Table,
               $table,
               $fk2Field,
-              $fk1Field
+              $fk1Field,
             ];
         }
     }
-
-
 }

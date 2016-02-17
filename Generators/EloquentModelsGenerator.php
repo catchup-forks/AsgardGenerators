@@ -10,14 +10,13 @@ use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Generator;
 use User11001\EloquentModelGenerator\Console\SchemaGenerator;
-use \Illuminate\Config\Repository as Config;
+use Illuminate\Config\Repository as Config;
 
 class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterface
 {
-
     /**
      * List of columns that should not be included in the fillable or
-     * translatable fields list
+     * translatable fields list.
      *
      * @var array
      */
@@ -70,9 +69,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Execute the generator
-     *
-     * @return void
+     * Execute the generator.
      */
     public function execute()
     {
@@ -95,6 +92,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     /**
      * @param array $tables
      * @param array $prep
+     *
      * @return array
      */
     private function getEloquentRules($tables, $prep)
@@ -104,11 +102,11 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         //first create empty ruleset for each table
         foreach ($prep as $table => $properties) {
             $rules[$table] = [
-              'hasMany'       => [],
-              'hasOne'        => [],
-              'belongsTo'     => [],
+              'hasMany' => [],
+              'hasOne' => [],
+              'belongsTo' => [],
               'belongsToMany' => [],
-              'fillable'      => [],
+              'fillable' => [],
             ];
         }
 
@@ -126,33 +124,38 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Get plural function name
+     * Get plural function name.
      *
      * @param string $modelName
+     *
      * @return string
      */
     private function getPluralFunctionName($modelName)
     {
         $modelName = lcfirst($modelName);
+
         return str_plural($modelName);
     }
 
     /**
-     * Get single function name
+     * Get single function name.
      *
      * @param string $modelName
+     *
      * @return string
      */
     private function getSingularFunctionName($modelName)
     {
         $modelName = lcfirst($modelName);
+
         return str_singular($modelName);
     }
 
     /**
-     * Determine the model name from a given table name
+     * Determine the model name from a given table name.
      *
      * @param string $table
+     *
      * @return string
      */
     private function generateModelNameFromTableName($table)
@@ -161,7 +164,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Create fillable property for the model
+     * Create fillable property for the model.
      *
      * @param string $table
      * @param array  $rules
@@ -190,11 +193,10 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Generate the required models
+     * Generate the required models.
      *
      * @param string $destinationFolder
      * @param array  $eloquentRules
-     * @return void
      */
     private function generateEloquentModels($destinationFolder, $eloquentRules)
     {
@@ -207,15 +209,17 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
                   $rules);
             } catch (\Exception $e) {
                 echo "\nFailed to generate model for table $table\n";
+
                 return;
             }
         }
     }
 
     /**
-     * Create required belongs to relationship
+     * Create required belongs to relationship.
      *
      * @param array $rulesContainer
+     *
      * @return string
      */
     private function generateBelongsToFunctions($rulesContainer)
@@ -229,8 +233,8 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
             $belongsToFunctionName = $this->getSingularFunctionName($belongsToModel);
 
             $function = "
-    public function $belongsToFunctionName() {" . '
-        return $this->belongsTo' . "(\\" . self::$namespace . "\\$belongsToModel::class, '$key1', '$key2');
+    public function $belongsToFunctionName() {".'
+        return $this->belongsTo'.'(\\'.self::$namespace."\\$belongsToModel::class, '$key1', '$key2');
     }
 ";
             $functions .= $function;
@@ -240,9 +244,10 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Create required has many relationship
+     * Create required has many relationship.
      *
      * @param array $rulesContainer
+     *
      * @return string
      */
     private function generateHasManyFunctions($rulesContainer)
@@ -256,8 +261,8 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
             $hasManyFunctionName = $this->getPluralFunctionName($hasManyModel);
 
             $function = "
-    public function $hasManyFunctionName() {" . '
-        return $this->hasMany' . "(\\" . self::$namespace . "\\$hasManyModel::class, '$key1', '$key2');
+    public function $hasManyFunctionName() {".'
+        return $this->hasMany'.'(\\'.self::$namespace."\\$hasManyModel::class, '$key1', '$key2');
     }
 ";
             $functions .= $function;
@@ -267,9 +272,10 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Create required has one relationship
+     * Create required has one relationship.
      *
      * @param array $rulesContainer
+     *
      * @return string
      */
     private function generateHasOneFunctions($rulesContainer)
@@ -283,8 +289,8 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
             $hasOneFunctionName = $this->getSingularFunctionName($hasOneModel);
 
             $function = "
-    public function $hasOneFunctionName() {" . '
-        return $this->hasOne' . "(\\" . self::$namespace . "\\$hasOneModel::class, '$key1', '$key2');
+    public function $hasOneFunctionName() {".'
+        return $this->hasOne'.'(\\'.self::$namespace."\\$hasOneModel::class, '$key1', '$key2');
     }
 ";
             $functions .= $function;
@@ -294,9 +300,10 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Create required belongs to many relationship function
+     * Create required belongs to many relationship function.
      *
      * @param array $rulesContainer
+     *
      * @return string
      */
     private function generateBelongsToManyFunctions($rulesContainer)
@@ -311,8 +318,8 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
             $belongsToManyFunctionName = $this->getPluralFunctionName($belongsToManyModel);
 
             $function = "
-    public function $belongsToManyFunctionName() {" . '
-        return $this->belongsToMany' . "(\\" . self::$namespace . "\\$belongsToManyModel::class, '$through', '$key1', '$key2');
+    public function $belongsToManyFunctionName() {".'
+        return $this->belongsToMany'.'(\\'.self::$namespace."\\$belongsToManyModel::class, '$through', '$key1', '$key2');
     }
 ";
             $functions .= $function;
@@ -322,9 +329,10 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Create a function from a given array of chunks
+     * Create a function from a given array of chunks.
      *
      * @param array $functionsContainer
+     *
      * @return string
      */
     private function generateFunctions($functionsContainer)
@@ -338,19 +346,18 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Generate the Model for a table
+     * Generate the Model for a table.
      *
      * @param string $destinationFolder
      * @param string $table
      * @param array  $rules
-     * @return void
      */
     private function generateEloquentModel($destinationFolder, $table, $rules)
     {
 
         //1. Determine path where the file should be generated
         $modelName = $this->generateModelNameFromTableName($table);
-        $filePathToGenerate = $destinationFolder . '/' . $modelName . '.php';
+        $filePathToGenerate = $destinationFolder.'/'.$modelName.'.php';
 
         $canContinue = $this->canGenerateEloquentModel($filePathToGenerate,
           $table);
@@ -380,7 +387,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
 
         // init the traits replacement so empty traits will be replaced by an
         // empty string
-        $traits = "";
+        $traits = '';
 
         if (isset($rules['translatedAttributes'])) {
             $this->addTranslationTrait($traits, $table,
@@ -390,11 +397,11 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         //3. prepare template data
         $templateData = array(
           'NAMESPACE' => self::$namespace,
-          'NAME'      => $modelName,
+          'NAME' => $modelName,
           'TABLENAME' => $table,
-          'TRAITS'    => $traits,
-          'FILLABLE'  => $fillable,
-          'FUNCTIONS' => $functions
+          'TRAITS' => $traits,
+          'FILLABLE' => $fillable,
+          'FUNCTIONS' => $functions,
         );
 
         $templatePath = $this->getTemplatePath();
@@ -410,10 +417,11 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Determine if the model should be generated
+     * Determine if the model should be generated.
      *
      * @param string $filePathToGenerate
      * @param string $table
+     *
      * @return bool
      */
     private function canGenerateEloquentModel($filePathToGenerate, $table)
@@ -424,10 +432,12 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
                 $deleted = unlink($filePathToGenerate);
                 if (!$deleted) {
                     echo "\nFailed to delete existing model $filePathToGenerate\n";
+
                     return false;
                 }
             } else {
                 echo "\nSkipped model generation, file already exists. (force using --overwrite) $table -> $filePathToGenerate\n";
+
                 return false;
             }
         }
@@ -436,19 +446,18 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Full path to the required template file
+     * Full path to the required template file.
      *
      * @return string
      */
     public function getTemplatePath()
     {
-        return $this->getOption("templatePath",
+        return $this->getOption('templatePath',
           config('asgard.asgardgenerators.config.models.template'));
-
     }
 
     /**
-     * Create the data used in the template file
+     * Create the data used in the template file.
      *
      * @return array
      */
@@ -460,17 +469,17 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Full path to the output file
+     * Full path to the output file.
      *
      * @return string
      */
     public function getFileGenerationPath()
     {
-        return $this->module->getPath() . DIRECTORY_SEPARATOR . "Entities";
+        return $this->module->getPath().DIRECTORY_SEPARATOR.'Entities';
     }
 
     /**
-     * Create the namespace for Model generation
+     * Create the namespace for Model generation.
      *
      * @return string
      */
@@ -485,39 +494,40 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         //convert forward slashes in the namespace to backslashes
         $ns = str_replace('/', '\\', $ns);
 
-        return $ns . "\\Entities";
+        return $ns.'\\Entities';
     }
 
-
     /**
-     * Check if a given table has a translation table available
+     * Check if a given table has a translation table available.
      *
      * @param string $table
+     *
      * @return bool
      */
     private function tableHasTranslation($table)
     {
-        return (bool)$this->getTranslationTable($table);
+        return (bool) $this->getTranslationTable($table);
     }
 
     /**
-     * Retrieve the translation table for a given table, false if not found
+     * Retrieve the translation table for a given table, false if not found.
      *
      * @param string $table
+     *
      * @return string|bool
      */
     private function getTranslationTable($table)
     {
         // the check should not be executed for a translation table
-        if (preg_match("/_translations$/", $table)) {
+        if (preg_match('/_translations$/', $table)) {
             return false;
         }
 
         // list all the tables
         $tables = $this->schemaGenerator->getTables();
 
-        $singular = str_singular($table) . "_translations";
-        $plural = str_plural($table) . "_translations";
+        $singular = str_singular($table).'_translations';
+        $plural = str_plural($table).'_translations';
 
         // check if the translation tables exists
         foreach ($tables as $table_name) {
@@ -530,9 +540,10 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Create a list of columns available on the given table's translation table
+     * Create a list of columns available on the given table's translation table.
      *
      * @param string $table
+     *
      * @return array
      */
     private function setTranslatable($table)
@@ -558,7 +569,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     }
 
     /**
-     * Add the translation trait and property needed for translation
+     * Add the translation trait and property needed for translation.
      *
      * @param string $traits
      * @param string $table
@@ -567,20 +578,22 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     private function addTranslationTrait(&$traits, $table, $translatable = [])
     {
         $traits .= "use \\Dimsav\\Translatable\\Translatable;\n\n"
-          . "public \$translatedAttributes = " . $this->arrayToString($translatable) . ";"
-          . "\n";
+          .'public $translatedAttributes = '.$this->arrayToString($translatable).';'
+          ."\n";
     }
 
     /**
      * @param $table
+     *
      * @return array
+     *
      * @throws \Modules\Asgardgenerators\Exceptions\DatabaseInformationException
      */
     private function excludedFieldsForTable($table)
     {
-        try{
+        try {
             $primary_key = $this->tables->primaryKey($table);
-        } catch(DatabaseInformationException $e){
+        } catch (DatabaseInformationException $e) {
             // fallback to the default id primary key name
             $primary_key = 'id';
         }
@@ -590,7 +603,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         }
 
         $excluded = array_merge($this->excluded_columns, $primary_key);
+
         return $excluded;
     }
-
 }

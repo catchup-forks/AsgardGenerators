@@ -1,20 +1,19 @@
-<?php namespace Modules\Asgardgenerators\Database\Seeders;
+<?php
+
+namespace Modules\Asgardgenerators\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
-class AsgardgeneratorsDatabaseSeeder extends Seeder {
+class AsgardgeneratorsDatabaseSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run()
+    {
+        Model::unguard();
 
-	/**
-	 * Run the database seeds.
-	 *
-	 * @return void
-	 */
-	public function run()
-	{
-		Model::unguard();
-		
-		// $this->call("OthersTableSeeder");
-	}
-
+        // $this->call("OthersTableSeeder");
+    }
 }

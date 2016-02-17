@@ -1,4 +1,6 @@
-<?php namespace Modules\Asgardgenerators\Console;
+<?php
+
+namespace Modules\Asgardgenerators\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
@@ -20,7 +22,6 @@ use User11001\EloquentModelGenerator\Console\SchemaGenerator;
 
 class GenerateStructureCommand extends Command
 {
-
     /**
      * The console command name.
      *
@@ -76,23 +77,23 @@ class GenerateStructureCommand extends Command
     protected $databaseInformation;
 
     /**
-     * Tables the generators should work with
+     * Tables the generators should work with.
      *
      * @var null|array
      */
     protected $tables = null;
 
     /**
-     * List of excluded tables
+     * List of excluded tables.
      *
      * @var array
      */
     protected $excludes = [
-      'migrations'
+      'migrations',
     ];
 
     /**
-     * List of options provided by the user
+     * List of options provided by the user.
      *
      * @var array
      */
@@ -124,7 +125,7 @@ class GenerateStructureCommand extends Command
     }
 
     /**
-     * Initialize a list of given command options with their default values
+     * Initialize a list of given command options with their default values.
      *
      * @return $this
      */
@@ -134,15 +135,15 @@ class GenerateStructureCommand extends Command
         $ns = "Modules\\{$module}";
 
         $this->options = [
-          'connection'        => $this->getOption('connection', null),
-          'ignore'            => $this->getOption('ignore', []),
-          'path'              => $this->getOption('path', ''),
-          'templatePath'      => $this->getOption('templatePath', ''),
-          'namespace'         => $this->getOption('namespace',
+          'connection' => $this->getOption('connection', null),
+          'ignore' => $this->getOption('ignore', []),
+          'path' => $this->getOption('path', ''),
+          'templatePath' => $this->getOption('templatePath', ''),
+          'namespace' => $this->getOption('namespace',
             $ns),
           'defaultIndexNames' => $this->getOption('defaultIndexNames', false),
-          'defaultFKNames'    => $this->getOption('defaultFKNames', false),
-          'overwrite'         => $this->getOption('overwrite', false)
+          'defaultFKNames' => $this->getOption('defaultFKNames', false),
+          'overwrite' => $this->getOption('overwrite', false),
         ];
 
         return $this;
@@ -173,11 +174,11 @@ class GenerateStructureCommand extends Command
 
         // the available generators
         $generators = [
-          'migrations'   => MigrationsGenerator::class,
-          'models'       => EloquentModelsGenerator::class,
+          'migrations' => MigrationsGenerator::class,
+          'models' => EloquentModelsGenerator::class,
           'repositories' => RepositoryGenerator::class,
-          'views'        => ViewsGenerator::class,
-          'controllers'  => ControllersGenerator::class,
+          'views' => ViewsGenerator::class,
+          'controllers' => ControllersGenerator::class,
         ];
 
         foreach ($generators as $name => $class) {
@@ -198,7 +199,7 @@ class GenerateStructureCommand extends Command
     }
 
     /**
-     * Create a list of tables the structure should be generated for
+     * Create a list of tables the structure should be generated for.
      *
      * @return array
      */
@@ -232,14 +233,14 @@ class GenerateStructureCommand extends Command
         $tables = $this->removeExcludedTables($tables);
 
         if (empty($tables)) {
-            throw new NothingToGenerateException("There is nothing to generate.");
+            throw new NothingToGenerateException('There is nothing to generate.');
         }
 
         return $tables;
     }
 
     /**
-     * Remove all the tables to exclude from the array of tables
+     * Remove all the tables to exclude from the array of tables.
      *
      * @param $tables
      *
@@ -254,7 +255,7 @@ class GenerateStructureCommand extends Command
     }
 
     /**
-     * Get a list of tables to exclude
+     * Get a list of tables to exclude.
      *
      * @return array
      */
@@ -279,7 +280,7 @@ class GenerateStructureCommand extends Command
           [
             'module',
             InputArgument::REQUIRED,
-            'The module you would like to generate the resources for.'
+            'The module you would like to generate the resources for.',
           ],
         ];
     }
@@ -296,73 +297,72 @@ class GenerateStructureCommand extends Command
             'only',
             'only',
             InputOption::VALUE_OPTIONAL,
-            'A comma separated list of generators to run: migrations,models,views,controllers,repositories'
+            'A comma separated list of generators to run: migrations,models,views,controllers,repositories',
           ],
           [
             'tables',
             't',
             InputOption::VALUE_OPTIONAL,
-            'A list of Tables you wish to Generate Migrations for separated by a comma: users,posts,comments'
+            'A list of Tables you wish to Generate Migrations for separated by a comma: users,posts,comments',
           ],
           [
             'ignore',
             'i',
             InputOption::VALUE_OPTIONAL,
-            'A list of Tables you wish to ignore, separated by a comma: users,posts,comments'
+            'A list of Tables you wish to ignore, separated by a comma: users,posts,comments',
           ],
           [
             'overwrite',
             'o',
             InputOption::VALUE_NONE,
               // @todo: ensure migrations are deleted
-            'Overwrite existing generated files'
+            'Overwrite existing generated files',
           ],
           [
             'path',
             'p',
             InputOption::VALUE_OPTIONAL,
-            'Where should the file be created?'
+            'Where should the file be created?',
           ],
           [
             'templatePath',
             'tp',
             InputOption::VALUE_OPTIONAL,
-            'The location of the template for this generator'
+            'The location of the template for this generator',
           ],
           [
             'namespace',
             'ns',
             InputOption::VALUE_OPTIONAL,
-            'The base namespace the files should adhere to'
+            'The base namespace the files should adhere to',
           ],
           [
             'connection',
             'c',
             InputOption::VALUE_OPTIONAL,
             'The database connection to use.',
-            $this->config->get('database.default')
+            $this->config->get('database.default'),
           ],
           [
             'defaultIndexNames',
             null,
             InputOption::VALUE_NONE,
-            'Don\'t use db index names for migrations'
+            'Don\'t use db index names for migrations',
           ],
           [
             'defaultFKNames',
             null,
             InputOption::VALUE_NONE,
-            'Don\'t use db foreign key names for migrations'
+            'Don\'t use db foreign key names for migrations',
           ],
         ];
     }
 
     /**
-     * Retrieve the value of an option or default value for the key
+     * Retrieve the value of an option or default value for the key.
      *
      * @param string $key
      * @param null   $default
-     * @return null
      */
     private function getOption($key, $default = null)
     {
@@ -370,7 +370,7 @@ class GenerateStructureCommand extends Command
     }
 
     /**
-     * Initialize a schemaGenerator object
+     * Initialize a schemaGenerator object.
      *
      * @return \User11001\EloquentModelGenerator\Console\SchemaGenerator
      */
@@ -388,9 +388,10 @@ class GenerateStructureCommand extends Command
     }
 
     /**
-     * Check if the requested migration should be run or skipped
+     * Check if the requested migration should be run or skipped.
      *
      * @param string $string
+     *
      * @return bool
      */
     private function shouldGenerate($string)
@@ -404,7 +405,7 @@ class GenerateStructureCommand extends Command
         }
 
         // because the input is a comma separated string force to an array
-        $only_generate = explode(",", $only_generate);
+        $only_generate = explode(',', $only_generate);
 
         // check if the string is in the array
         return in_array($string, $only_generate);
