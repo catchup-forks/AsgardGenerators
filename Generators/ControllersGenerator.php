@@ -17,6 +17,13 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     protected $generated = [];
 
     /**
+     * Maximum length of the resource route pattern
+     *
+     * @var int
+     */
+    protected $maxResourceRouteLength = 32;
+
+    /**
      * Execute the generator
      *
      * @return void
@@ -201,19 +208,23 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         // replace the keyed values with their actual value
         foreach ($this->generated as $entity) {
-            $data .= str_replace([
-                '$CLASS_NAME$',
-                '$PLURAL_LOWERCASE_CLASS_NAME$',
-                '$MODULE_NAME$',
-                '$LOWERCASE_MODULE_NAME$',
-                '$LOWERCASE_CLASS_NAME$',
-              ], [
-                $entity,
-                str_plural(strtolower($entity)),
-                $this->module->getStudlyName(),
-                $this->module->getLowerName(),
-                strtolower($entity),
-              ], $stub) . "\n";
+            if ($this->shouldGenerateRoutesForEntity($entity)) {
+                $data .= str_replace([
+                    '$CLASS_NAME$',
+                    '$PLURAL_LOWERCASE_CLASS_NAME$',
+                    '$MODULE_NAME$',
+                    '$LOWERCASE_MODULE_NAME$',
+                    '$LOWERCASE_CLASS_NAME$',
+                  ], [
+                    $entity,
+                    str_plural(strtolower($entity)),
+                    $this->module->getStudlyName(),
+                    $this->module->getLowerName(),
+                    strtolower($entity),
+                  ], $stub) . "\n";
+            }else{
+                $data .= "\n// @todo: create routes for {$entity} manually\n";
+            }
         }
 
         // add a replacement pointer to the end of the file to ensure further changes
@@ -232,6 +243,11 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         $this->filesystem->make($file, $content);
     }
 
+    /**
+     * Create the permissions for the generated controller classes
+     *
+     * @return void
+     */
     private function createPermissions()
     {
         // get stub data
@@ -282,5 +298,25 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         $this->filesystem->make($publish_location, $content);
+    }
+
+    /**
+     * Check if the resource routes should be generated for a given entityname
+     *
+     * @param string $entity
+     * @return bool
+     */
+    private function shouldGenerateRoutesForEntity($entityName)
+    {
+        $LOWERCASE_MODULE_NAME = $this->module->getLowerName();
+        $LOWERCASE_CLASS_NAME = strtolower($entityName);
+
+        $pattern = "admin.$LOWERCASE_MODULE_NAME.$LOWERCASE_CLASS_NAME.destroy";
+
+        if (strlen($pattern) > $this->maxResourceRouteLength) {
+            return false;
+        }
+
+        return true;
     }
 }
