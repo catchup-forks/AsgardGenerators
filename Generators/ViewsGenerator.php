@@ -384,7 +384,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                     
                     if (is_array($primary_key) && !empty($primary_key)) {
                         $list_keys = "'".implode("','", $primary_key)."'";
-                    }elseif(!is_array($primary_key)){
+                    } elseif (!is_array($primary_key)) {
                         $list_keys = "'$primary_key'";
                     }
 
