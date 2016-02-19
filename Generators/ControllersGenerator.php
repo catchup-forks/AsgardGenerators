@@ -51,7 +51,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         if (is_null($path)) {
             $path = config('asgard.asgardgenerators.config.controllers.template',
-              '');
+                '');
         } else {
             $path .= 'admin-controller.txt';
         }
@@ -80,8 +80,8 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         $path = $this->module->getPath() . DIRECTORY_SEPARATOR;
 
         $path .= implode(DIRECTORY_SEPARATOR, [
-          'Http',
-          'Controllers',
+            'Http',
+            'Controllers',
         ]);
 
         return $path;
@@ -103,15 +103,15 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         if ($this->canGenerate(
-          $file,
-          $this->getOption('overwrite', false),
-          'view'
+            $file,
+            $this->getOption('overwrite', false),
+            'view'
         )
         ) {
             $this->generator->make(
-              $this->getTemplatePath(),
-              $this->createData($entity, $table),
-              $file
+                $this->getTemplatePath(),
+                $this->createData($entity, $table),
+                $file
             );
 
             $this->generated[] = $entity;
@@ -133,14 +133,14 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         // @todo: update config to retrieve entities, repos namespace
         return [
-          'NAMESPACE'                   => $this->getNamespace() . '\\Http\\Controllers\\Admin',
-          'CLASS_NAME'                  => $entity,
-          'LOWERCASE_CLASS_NAME'        => camel_case($entity),
-          'PLURAL_LOWERCASE_CLASS_NAME' => camel_case(str_plural($entity)),
-          'MODULE_NAME'                 => $this->module->getStudlyName(),
-          'LOWERCASE_MODULE_NAME'       => $this->module->getLowerName(),
-          'RELATIONSHIPS'               => $relationships,
-          'VARIABLES'                   => $variables,
+            'NAMESPACE' => $this->getNamespace() . '\\Http\\Controllers\\Admin',
+            'CLASS_NAME' => $entity,
+            'LOWERCASE_CLASS_NAME' => camel_case($entity),
+            'PLURAL_LOWERCASE_CLASS_NAME' => camel_case(str_plural($entity)),
+            'MODULE_NAME' => $this->module->getStudlyName(),
+            'LOWERCASE_MODULE_NAME' => $this->module->getLowerName(),
+            'RELATIONSHIPS' => $relationships,
+            'VARIABLES' => $variables,
         ];
     }
 
@@ -186,8 +186,8 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         }, $variables);
 
         return [
-          $relationship_data,
-          implode(",\n", $variables),
+            $relationship_data,
+            implode(",\n", $variables),
         ];
     }
 
@@ -201,7 +201,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     {
         // get stub data
         $path = config('asgard.asgardgenerators.config.controllers.route_template',
-          base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'route-resource.txt');
+            base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'route-resource.txt');
 
         $stub = $this->filesystem->get($path);
 
@@ -211,18 +211,18 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         foreach ($this->generated as $entity) {
             if ($this->shouldGenerateRoutesForEntity($entity)) {
                 $data .= str_replace([
-                    '$CLASS_NAME$',
-                    '$PLURAL_LOWERCASE_CLASS_NAME$',
-                    '$MODULE_NAME$',
-                    '$LOWERCASE_MODULE_NAME$',
-                    '$LOWERCASE_CLASS_NAME$',
-                  ], [
-                    $entity,
-                    str_plural(strtolower($entity)),
-                    $this->module->getStudlyName(),
-                    $this->module->getLowerName(),
-                    strtolower($entity),
-                  ], $stub) . "\n";
+                        '$CLASS_NAME$',
+                        '$PLURAL_LOWERCASE_CLASS_NAME$',
+                        '$MODULE_NAME$',
+                        '$LOWERCASE_MODULE_NAME$',
+                        '$LOWERCASE_CLASS_NAME$',
+                    ], [
+                        $entity,
+                        str_plural(strtolower($entity)),
+                        $this->module->getStudlyName(),
+                        $this->module->getLowerName(),
+                        strtolower($entity),
+                    ], $stub) . "\n";
             } else {
                 $data .= "\n// @todo: create routes for {$entity} manually\n";
             }
@@ -251,7 +251,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     {
         // get stub data
         $path = config('asgard.asgardgenerators.config.controllers.permissions_template',
-          base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'permissions-append.txt');
+            base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'permissions-append.txt');
 
         $stub = $this->filesystem->get($path);
 
@@ -260,12 +260,12 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         // replace the keyed values with their actual value
         foreach ($this->generated as $entity) {
             $data .= str_replace([
-                '$LOWERCASE_MODULE_NAME$',
-                '$PLURAL_LOWERCASE_CLASS_NAME$',
-              ], [
-                $this->module->getLowerName(),
-                str_plural(strtolower($entity)),
-              ], $stub) . "\n";
+                    '$LOWERCASE_MODULE_NAME$',
+                    '$PLURAL_LOWERCASE_CLASS_NAME$',
+                ], [
+                    $this->module->getLowerName(),
+                    str_plural(strtolower($entity)),
+                ], $stub) . "\n";
         }
 
         // add a replacement pointer to the end of the file to ensure further changes
@@ -285,11 +285,11 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         // publish the newly created permissions file
         $publish_location = config_path() . DIRECTORY_SEPARATOR . implode('.', [
-            'asgard',
-            $this->module->getLowerName(),
-            'permissions',
-            'php',
-          ]);
+                'asgard',
+                $this->module->getLowerName(),
+                'permissions',
+                'php',
+            ]);
 
         if ($this->filesystem->exists($publish_location)) {
             unlink($publish_location);
@@ -299,11 +299,12 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Check if the resource routes should be generated for a given entityname.
+     * Check if the resource routes should be generated for a given entity name.
      *
-     * @param string $entity
-     *
+     * @param $entityName
      * @return bool
+     * @internal param string $entity
+     *
      */
     private function shouldGenerateRoutesForEntity($entityName)
     {
@@ -321,52 +322,37 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
     private function createSidebar()
     {
-
-//        $menu->group(trans('core::sidebar.content'), function (Group $group) {
-//            $group->item(trans('media::media.title.media'), function (Item $item) {
-//                $item->weight(2);
-//                $item->icon('fa fa-camera');
-//                $item->route('admin.media.media.index');
-//                $item->authorize(
-//                  $this->auth->hasAccess('media.media.index')
-//                );
-//            });
-//        });
-
-
-        // get stub data
         $path = config('asgard.asgardgenerators.config.controllers.sidebar_item_template',
-          base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'sidebar-item.txt');
-
+            base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'sidebar-item.txt');
 
         $stub = $this->filesystem->get($path);
 
-        $data = "\$menu->group(trans('core::sidebar.content'), function (Group \$group) {";
+        $module = $this->module->getLowerName();
+
+        $data = "\$menu->group('{$module}', function (Group \$group) {";
 
         // replace the keyed values with their actual value
         foreach ($this->generated as $entity) {
             $data .= str_replace([
-                '$LOWERCASE_MODULE_NAME$',
-                '$LOWERCASE_SINGLE_ENTITY$',
-                '$LOWERCASE_PLURAL_ENTITY$'
-              ], [
-                $this->module->getLowerName(),
-                str_singular(strtolower($entity)),
-                str_plural(strtolower($entity)),
-              ], $stub) . "\n";
+                    '$LOWERCASE_MODULE_NAME$',
+                    '$LOWERCASE_SINGLE_ENTITY$',
+                    '$LOWERCASE_PLURAL_ENTITY$'
+                ], [
+                    $module,
+                    str_singular(strtolower($entity)),
+                    str_plural(strtolower($entity)),
+                ], $stub) . "\n";
         }
 
         // add a replacement pointer to the end of the file to ensure further changes
         $data .= "\n});\n\nreturn \$menu; \n";
 
         // write the file
-//        $file = $this->module->getPath().DIRECTORY_SEPARATOR.'Config'.DIRECTORY_SEPARATOR.'permissions.php';
-
         $file = $this->module->getPath() . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR,
-            [
-              "Sidebar",
-              "SidebarExtender.php"
-            ]);
+                [
+                    "Sidebar",
+                    "SidebarExtender.php"
+                ]);
 
         $content = $this->filesystem->get($file);
         $content = str_replace('return $menu;', $data, $content);
@@ -376,22 +362,5 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         $this->filesystem->make($file, $content);
-
-        // publish the newly created permissions file
-//        $publish_location = config_path().DIRECTORY_SEPARATOR.implode('.', [
-//            'asgard',
-//            $this->module->getLowerName(),
-//            'permissions',
-//            'php',
-//          ]);
-
-
-//        if ($this->filesystem->exists($publish_location)) {
-//            unlink($publish_location);
-//        }
-//
-//        $this->filesystem->make($publish_location, $content);
-
-
     }
 }
