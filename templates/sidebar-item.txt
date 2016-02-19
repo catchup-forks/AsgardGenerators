@@ -1,0 +1,8 @@
+$group->item(trans('$LOWERCASE_MODULE_NAME$::$LOWERCASE_MODULE_NAME$.title.$LOWERCASE_SINGLE_ENTITY$'), function (Item $item) {
+    $item->weight(2);
+    $item->icon('fa fa-camera');
+    $item->route('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_SINGLE_ENTITY$.index');
+    $item->authorize(
+      $this->auth->hasAccess('$LOWERCASE_MODULE_NAME$.$LOWERCASE_PLURAL_ENTITY$.index')
+    );
+});
