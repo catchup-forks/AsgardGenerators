@@ -121,6 +121,13 @@ abstract class BaseGenerator
     }
 
     /**
+     * Determines whether this entity (model) is a translation model
+     */
+    protected function isTranslationEntity($entityName) {
+        return ends_with($entityName, 'Translation');
+    }
+
+    /**
      * @param string $file
      * @param bool   $overwrite
      *
