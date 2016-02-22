@@ -32,7 +32,9 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         echo "\nGenerating Admin Controllers\n";
         foreach ($this->tables->getInfo() as $table => $columns) {
             $entity = $this->entityNameFromTable($table);
-            $this->generate($entity, $table);
+            if(!$this->isTranslationEntity($entity)) {
+                $this->generate($entity, $table);
+            }
         }
 
         $this->createRoutes();
@@ -209,22 +211,26 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         // replace the keyed values with their actual value
         foreach ($this->generated as $entity) {
-            if ($this->shouldGenerateRoutesForEntity($entity)) {
-                $data .= str_replace([
-                        '$CLASS_NAME$',
-                        '$PLURAL_LOWERCASE_CLASS_NAME$',
-                        '$MODULE_NAME$',
-                        '$LOWERCASE_MODULE_NAME$',
-                        '$LOWERCASE_CLASS_NAME$',
-                    ], [
-                        $entity,
-                        str_plural(strtolower($entity)),
-                        $this->module->getStudlyName(),
-                        $this->module->getLowerName(),
-                        strtolower($entity),
-                    ], $stub) . "\n";
-            } else {
-                $data .= "\n// @todo: create routes for {$entity} manually\n";
+
+            if(! $this->isTranslationEntity($entity)) {
+                if ($this->shouldGenerateRoutesForEntity($entity)) {
+                    $data .= str_replace([
+                            '$CLASS_NAME$',
+                            '$PLURAL_LOWERCASE_CLASS_NAME$',
+                            '$MODULE_NAME$',
+                            '$LOWERCASE_MODULE_NAME$',
+                            '$LOWERCASE_CLASS_NAME$',
+                        ], [
+                            $entity,
+                            str_plural(strtolower($entity)),
+                            $this->module->getStudlyName(),
+                            $this->module->getLowerName(),
+                            strtolower($entity),
+                        ], $stub) . "\n";
+                } else {
+                    $data .= "\n// @todo: create routes for {$entity} manually\n";
+                }
+
             }
         }
 
@@ -311,9 +317,10 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         $LOWERCASE_MODULE_NAME = $this->module->getLowerName();
         $LOWERCASE_CLASS_NAME = strtolower($entityName);
 
-        $pattern = "admin.$LOWERCASE_MODULE_NAME.$LOWERCASE_CLASS_NAME.destroy";
+        //$pattern = "admin.$LOWERCASE_MODULE_NAME.$LOWERCASE_CLASS_NAME.destroy";
+        //if (strlen($pattern) > $this->maxResourceRouteLength) {
 
-        if (strlen($pattern) > $this->maxResourceRouteLength) {
+        if (strlen($LOWERCASE_CLASS_NAME) > $this->maxResourceRouteLength) {
             return false;
         }
 
