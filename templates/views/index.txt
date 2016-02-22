@@ -34,19 +34,19 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <?php if (isset($$PLURAL_LOWERCASE_CLASS_NAME$)): ?>
-                        <?php foreach ($$PLURAL_LOWERCASE_CLASS_NAME$ as $$LOWERCASE_CLASS_NAME$): ?>
+                        <?php if (isset($$MODELS$)): ?>
+                        <?php foreach ($$MODELS$ as $$MODEL$): ?>
                         <tr>
                         $TABLE_CONTENT$
                             <td>
-                                <a href="{{ route('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.edit', [$$LOWERCASE_CLASS_NAME$->id]) }}">
-                                    {{ $$LOWERCASE_CLASS_NAME$->created_at }}
+                                <a href="{{ route('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.edit', [$$MODEL$->id]) }}">
+                                    {{ $$MODEL$->created_at }}
                                 </a>
                             </td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.edit', [$$LOWERCASE_CLASS_NAME$->id]) }}" class="btn btn-default btn-flat"><i class="fa fa-pencil"></i></a>
-                                    <button class="btn btn-danger btn-flat" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="{{ route('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.destroy', [$$LOWERCASE_CLASS_NAME$->id]) }}"><i class="fa fa-trash"></i></button>
+                                    <a href="{{ route('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.edit', [$$MODEL$->id]) }}" class="btn btn-default btn-flat"><i class="fa fa-pencil"></i></a>
+                                    <button class="btn btn-danger btn-flat" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="{{ route('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.destroy', [$$MODEL$->id]) }}"><i class="fa fa-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
