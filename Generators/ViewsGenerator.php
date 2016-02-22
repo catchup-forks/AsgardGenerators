@@ -27,17 +27,34 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         echo "\nGenerating Views:\n";
         // create the index view per table
         foreach ($this->tables->getInfo() as $table => $columns) {
-            foreach ([
-                       'index',
-                       'show',
-                       'edit',
-                       'create',
-                       'edit-fields',
-                       'create-fields',
-                     ] as $item) {
+
+            $viewsToGenerate = $this->getViewsToGenerate($table);
+
+            foreach ($viewsToGenerate as $item) {
                 $this->generate($table, $columns, $item);
             }
         }
+    }
+
+    private function getViewsToGenerate($table) {
+        $entity = $this->entityNameFromTable($table);
+        $isTranslation = $this->isTranslationEntity($entity);
+
+        if($isTranslation) {
+            return [
+                'edit-fields',
+                'create-fields',
+            ];
+        }
+
+        return [
+            'index',
+            'show',
+            'edit',
+            'create',
+            'edit-fields',
+            'create-fields',
+        ];
     }
 
     /**
@@ -107,6 +124,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $entity = str_plural($entity);
 
         $base_dir = $this->getFileGenerationPath().DIRECTORY_SEPARATOR."{$entity}";
+
+
         if (!file_exists($base_dir)) {
             mkdir($base_dir);
         }
@@ -278,7 +297,6 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                 unset($columns['columns'][$column]);
             }
         }
-
         return $columns;
     }
 
