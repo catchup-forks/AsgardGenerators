@@ -1,6 +1,12 @@
 <p>
     <label for="">{{ $title }}</label>
-    {!! Form::select($name, $options->pluck($primary_key, $primary_key), $selected, [
+    <?php
+        //add an empty item to the array
+        $options = is_array($options) ? $options : [];
+    ?>
+
+
+    {!! Form::select($name, $options, $selected, [
         'class' => 'form-control'
     ]) !!}
 </p>
