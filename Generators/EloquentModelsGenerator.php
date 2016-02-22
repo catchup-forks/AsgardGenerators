@@ -130,11 +130,13 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      *
      * @return string
      */
-    private function getPluralFunctionName($modelName)
+    private function getPluralFunctionName($modelName, &$existingFunctions)
     {
         $modelName = lcfirst($modelName);
 
-        return str_plural($modelName);
+        $result = str_plural($modelName);
+
+        return $this->getUniqueFunctionName($result, $existingFunctions);
     }
 
     /**
@@ -144,11 +146,25 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      *
      * @return string
      */
-    private function getSingularFunctionName($modelName)
+    private function getSingularFunctionName($modelName, &$existingFunctions)
     {
         $modelName = lcfirst($modelName);
 
-        return str_singular($modelName);
+        $result = str_singular($modelName);
+
+        return $this->getUniqueFunctionName($result, $existingFunctions);
+    }
+
+    private function getUniqueFunctionName($functionName, &$existingFunctions, $suffix='') {
+
+        $name = $functionName . $suffix;
+        if(!isset($existingFunctions[$name])) {
+            $existingFunctions[$name] = $name;
+            return $name;
+        }
+
+        $suffix = ($suffix === '') ? 2 : $suffix+1;
+        return $this->getUniqueFunctionName($functionName, $existingFunctions, $suffix);
     }
 
     /**
@@ -222,7 +238,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      *
      * @return string
      */
-    private function generateBelongsToFunctions($rulesContainer)
+    private function generateBelongsToFunctions($rulesContainer, &$generatedFunctions)
     {
         $functions = '';
         foreach ($rulesContainer as $rules) {
@@ -230,7 +246,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
             $key1 = $rules[1];
             $key2 = $rules[2];
 
-            $belongsToFunctionName = $this->getSingularFunctionName($belongsToModel);
+            $belongsToFunctionName = $this->getSingularFunctionName($belongsToModel, $generatedFunctions);
 
             $function = "
     public function $belongsToFunctionName() {".'
@@ -250,7 +266,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      *
      * @return string
      */
-    private function generateHasManyFunctions($rulesContainer)
+    private function generateHasManyFunctions($rulesContainer, &$generatedFunctions)
     {
         $functions = '';
         foreach ($rulesContainer as $rules) {
@@ -258,7 +274,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
             $key1 = $rules[1];
             $key2 = $rules[2];
 
-            $hasManyFunctionName = $this->getPluralFunctionName($hasManyModel);
+            $hasManyFunctionName = $this->getPluralFunctionName($hasManyModel, $generatedFunctions);
 
             $function = "
     public function $hasManyFunctionName() {".'
@@ -278,7 +294,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      *
      * @return string
      */
-    private function generateHasOneFunctions($rulesContainer)
+    private function generateHasOneFunctions($rulesContainer, &$generatedFunctions)
     {
         $functions = '';
         foreach ($rulesContainer as $rules) {
@@ -286,7 +302,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
             $key1 = $rules[1];
             $key2 = $rules[2];
 
-            $hasOneFunctionName = $this->getSingularFunctionName($hasOneModel);
+            $hasOneFunctionName = $this->getSingularFunctionName($hasOneModel, $generatedFunctions);
 
             $function = "
     public function $hasOneFunctionName() {".'
@@ -306,7 +322,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      *
      * @return string
      */
-    private function generateBelongsToManyFunctions($rulesContainer)
+    private function generateBelongsToManyFunctions($rulesContainer, &$generatedFunctions)
     {
         $functions = '';
         foreach ($rulesContainer as $rules) {
@@ -315,7 +331,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
             $key1 = $rules[2];
             $key2 = $rules[3];
 
-            $belongsToManyFunctionName = $this->getPluralFunctionName($belongsToManyModel);
+            $belongsToManyFunctionName = $this->getPluralFunctionName($belongsToManyModel, $generatedFunctions);
 
             $function = "
     public function $belongsToManyFunctionName() {".'
@@ -373,10 +389,12 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
 
         $fillable = implode(', ', $rules['fillable']);
 
-        $belongsToFunctions = $this->generateBelongsToFunctions($belongsTo);
-        $belongsToManyFunctions = $this->generateBelongsToManyFunctions($belongsToMany);
-        $hasManyFunctions = $this->generateHasManyFunctions($hasMany);
-        $hasOneFunctions = $this->generateHasOneFunctions($hasOne);
+        $generatedFunctions = [];
+
+        $belongsToFunctions = $this->generateBelongsToFunctions($belongsTo, $generatedFunctions);
+        $belongsToManyFunctions = $this->generateBelongsToManyFunctions($belongsToMany, $generatedFunctions);
+        $hasManyFunctions = $this->generateHasManyFunctions($hasMany, $generatedFunctions);
+        $hasOneFunctions = $this->generateHasOneFunctions($hasOne, $generatedFunctions);
 
         $functions = $this->generateFunctions([
           $belongsToFunctions,
