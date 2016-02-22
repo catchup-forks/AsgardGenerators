@@ -2,6 +2,7 @@
 
 namespace Modules\Asgardgenerators\Generators;
 
+use Illuminate\Support\Facades\App;
 use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
 use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
 use Modules\Asgardgenerators\Exceptions\DatabaseInformationException;
@@ -14,6 +15,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      * @var array
      */
     protected $excluded_columns = [
+      'id',
       'created_at',
       'updated_at',
       'deleted_at',
@@ -325,53 +327,58 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         // add the "normal fields"
         foreach ($columns['columns'] as $column => $type) {
-            // create the title from a given column
-            $title = $this->createTitleFromColumn($column);
 
-            $value = "''";
 
-            if ($type_to_create == 'edit') {
-                $value = "\${$entity}->{$column}";
-            }
+            if((!ends_with($column, '_id') && ($column !== 'locale'))) {
+                // create the title from a given column
+                $title = $this->createTitleFromColumn($column);
 
-            switch (strtolower($type)) {
-                case 'text':
-                    $stub .= "@include('$module::partials.fields.textarea', [
-                  'title' => '$title',
-                  'name' => '$column',
-                  'value' => $value,
-                  'placeholder' => ''
-                ])\n\n";
-                    break;
-                case 'datetime':
-                    $stub .= "@include('$module::partials.fields.date', [
-                  'title' => '$title',
-                  'name' => '$column',
-                  'value' => $value,
-                  'placeholder' => ''
-                ])\n\n";
-                    break;
-                case 'string':
-                default:
-                    $stub .= "@include('$module::partials.fields.text', [
-                  'title' => '$title',
-                  'name' => '$column',
-                  'value' => $value,
-                  'placeholder' => ''
-                ])\n\n";
+                $value = "''";
+
+                if ($type_to_create == 'edit') {
+                    $value = "\${$entity}->{$column}";
+                }
+
+                switch (strtolower($type)) {
+                    case 'text':
+                        $stub .= "@include('$module::partials.fields.textarea', [
+                      'title' => '$title',
+                      'name' => '$column',
+                      'value' => $value,
+                      'placeholder' => ''
+                    ])\n\n";
+                        break;
+                    case 'datetime':
+                        $stub .= "@include('$module::partials.fields.date', [
+                      'title' => '$title',
+                      'name' => '$column',
+                      'value' => $value,
+                      'placeholder' => ''
+                    ])\n\n";
+                        break;
+                    case 'string':
+                    default:
+                        $stub .= "@include('$module::partials.fields.text', [
+                      'title' => '$title',
+                      'name' => '$column',
+                      'value' => $value,
+                      'placeholder' => ''
+                    ])\n\n";
+                }
             }
         }
 
         // add the relationships
         $relationships = $this->tables->getRelationships($table);
 
+        //echo("\nTable: " . $table . "\n");
+
         foreach ($relationships as $relationship => $data) {
             // simpler to work with lower case
             $relationship = strtolower($relationship);
+            $isHasMany = ($relationship === 'hasmany');
+            $isBelongsToMany = ($relationship === 'belongstomany');
 
-            if (empty($data)) {
-                continue;
-            }
 
             switch ($relationship) {
                 case 'belongstomany':
@@ -389,11 +396,16 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
             foreach ($data as $row) {
 
-                $function = camel_case($row[0]);
+                $relatedTable = $row[0];
 
-                $isHasMany = $relationship === 'hasmany';
-                $isTranslationRelation = ends_with($function, 'Translations');
 
+                //singular or plural model function?
+                $function = camel_case($relatedTable);
+                $function =( $isHasMany ||  $isBelongsToMany ) ? str_plural($function) : str_singular($function);
+                $isTranslationRelation = ends_with($function, 'Translations') || ends_with($function, 'Translation');
+
+
+                $relatedModelColumns = \Schema::getColumnListing($relatedTable);
 
                 //skipping translation fields
                 if(!$isTranslationRelation && !$isHasMany) {
@@ -406,48 +418,81 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                         $primary_key = 'id';
                     }
 
-                    //if ($type_to_create == 'edit') {
+                    $list_keys = '';
+                    if (is_array($primary_key) && !empty($primary_key)) {
+                        $list_keys = "'".implode("','", $primary_key)."'";
+                    } elseif (!is_array($primary_key)) {
+                        $list_keys = "'$primary_key'";
+                    }
+
+                    //$selected = "\${$entity}->{$function}()->lists($list_keys)->toArray()";
 
 
-                        $function =( ($relationship === 'hasmany') || ($relationship === 'belongstomany')) ? str_plural($function) : str_singular($function);
-                        $list_keys = '';
+                    $options = 'null';
+                    if(!empty($list_keys)) {
 
-                        if (is_array($primary_key) && !empty($primary_key)) {
-                            $list_keys = "'".implode("','", $primary_key)."'";
-                        } elseif (!is_array($primary_key)) {
-                            $list_keys = "'$primary_key'";
+                        $keysCount = count(explode(',', $list_keys));
+
+                        if($keysCount === 1) {
+
+                            //that's great, we have 1 id...
+                            //now find an appropriate second column
+
+                            //get columns from the related table !
+
+
+                            $textColumn = $this->getListColumn($list_keys, $relatedModelColumns);
+                            $lists = "$textColumn,$list_keys";
+
+                            //$options = "$" . $entity . '->' . $function . '()->lists(' . $lists . ')->toArray()';
+                            $options = "$" . str_plural($function) . '->lists(' . $lists . ')->toArray()';
+                            $selected = "$" . $entity . '->' . $function . '()->lists("id","id")->toArray()';
                         }
+                    }
 
-                        //$selected = "\${$entity}->{$function}()->lists($list_keys)->toArray()";
-
-                        if(!empty($list_keys)) {
-                            $selected = "$" . $entity . '->' . $function . '()->lists(' . $list_keys . ')->toArray()';
-                        }
-
-
-
-                    //}
 
                     $primary_key = $this->arrayToString($primary_key);
 
                     $single = $this->entityNameFromTable($row[0]);
                     $plurar = camel_case(str_plural($single));
 
+                    $name = $isBelongsToMany ? $function : $row[1];
+
                     $stub .= "@include('$module::partials.fields.{$view_name}', [
                                   'title' => '{$single}',
-                                  'name' => '{$row[0]}',
-                                  'options' => \${$plurar},
+                                  'name' => '{$name}', //$function,//'{$row[0]}',
+                                  'options' => $options,
                                   'primary_key' => {$primary_key},
                                   'selected' => $selected,
                                 ])\n\n";
 
                 } else {
-                    //skipping translation multiple-select field
+                    //skipping translation multiple-select field, or hasMany field
                 }
             }
         }
 
         return $stub;
+    }
+
+
+    private function getListColumn($id, $columns) {
+        $defaultGuesses = [
+            'name',
+            'title',
+            'slug',
+            'translation',
+            'value',
+            'status',
+        ];
+
+        foreach($defaultGuesses as $guess) {
+            if(in_array($guess, $columns)) {
+                return "'$guess'";
+            }
+        }
+
+        return $id;
     }
 
     /**
