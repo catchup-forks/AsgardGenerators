@@ -170,13 +170,16 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
                 case 'hasmany':
                     foreach ($data as $row) {
                         $single = $this->entityNameFromTable($row[0]);
-                        $plurar = str_plural($single);
-                        $plurar_lowercase = camel_case($plurar);
 
-                        $relationship_data .= "\${$plurar_lowercase}_repository = app(\\Modules\\{$module}\\Repositories\\{$single}Repository::class);\n        ";
-                        $relationship_data .= "\${$plurar_lowercase} = \${$plurar_lowercase}_repository->all();\n        ";
+                        if(! $this->isTranslationEntity($single)) {
+                            $plurar = str_plural($single);
+                            $plurar_lowercase = camel_case($plurar);
 
-                        $variables[] = $plurar_lowercase;
+                            $relationship_data .= "\${$plurar_lowercase}_repository = app(\\Modules\\{$module}\\Repositories\\{$single}Repository::class);\n        ";
+                            $relationship_data .= "\${$plurar_lowercase} = \${$plurar_lowercase}_repository->all();\n        ";
+
+                            $variables[] = $plurar_lowercase;
+                        }
                     }
                     break;
                 default:
