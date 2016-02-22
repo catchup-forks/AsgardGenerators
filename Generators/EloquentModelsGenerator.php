@@ -595,6 +595,20 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      */
     private function addTranslationTrait(&$traits, $table, $translatable = [])
     {
+
+
+        $excluded = [
+            'created_at',
+            'updated_at',
+            'deleted_at',
+            'id'
+        ];
+
+        $translatable = array_flip($translatable);
+        $translatable = array_except($translatable, $excluded);
+        $translatable = array_flip($translatable);
+
+
         $traits .= "use \\Dimsav\\Translatable\\Translatable;\n\n"
           .'public $translatedAttributes = '.$this->arrayToString($translatable).';'
           ."\n";
