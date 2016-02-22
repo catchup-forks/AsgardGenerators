@@ -16,6 +16,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
     protected $excluded_columns = [
       'created_at',
       'updated_at',
+      'deleted_at',
       'password',
     ];
 
@@ -390,9 +391,12 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
                 $function = camel_case($row[0]);
 
+                $isHasMany = $relationship === 'hasmany';
+                $isTranslationRelation = ends_with($function, 'Translations');
+
 
                 //skipping translation fields
-                if(!ends_with($function, 'Translations')) {
+                if(!$isTranslationRelation && !$isHasMany) {
 
                     // determine the primary key(s)
                     try {
