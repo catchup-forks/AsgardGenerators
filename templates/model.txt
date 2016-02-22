@@ -15,4 +15,24 @@ class $NAME$ extends Model {
 
 $FUNCTIONS$
 
+
+    public function update(array $attributes = []) {
+        $res = parent::update($attributes);
+        self::sync($this, $attributes);
+        return $res;
+    }
+
+    public static function create(array $attributes = []) {
+        $res = parent::create($attributes);
+        self::sync($res, $attributes);
+        return $res;
+    }
+
+    /**
+     * Sync many-to-many relationships
+     */
+    private static function sync($model, array $attributes = []) {
+        $SYNC$
+    }
+
 }

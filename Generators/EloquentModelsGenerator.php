@@ -23,6 +23,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
     protected $excluded_columns = [
       'created_at',
       'updated_at',
+      'deleted_at',
       'locale',
     ];
 
@@ -205,7 +206,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
                 $fillable[] = "'$column_name'";
             }
         }
-        $rules[$table]['fillable'] = $fillable;
+        $rules[$table]['fillable'] = array_unique($fillable);
     }
 
     /**
@@ -344,6 +345,30 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         return $functions;
     }
 
+    private function generateSyncStatements($belongsToManyRulesContainer) {
+
+        $statements = '';
+
+        foreach($belongsToManyRulesContainer as $rules) {
+            $belongsToManyModel = $this->generateModelNameFromTableName($rules[0]);
+            $through = $rules[1];
+            $key1 = $rules[2];
+            $key2 = $rules[3];
+
+            $belongsToManyFunctionName = $this->getPluralFunctionName($belongsToManyModel, $generatedFunctions);
+
+            $statement = '
+
+        if(isset($attributes[' . "'$belongsToManyFunctionName'" . '])) {
+            $model->' . $belongsToManyFunctionName . '()->sync($attributes[' . "'$belongsToManyFunctionName'" . ']);
+        }';
+
+            $statements .= $statement;
+        }
+
+        return $statements;
+    }
+
     /**
      * Create a function from a given array of chunks.
      *
@@ -403,6 +428,8 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
           $hasOneFunctions,
         ]);
 
+        $syncFunctions = $this->generateSyncStatements($belongsToMany);
+
         // init the traits replacement so empty traits will be replaced by an
         // empty string
         $traits = '';
@@ -420,6 +447,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
           'TRAITS' => $traits,
           'FILLABLE' => $fillable,
           'FUNCTIONS' => $functions,
+          'SYNC' => $syncFunctions,
         );
 
         $templatePath = $this->getTemplatePath();
@@ -609,8 +637,8 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         $translatable = array_flip($translatable);
 
 
-        $traits .= "use \\Dimsav\\Translatable\\Translatable;\n\n"
-          .'public $translatedAttributes = '.$this->arrayToString($translatable).';'
+        $traits .= "use \\Dimsav\\Translatable\\Translatable;\n"
+          .'    public $translatedAttributes = '.$this->arrayToString($translatable).';'
           ."\n";
     }
 
@@ -623,6 +651,8 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      */
     private function excludedFieldsForTable($table)
     {
+        return $this->excluded_columns;
+        /*
         try {
             $primary_key = $this->tables->primaryKey($table);
         } catch (DatabaseInformationException $e) {
@@ -637,5 +667,6 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         $excluded = array_merge($this->excluded_columns, $primary_key);
 
         return $excluded;
+        */
     }
 }
