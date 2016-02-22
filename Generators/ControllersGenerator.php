@@ -2,6 +2,7 @@
 
 namespace Modules\Asgardgenerators\Generators;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
 use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
 use Modules\Asgardgenerators\Exceptions\DatabaseInformationException;
@@ -38,6 +39,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         $this->createRoutes();
         $this->createPermissions();
         $this->createSidebar();
+        $this->giveAdminRollAllPermissions();
     }
 
     /**
@@ -320,6 +322,10 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         return true;
     }
 
+    /**
+     * @throws FileNotFound
+     * @throws \Way\Generators\Filesystem\FileAlreadyExists
+     */
     private function createSidebar()
     {
         $path = config('asgard.asgardgenerators.config.controllers.sidebar_item_template',
@@ -364,5 +370,62 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         $this->filesystem->make($file, $content);
+    }
+
+    /**
+     * Give the admin all the permissions provided by this generator
+     */
+    private function giveAdminRollAllPermissions()
+    {
+        $permissions = $this->flatPermissionList();
+        // @todo: constructor inject the role repository?
+        $roleManager = app(\Modules\User\Repositories\RoleRepository::class);
+
+        $role = $roleManager->findByName('admin');
+
+        if (!$role) {
+            throw new ModelNotFoundException("Admin role not found.");
+        }
+
+        $rolePermissions = $role->permissions;
+
+        foreach ($permissions as $permission) {
+            // force permission on the admin
+            $rolePermissions[$permission] = true;
+        }
+
+        $role->permissions = $rolePermissions;
+        $roleManager->update($role->id, $role->toArray());
+    }
+
+    /**
+     * Create a flat list of permissions
+     *
+     * @return array
+     */
+    private function flatPermissionList()
+    {
+        // @todo: constructor inject the permission manager?
+        $permissionManager = app(\Modules\User\Permissions\PermissionManager::class);
+        $permissions = $permissionManager->all();
+
+        $list = [];
+
+        $glue = ".";
+
+        foreach ($permissions as $key => $value) {
+            if ($key == $this->module->getLowerName()) {
+                foreach ($value as $permissionGroup => $permissionGroupValue) {
+                    foreach ($permissionGroupValue as $permission) {
+                        $list[] = implode($glue, [
+                            $permissionGroup,
+                            $permission
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return $list;
     }
 }
