@@ -38,12 +38,13 @@ class $CLASS_NAME$Controller extends AdminBaseController
      *
      * @return Response
      */
-    public function create()
+    public function create($CLASS_NAME$ $$LOWERCASE_CLASS_NAME$)
     {
         $RELATIONSHIPS$
 
         $variables = [
-            $VARIABLES$
+            $VARIABLES$,
+            '$LOWERCASE_CLASS_NAME$' => $$LOWERCASE_CLASS_NAME$,
         ];
 
         return view('$LOWERCASE_MODULE_NAME$::admin.$PLURAL_LOWERCASE_CLASS_NAME$.create', $variables);
@@ -75,7 +76,7 @@ class $CLASS_NAME$Controller extends AdminBaseController
         $RELATIONSHIPS$
 
         $variables = [
-        '$LOWERCASE_CLASS_NAME$' => $$LOWERCASE_CLASS_NAME$,
+            '$LOWERCASE_CLASS_NAME$' => $$LOWERCASE_CLASS_NAME$,
             $VARIABLES$
         ];
 
