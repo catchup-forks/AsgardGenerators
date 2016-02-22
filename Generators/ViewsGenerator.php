@@ -382,7 +382,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                 case 'hasone':
                 default:
                     $view_name = 'select';
-                    $selected = '';
+                    $selected = 'null';
                     break;
             }
 
@@ -395,9 +395,11 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                     $primary_key = 'id';
                 }
 
-                if ($type_to_create == 'edit') {
+                //if ($type_to_create == 'edit') {
                     $function = camel_case($row[0]);
 
+
+                    $function =( ($relationship === 'hasmany') || ($relationship === 'belongstomany')) ? str_plural($function) : $function;
                     $list_keys = '';
                     
                     if (is_array($primary_key) && !empty($primary_key)) {
@@ -406,8 +408,10 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                         $list_keys = "'$primary_key'";
                     }
 
-                    $selected = "\${$entity}->{$function}()->lists($list_keys)->toArray()";
-                }
+                    //$selected = "\${$entity}->{$function}()->lists($list_keys)->toArray()";
+                    $selected = "$" . $entity . '->' . $function . '()->lists(' . $list_keys . ')->toArray()';
+                    //dd($selected);
+                //}
 
                 $primary_key = $this->arrayToString($primary_key);
 
@@ -419,7 +423,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                               'name' => '{$row[0]}',
                               'options' => \${$plurar},
                               'primary_key' => {$primary_key},
-                              'selected' => $selected
+                              'selected' => $selected,
                             ])\n\n";
             }
         }
