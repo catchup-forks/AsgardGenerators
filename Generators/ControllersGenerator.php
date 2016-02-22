@@ -173,8 +173,8 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
                         $plurar = str_plural($single);
                         $plurar_lowercase = camel_case($plurar);
 
-                        $relationship_data .= "\${$plurar_lowercase}_repository = app(\\Modules\\{$module}\\Repositories\\{$single}Repository::class);\n";
-                        $relationship_data .= "\${$plurar_lowercase} = \${$plurar_lowercase}_repository->all();\n";
+                        $relationship_data .= "\${$plurar_lowercase}_repository = app(\\Modules\\{$module}\\Repositories\\{$single}Repository::class);\n        ";
+                        $relationship_data .= "\${$plurar_lowercase} = \${$plurar_lowercase}_repository->all();\n        ";
 
                         $variables[] = $plurar_lowercase;
                     }
@@ -191,7 +191,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         return [
             $relationship_data,
-            implode(",\n", $variables),
+            implode(",\n            ", $variables),
         ];
     }
 
