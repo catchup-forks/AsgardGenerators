@@ -387,44 +387,59 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
             }
 
             foreach ($data as $row) {
-                // determine the primary key(s)
-                try {
-                    $primary_key = $this->tables->primaryKey($row[0]);
-                } catch (DatabaseInformationException $e) {
-                    // fallback to the default id primary key name
-                    $primary_key = 'id';
-                }
 
-                //if ($type_to_create == 'edit') {
-                    $function = camel_case($row[0]);
+                $function = camel_case($row[0]);
 
 
-                    $function =( ($relationship === 'hasmany') || ($relationship === 'belongstomany')) ? str_plural($function) : $function;
-                    $list_keys = '';
-                    
-                    if (is_array($primary_key) && !empty($primary_key)) {
-                        $list_keys = "'".implode("','", $primary_key)."'";
-                    } elseif (!is_array($primary_key)) {
-                        $list_keys = "'$primary_key'";
+                //skipping translation fields
+                if(!ends_with($function, 'Translations')) {
+
+                    // determine the primary key(s)
+                    try {
+                        $primary_key = $this->tables->primaryKey($row[0]);
+                    } catch (DatabaseInformationException $e) {
+                        // fallback to the default id primary key name
+                        $primary_key = 'id';
                     }
 
-                    //$selected = "\${$entity}->{$function}()->lists($list_keys)->toArray()";
-                    $selected = "$" . $entity . '->' . $function . '()->lists(' . $list_keys . ')->toArray()';
-                    //dd($selected);
-                //}
+                    //if ($type_to_create == 'edit') {
 
-                $primary_key = $this->arrayToString($primary_key);
 
-                $single = $this->entityNameFromTable($row[0]);
-                $plurar = camel_case(str_plural($single));
+                        $function =( ($relationship === 'hasmany') || ($relationship === 'belongstomany')) ? str_plural($function) : str_singular($function);
+                        $list_keys = '';
 
-                $stub .= "@include('$module::partials.fields.{$view_name}', [
-                              'title' => '{$single}',
-                              'name' => '{$row[0]}',
-                              'options' => \${$plurar},
-                              'primary_key' => {$primary_key},
-                              'selected' => $selected,
-                            ])\n\n";
+                        if (is_array($primary_key) && !empty($primary_key)) {
+                            $list_keys = "'".implode("','", $primary_key)."'";
+                        } elseif (!is_array($primary_key)) {
+                            $list_keys = "'$primary_key'";
+                        }
+
+                        //$selected = "\${$entity}->{$function}()->lists($list_keys)->toArray()";
+
+                        if(!empty($list_keys)) {
+                            $selected = "$" . $entity . '->' . $function . '()->lists(' . $list_keys . ')->toArray()';
+                        }
+
+
+
+                    //}
+
+                    $primary_key = $this->arrayToString($primary_key);
+
+                    $single = $this->entityNameFromTable($row[0]);
+                    $plurar = camel_case(str_plural($single));
+
+                    $stub .= "@include('$module::partials.fields.{$view_name}', [
+                                  'title' => '{$single}',
+                                  'name' => '{$row[0]}',
+                                  'options' => \${$plurar},
+                                  'primary_key' => {$primary_key},
+                                  'selected' => $selected,
+                                ])\n\n";
+
+                } else {
+                    //skipping translation multiple-select field
+                }
             }
         }
 
