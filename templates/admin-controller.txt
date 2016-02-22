@@ -62,7 +62,7 @@ class $CLASS_NAME$Controller extends AdminBaseController
 
         flash()->success(trans('core::core.messages.resource created', ['name' => trans('$LOWERCASE_MODULE_NAME$::$PLURAL_LOWERCASE_CLASS_NAME$.title.$PLURAL_LOWERCASE_CLASS_NAME$')]));
 
-        return redirect()->route('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.index');
+        return redirect()->route(strtolower('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.index'));
     }
 
     /**
@@ -96,7 +96,7 @@ class $CLASS_NAME$Controller extends AdminBaseController
 
         flash()->success(trans('core::core.messages.resource updated', ['name' => trans('$LOWERCASE_MODULE_NAME$::$PLURAL_LOWERCASE_CLASS_NAME$.title.$PLURAL_LOWERCASE_CLASS_NAME$')]));
 
-        return redirect()->route('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.index');
+        return redirect()->route(strtolower('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.index'));
     }
 
     /**
@@ -111,6 +111,6 @@ class $CLASS_NAME$Controller extends AdminBaseController
 
         flash()->success(trans('core::core.messages.resource deleted', ['name' => trans('$LOWERCASE_MODULE_NAME$::$PLURAL_LOWERCASE_CLASS_NAME$.title.$PLURAL_LOWERCASE_CLASS_NAME$')]));
 
-        return redirect()->route('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.index');
+        return redirect()->route(strtolower('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.index'));
     }
 }
