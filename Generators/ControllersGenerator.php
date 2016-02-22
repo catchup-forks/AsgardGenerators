@@ -333,15 +333,17 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         // replace the keyed values with their actual value
         foreach ($this->generated as $entity) {
-            $data .= str_replace([
-                    '$LOWERCASE_MODULE_NAME$',
-                    '$LOWERCASE_SINGLE_ENTITY$',
-                    '$LOWERCASE_PLURAL_ENTITY$'
-                ], [
-                    $module,
-                    str_singular(strtolower($entity)),
-                    str_plural(strtolower($entity)),
-                ], $stub) . "\n";
+            if ($this->shouldGenerateRoutesForEntity($entity)) {
+                $data .= str_replace([
+                        '$LOWERCASE_MODULE_NAME$',
+                        '$LOWERCASE_SINGLE_ENTITY$',
+                        '$LOWERCASE_PLURAL_ENTITY$'
+                    ], [
+                        $module,
+                        str_singular(strtolower($entity)),
+                        str_plural(strtolower($entity)),
+                    ], $stub) . "\n";
+            }
         }
 
         // add a replacement pointer to the end of the file to ensure further changes
