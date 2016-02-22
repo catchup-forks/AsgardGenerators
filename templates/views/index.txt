@@ -34,8 +34,8 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <?php if (isset($$MODELS$)): ?>
-                        <?php foreach ($$MODELS$ as $$MODEL$): ?>
+                        <?php if (isset($data)): ?>
+                        <?php foreach ($data as $$MODEL$): ?>
                         <tr>
                         $TABLE_CONTENT$
                             <td>

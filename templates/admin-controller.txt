@@ -28,9 +28,9 @@ class $CLASS_NAME$Controller extends AdminBaseController
      */
     public function index()
     {
-        $$PLURAL_LOWERCASE_CLASS_NAME$ = $this->$LOWERCASE_CLASS_NAME$->all();
+        $data = $this->$LOWERCASE_CLASS_NAME$->all();
 
-        return view('$LOWERCASE_MODULE_NAME$::admin.$PLURAL_LOWERCASE_CLASS_NAME$.index', compact('$PLURAL_LOWERCASE_CLASS_NAME$'));
+        return view('$LOWERCASE_MODULE_NAME$::admin.$PLURAL_LOWERCASE_CLASS_NAME$.index', compact('data'));
     }
 
     /**
