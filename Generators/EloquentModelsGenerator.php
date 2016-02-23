@@ -634,10 +634,17 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         $translatable = array_except($translatable, $excluded);
         $translatable = array_flip($translatable);
 
+        $module = $this->module->getStudlyName();
+
+        $translationTable = $this->tables->getTranslationTable($table);
+
+        $translationEntity = $this->entityNameFromTable($translationTable);
+
+        $translationEntity = "\\Modules\\{$module}\\Entities\\{$translationEntity}::class";
 
         $traits .= "use \\Dimsav\\Translatable\\Translatable;\n"
-          .'    public $translatedAttributes = '.$this->arrayToString($translatable).';'
-          ."\n";
+          ."    public \$translatedAttributes = ".$this->arrayToString($translatable).";\n"
+          ."    public \$translationModel = {$translationEntity};\n";
     }
 
     /**
