@@ -135,7 +135,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     {
         list($relationships, $variables) = $this->createRelationshipsData($table);
 
-        if($variables){
+        if ($variables) {
             $variables .= ",";
         }
 
