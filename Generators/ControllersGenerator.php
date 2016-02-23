@@ -33,7 +33,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         echo "\nGenerating Admin Controllers\n";
         foreach ($this->tables->getInfo() as $table => $columns) {
             $entity = $this->entityNameFromTable($table);
-            if(!$this->isTranslationEntity($entity)) {
+            if (!$this->isTranslationEntity($entity)) {
                 $this->generate($entity, $table);
             }
         }
@@ -171,7 +171,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
                     foreach ($data as $row) {
                         $single = $this->entityNameFromTable($row[0]);
 
-                        if(! $this->isTranslationEntity($single)) {
+                        if (!$this->isTranslationEntity($single)) {
                             $plurar = str_plural($single);
                             $plurar_lowercase = camel_case($plurar);
 
@@ -217,7 +217,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         // replace the keyed values with their actual value
         foreach ($this->generated as $entity) {
 
-            if(! $this->isTranslationEntity($entity)) {
+            if (!$this->isTranslationEntity($entity)) {
                 if ($this->shouldGenerateRoutesForEntity($entity)) {
                     $data .= str_replace([
                             '$CLASS_NAME$',
@@ -389,9 +389,9 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     {
         $permissions = $this->flatPermissionList();
         // @todo: constructor inject the role repository?
-        $roleManager = app(\Modules\User\Repositories\RoleRepository::class);
+        $roleRepository = app(\Modules\User\Repositories\RoleRepository::class);
 
-        $role = $roleManager->findByName('admin');
+        $role = $roleRepository->findByName('admin');
 
         if (!$role) {
             throw new ModelNotFoundException("Admin role not found.");
@@ -404,8 +404,9 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
             $rolePermissions[$permission] = true;
         }
 
-        $role->permissions = $rolePermissions;
-        $roleManager->update($role->id, $role->toArray());
+        $roleRepository->update($role->id, [
+            'permissions' => $rolePermissions
+        ]);
     }
 
     /**
@@ -416,23 +417,18 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     private function flatPermissionList()
     {
         // @todo: constructor inject the permission manager?
-        $permissionManager = app(\Modules\User\Permissions\PermissionManager::class);
-        $permissions = $permissionManager->all();
+        $permissions = config("asgard.{$this->module->getLowerName()}.permissions");
 
         $list = [];
 
         $glue = ".";
 
-        foreach ($permissions as $key => $value) {
-            if ($key == $this->module->getLowerName()) {
-                foreach ($value as $permissionGroup => $permissionGroupValue) {
-                    foreach ($permissionGroupValue as $permission) {
-                        $list[] = implode($glue, [
-                            $permissionGroup,
-                            $permission
-                        ]);
-                    }
-                }
+        foreach ($permissions as $permissionGroup => $permissionGroupValue) {
+            foreach ($permissionGroupValue as $permission) {
+                $list[] = implode($glue, [
+                    $permissionGroup,
+                    $permission
+                ]);
             }
         }
 
