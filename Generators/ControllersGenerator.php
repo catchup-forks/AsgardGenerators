@@ -216,7 +216,6 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         // replace the keyed values with their actual value
         foreach ($this->generated as $entity) {
-
             if (!$this->isTranslationEntity($entity)) {
                 if ($this->shouldGenerateRoutesForEntity($entity)) {
                     $data .= str_replace([
@@ -235,7 +234,6 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
                 } else {
                     $data .= "\n// @todo: create routes for {$entity} manually\n";
                 }
-
             }
         }
 

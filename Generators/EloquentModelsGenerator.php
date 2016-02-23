@@ -156,10 +156,10 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         return $this->getUniqueFunctionName($result, $existingFunctions);
     }
 
-    private function getUniqueFunctionName($functionName, &$existingFunctions, $suffix='') {
-
+    private function getUniqueFunctionName($functionName, &$existingFunctions, $suffix='')
+    {
         $name = $functionName . $suffix;
-        if(!isset($existingFunctions[$name])) {
+        if (!isset($existingFunctions[$name])) {
             $existingFunctions[$name] = $name;
             return $name;
         }
@@ -345,11 +345,11 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         return $functions;
     }
 
-    private function generateSyncStatements($belongsToManyRulesContainer) {
-
+    private function generateSyncStatements($belongsToManyRulesContainer)
+    {
         $statements = '';
 
-        foreach($belongsToManyRulesContainer as $rules) {
+        foreach ($belongsToManyRulesContainer as $rules) {
             $belongsToManyModel = $this->generateModelNameFromTableName($rules[0]);
             $through = $rules[1];
             $key1 = $rules[2];
@@ -623,8 +623,6 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      */
     private function addTranslationTrait(&$traits, $table, $translatable = [])
     {
-
-
         $excluded = [
             'created_at',
             'updated_at',

@@ -30,7 +30,6 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         echo "\nGenerating Views:\n";
         // create the index view per table
         foreach ($this->tables->getInfo() as $table => $columns) {
-
             $viewsToGenerate = $this->getViewsToGenerate($table);
 
             foreach ($viewsToGenerate as $item) {
@@ -39,11 +38,12 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         }
     }
 
-    private function getViewsToGenerate($table) {
+    private function getViewsToGenerate($table)
+    {
         $entity = $this->entityNameFromTable($table);
         $isTranslation = $this->isTranslationEntity($entity);
 
-        if($isTranslation) {
+        if ($isTranslation) {
             return [
                 'edit-fields',
                 'create-fields',
@@ -327,9 +327,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         // add the "normal fields"
         foreach ($columns['columns'] as $column => $type) {
-
-
-            if((!ends_with($column, '_id') && ($column !== 'locale'))) {
+            if ((!ends_with($column, '_id') && ($column !== 'locale'))) {
                 // create the title from a given column
                 $title = $this->createTitleFromColumn($column);
 
@@ -395,20 +393,19 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
             }
 
             foreach ($data as $row) {
-
                 $relatedTable = $row[0];
 
 
                 //singular or plural model function?
                 $function = camel_case($relatedTable);
-                $function =( $isHasMany ||  $isBelongsToMany ) ? str_plural($function) : str_singular($function);
+                $function =($isHasMany ||  $isBelongsToMany) ? str_plural($function) : str_singular($function);
                 $isTranslationRelation = ends_with($function, 'Translations') || ends_with($function, 'Translation');
 
 
                 $relatedModelColumns = \Schema::getColumnListing($relatedTable);
 
                 //skipping translation fields
-                if(!$isTranslationRelation && !$isHasMany) {
+                if (!$isTranslationRelation && !$isHasMany) {
 
                     // determine the primary key(s)
                     try {
@@ -429,11 +426,10 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
 
                     $options = 'null';
-                    if(!empty($list_keys)) {
-
+                    if (!empty($list_keys)) {
                         $keysCount = count(explode(',', $list_keys));
 
-                        if($keysCount === 1) {
+                        if ($keysCount === 1) {
 
                             //that's great, we have 1 id...
                             //now find an appropriate second column
@@ -465,7 +461,6 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                                   'primary_key' => {$primary_key},
                                   'selected' => $selected,
                                 ])\n\n";
-
                 } else {
                     //skipping translation multiple-select field, or hasMany field
                 }
@@ -476,7 +471,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
     }
 
 
-    private function getListColumn($id, $columns) {
+    private function getListColumn($id, $columns)
+    {
         $defaultGuesses = [
             'name',
             'title',
@@ -486,8 +482,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
             'status',
         ];
 
-        foreach($defaultGuesses as $guess) {
-            if(in_array($guess, $columns)) {
+        foreach ($defaultGuesses as $guess) {
+            if (in_array($guess, $columns)) {
                 return "'$guess'";
             }
         }
