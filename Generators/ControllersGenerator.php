@@ -135,6 +135,10 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     {
         list($relationships, $variables) = $this->createRelationshipsData($table);
 
+        if($variables){
+            $variables .= ",";
+        }
+
         // @todo: update config to retrieve entities, repos namespace
         return [
             'NAMESPACE' => $this->getNamespace() . '\\Http\\Controllers\\Admin',
