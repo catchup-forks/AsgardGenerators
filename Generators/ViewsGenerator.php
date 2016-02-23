@@ -55,8 +55,10 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
             'show',
             'edit',
             'create',
-            'edit-fields',
             'create-fields',
+            'create-translation-fields',
+            'edit-fields',
+            'edit-translation-fields',
         ];
     }
 
@@ -224,15 +226,61 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                         'edit'),
                 ];
                 break;
+            case 'edit-translation-fields':
+                $translation_table = $this->tables->getTranslationTable($table);
+
+                if ($translation_table) {
+                    $translation_columns = $this->tables->getInfo($translation_table);
+                    $translation_columns = $this->translationFieldsOnly($columns, $translation_columns);
+
+                    $data += [
+                        'FIELDS' => $this->createFieldsForForm($table, $translation_columns,
+                            'edit-translation'),
+                    ];
+                } else {
+                    $data += [
+                        'FIELDS' => "",
+                    ];
+                }
+                break;
             case 'create-fields':
                 $data += [
                     'FIELDS' => $this->createFieldsForForm($table, $columns,
                         'create'),
                 ];
                 break;
+            case 'create-translation-fields':
+                $translation_table = $this->tables->getTranslationTable($table);
+
+                if ($translation_table) {
+                    $translation_columns = $this->tables->getInfo($translation_table);
+                    $translation_columns = $this->translationFieldsOnly($columns, $translation_columns);
+
+                    $data += [
+                        'FIELDS' => $this->createFieldsForForm($table, $translation_columns,
+                            'create-translation'),
+                    ];
+                } else {
+                    $data += [
+                        'FIELDS' => "",
+                    ];
+                }
+                break;
         }
 
         return $data;
+    }
+
+    /**
+     * @param array $columns
+     * @param array $translationColumns
+     * @return array
+     */
+    private function translationFieldsOnly($columns, $translationColumns)
+    {
+        $translationColumns['columns'] = array_diff_assoc($columns['columns'], $translationColumns['columns']);
+
+        return $translationColumns;
     }
 
     /**
@@ -308,7 +356,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      *
      * @param string $table
      * @param array $columns
-     *
+     * @param string $type_to_create
      * @return string
      */
     private function createFieldsForForm(
@@ -324,9 +372,9 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $entity = camel_case($this->entityNameFromTable($table));
 
         // add the "normal fields"
-        foreach ($columns['columns'] as $column => $type) {
+        foreach ($columns['columns'] as $column => $column_type) {
             if ((!ends_with($column, '_id') && ($column !== 'locale'))) {
-                $this->appendFieldToStub($stub, $type_to_create, $entity, $column, $type, $module);
+                $this->appendFieldToStub($stub, $type_to_create, $entity, $column, $column_type, $module);
             }
         }
 
@@ -346,7 +394,11 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         return $stub;
     }
 
-
+    /**
+     * @param int $id
+     * @param array $columns
+     * @return string
+     */
     private function getListColumn($id, $columns)
     {
         $defaultGuesses = [
@@ -401,7 +453,10 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         $value = "''";
 
-        if ($type_to_create == 'edit') {
+        if (in_array($type_to_create, [
+            'edit',
+            'edit-translation'
+        ])) {
             $value = "\${$entity}->{$column}";
         }
 
