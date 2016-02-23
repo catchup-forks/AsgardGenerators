@@ -43,7 +43,7 @@ class $CLASS_NAME$Controller extends AdminBaseController
         $RELATIONSHIPS$
 
         $variables = [
-            $VARIABLES$,
+            $VARIABLES$
             '$LOWERCASE_CLASS_NAME$' => $$LOWERCASE_CLASS_NAME$,
         ];
 
