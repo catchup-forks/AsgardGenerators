@@ -191,6 +191,27 @@ class DatabaseInformation
     }
 
     /**
+     * Retrieve the translation table for a given table if it exists
+     *
+     * @param string $table
+     * @return bool|string
+     */
+    public function getTranslationTable($table){
+        $pattern = implode("|", [
+            "{$table}_translation$",
+            "{$table}_translations$",
+        ]);
+
+        foreach($this->getTables() as $tableName){
+            if(preg_match("/$pattern/", $tableName)){
+                return $tableName;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Retrieve relationship information for a given table or all tables if none
      * defined.
      *
