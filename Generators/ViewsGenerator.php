@@ -232,10 +232,11 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                 if ($translation_table) {
                     $translation_columns = $this->tables->getInfo($translation_table);
                     $translation_columns = $this->translationFieldsOnly($columns, $translation_columns);
+                    $translation_columns = $this->removeExcluded($translation_columns);
 
                     $data += [
                         'FIELDS' => $this->createFieldsForForm($table, $translation_columns,
-                            'edit-translation'),
+                            'edit-translation', true),
                     ];
                 } else {
                     $data += [
@@ -255,10 +256,11 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                 if ($translation_table) {
                     $translation_columns = $this->tables->getInfo($translation_table);
                     $translation_columns = $this->translationFieldsOnly($columns, $translation_columns);
+                    $translation_columns = $this->removeExcluded($translation_columns);
 
                     $data += [
                         'FIELDS' => $this->createFieldsForForm($table, $translation_columns,
-                            'create-translation'),
+                            'create-translation', true),
                     ];
                 } else {
                     $data += [
@@ -278,7 +280,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      */
     private function translationFieldsOnly($columns, $translationColumns)
     {
-        $translationColumns['columns'] = array_diff_assoc($columns['columns'], $translationColumns['columns']);
+        $translationColumns['columns'] = array_except($translationColumns['columns'], array_keys($columns['columns']));
 
         return $translationColumns;
     }
@@ -357,12 +359,14 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      * @param string $table
      * @param array $columns
      * @param string $type_to_create
+     * @param bool $is_translation
      * @return string
      */
     private function createFieldsForForm(
         $table,
         $columns,
-        $type_to_create = 'create'
+        $type_to_create = 'create',
+        $is_translation = false
     ) {
         $stub = '';
 
@@ -374,7 +378,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         // add the "normal fields"
         foreach ($columns['columns'] as $column => $column_type) {
             if ((!ends_with($column, '_id') && ($column !== 'locale'))) {
-                $this->appendFieldToStub($stub, $type_to_create, $entity, $column, $column_type, $module);
+                $this->appendFieldToStub($stub, $type_to_create, $entity, $column, $column_type, $module,
+                    $is_translation);
             }
         }
 
@@ -387,7 +392,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
             foreach ($data as $row) {
                 $relatedTable = $row[0];
 
-                $this->appendRelationshipFieldsToStub($stub, $relationship, $entity, $relatedTable, $row, $module);
+                $this->appendRelationshipFieldsToStub($stub, $relationship, $entity, $relatedTable, $row, $module,
+                    $is_translation);
             }
         }
 
@@ -444,9 +450,17 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      * @param string $column
      * @param string $field_type
      * @param null|string $module
+     * @param bool $is_translation
      */
-    private function appendFieldToStub(&$stub, $type_to_create, $entity, $column, $field_type, $module = null)
-    {
+    private function appendFieldToStub(
+        &$stub,
+        $type_to_create,
+        $entity,
+        $column,
+        $field_type,
+        $module = null,
+        $is_translation = false
+    ) {
         if (is_null($module)) {
             $module = 'asgardgenerators';
         }
@@ -462,13 +476,17 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         $title = $this->createTitleFromColumn($column);
 
+        // @todo: find a way to overload booleans in views
+        $is_translation = intval($is_translation);
+
         switch (strtolower($field_type)) {
             case 'text':
                 $stub .= "@include('$module::partials.fields.textarea', [
                       'title' => '$title',
                       'name' => '$column',
                       'value' => $value,
-                      'placeholder' => ''
+                      'placeholder' => '',
+                      'is_translation' => $is_translation
                     ])\n\n";
                 break;
             case 'datetime':
@@ -476,7 +494,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                       'title' => '$title',
                       'name' => '$column',
                       'value' => $value,
-                      'placeholder' => ''
+                      'placeholder' => '',
+                      'is_translation' => $is_translation
                     ])\n\n";
                 break;
             case 'string':
@@ -485,7 +504,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                       'title' => '$title',
                       'name' => '$column',
                       'value' => $value,
-                      'placeholder' => ''
+                      'placeholder' => '',
+                      'is_translation' => $is_translation
                     ])\n\n";
         }
     }
@@ -506,7 +526,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $entity,
         $table,
         $relationship,
-        $module = null
+        $module = null,
+        $is_translation = false
     ) {
         if (is_null($module)) {
             $module = "asgardgenerators";
