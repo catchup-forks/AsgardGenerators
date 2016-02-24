@@ -196,14 +196,15 @@ class DatabaseInformation
      * @param string $table
      * @return bool|string
      */
-    public function getTranslationTable($table){
+    public function getTranslationTable($table)
+    {
         $pattern = implode("|", [
             "{$table}_translation$",
             "{$table}_translations$",
         ]);
 
-        foreach($this->getTables() as $tableName){
-            if(preg_match("/$pattern/", $tableName)){
+        foreach ($this->getTables() as $tableName) {
+            if (preg_match("/$pattern/", $tableName)) {
                 return $tableName;
             }
         }
