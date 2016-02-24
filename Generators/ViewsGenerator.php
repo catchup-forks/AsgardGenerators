@@ -53,10 +53,10 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         return [
             'index',
             'show',
-            'edit',
             'create',
             'create-fields',
             'create-translation-fields',
+            'edit',
             'edit-fields',
             'edit-translation-fields',
         ];
