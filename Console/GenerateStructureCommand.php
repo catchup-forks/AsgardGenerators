@@ -10,6 +10,7 @@ use Modules\Asgardgenerators\Generators\DatabaseInformation;
 use Modules\Asgardgenerators\Generators\MigrationsGenerator;
 use Modules\Asgardgenerators\Generators\EloquentModelsGenerator;
 use Modules\Asgardgenerators\Generators\RepositoryGenerator;
+use Modules\Asgardgenerators\Generators\TranslationsGenerator;
 use Modules\Asgardgenerators\Generators\ViewsGenerator;
 use Pingpong\Modules\Module;
 use Symfony\Component\Console\Input\InputOption;
@@ -179,6 +180,7 @@ class GenerateStructureCommand extends Command
           'repositories' => RepositoryGenerator::class,
           'views' => ViewsGenerator::class,
           'controllers' => ControllersGenerator::class,
+          'translations' => TranslationsGenerator::class,
         ];
 
         foreach ($generators as $name => $class) {
