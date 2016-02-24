@@ -48,8 +48,6 @@ class TranslationsGenerator extends BaseGenerator implements GeneratorInterface
             
             echo "File {$file} generated.\n";
         }
-
-
     }
 
     /**
@@ -103,19 +101,3 @@ class TranslationsGenerator extends BaseGenerator implements GeneratorInterface
         return $path;
     }
 }
-
-
-//return [
-//    'title'=> [
-//        '$LOWERCASE_SINGLE_ENTITY$' => '$ENTITY$',
-//        '$LOWERCASE_PLURAL_ENTITY$' => 'Attributes',
-//        'create $LOWERCASE_SINGLE_ENTITY$' => "Create $ENTITY$",
-//        'edit $LOWERCASE_SINGLE_ENTITY$' => "Edit $ENTITY$",
-//        'delete $LOWERCASE_SINGLE_ENTITY$' => "Delete $ENTITY$",
-//    ],
-//    'button' => [
-//        'create $LOWERCASE_SINGLE_ENTITY$' => "Create $ENTITY$",
-//        'update $LOWERCASE_SINGLE_ENTITY$' => "Update $ENTITY$",
-//        'delete $LOWERCASE_SINGLE_ENTITY$' => "Delete $ENTITY$",
-//    ]
-//];
