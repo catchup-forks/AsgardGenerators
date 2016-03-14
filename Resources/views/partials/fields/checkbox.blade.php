@@ -1,11 +1,24 @@
 <div class="col-xs-12">
     <div class="checkbox">
         @if(isset($is_translation) && $is_translation === 1)
-            {!! Form::label("{$lang}[{$name}]", $title) !!}
-            {!! Form::checkbox("{$lang}[{$name}]", $value, old("{$lang}[{$name}]")) !!}
+            <label>
+                <input
+                        type="checkbox"
+                        name="{{ $lang }}[{{ $name }}]"
+                        value="{{ $value }}"
+                        @if($checked === true)checked="checked"@endif
+                > {{ $title }}
+            </label>
         @else
-            {!! Form::label($name, $title) !!}
-            {!! Form::checkbox($name, $value, old($name)) !!}
+            <label>
+                <input
+                        type="checkbox"
+                        name="{{ $name }}"
+                        value="{{ $value }}"
+                @if($checked === true)checked="checked"@endif
+                > {{ $title }}
+            </label>
+
         @endif
     </div>
 </div>
