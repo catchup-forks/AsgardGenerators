@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Asgardgenerators\Database\Seeders;
+namespace Modules\AsgardGenerators\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
-class AsgardgeneratorsDatabaseSeeder extends Seeder
+class AsgardGeneratorsDatabaseSeeder extends Seeder
 {
     /**
      * Run the database seeds.

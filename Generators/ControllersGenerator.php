@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Asgardgenerators\Generators;
+namespace Modules\AsgardGenerators\Generators;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
-use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
-use Modules\Asgardgenerators\Exceptions\DatabaseInformationException;
+use Modules\AsgardGenerators\Contracts\Generators\BaseGenerator;
+use Modules\AsgardGenerators\Contracts\Generators\GeneratorInterface;
+use Modules\AsgardGenerators\Exceptions\DatabaseInformationException;
 use Way\Generators\Filesystem\FileNotFound;
 
 class ControllersGenerator extends BaseGenerator implements GeneratorInterface
@@ -149,6 +149,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
             'LOWERCASE_MODULE_NAME' => $this->module->getLowerName(),
             'RELATIONSHIPS' => $relationships,
             'VARIABLES' => $variables,
+            'SNAKE_CASE_ENTITY' => snake_case(str_plural($entity))
         ];
     }
 
@@ -212,7 +213,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     {
         // get stub data
         $path = config('asgard.asgardgenerators.config.controllers.route_template',
-            base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'route-resource.txt');
+            base_path('Modules/AsgardGenerators/templates') . DIRECTORY_SEPARATOR . 'route-resource.txt');
 
         $stub = $this->filesystem->get($path);
 
@@ -264,7 +265,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     {
         // get stub data
         $path = config('asgard.asgardgenerators.config.controllers.permissions_template',
-            base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'permissions-append.txt');
+            base_path('Modules/AsgardGenerators/templates') . DIRECTORY_SEPARATOR . 'permissions-append.txt');
 
         $stub = $this->filesystem->get($path);
 
@@ -341,7 +342,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     private function createSidebar()
     {
         $path = config('asgard.asgardgenerators.config.controllers.sidebar_item_template',
-            base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'sidebar-item.txt');
+            base_path('Modules/AsgardGenerators/templates') . DIRECTORY_SEPARATOR . 'sidebar-item.txt');
 
         $stub = $this->filesystem->get($path);
 

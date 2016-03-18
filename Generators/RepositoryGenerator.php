@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Asgardgenerators\Generators;
+namespace Modules\AsgardGenerators\Generators;
 
-use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
-use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
+use Modules\AsgardGenerators\Contracts\Generators\BaseGenerator;
+use Modules\AsgardGenerators\Contracts\Generators\GeneratorInterface;
 
 class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
 {
@@ -179,7 +179,7 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
     {
         // get stub data
         $path = config('asgard.asgardgenerators.config.repositories.bindings_template',
-          base_path('Modules/Asgardgenerators/templates').DIRECTORY_SEPARATOR.'bindings.txt');
+          base_path('Modules/AsgardGenerators/templates').DIRECTORY_SEPARATOR.'bindings.txt');
 
         $stub = $this->filesystem->get($path);
 

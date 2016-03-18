@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Asgardgenerators\Generators;
+namespace Modules\AsgardGenerators\Generators;
 
-use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
-use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
+use Modules\AsgardGenerators\Contracts\Generators\BaseGenerator;
+use Modules\AsgardGenerators\Contracts\Generators\GeneratorInterface;
 use PhpSpec\Locator\ResourceInterface;
 
 class TranslationsGenerator extends BaseGenerator implements GeneratorInterface

@@ -13,7 +13,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Modules\\Asgardgenerators\\": ".",
+            "Modules\\AsgardGenerators\\": ".",
             "Modules\\": "Modules/"
         }
     },
@@ -27,7 +27,7 @@
 	],
 	"autoload": {
 		"psr-4": {
-			"Modules\\Asgardgenerators\\": ""
+			"Modules\\AsgardGenerators\\": ""
 		}
 	}
 }

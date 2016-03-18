@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Asgardgenerators\Sidebar;
+namespace Modules\AsgardGenerators\Sidebar;
 
 use Maatwebsite\Sidebar\Menu;
 use Modules\Core\Contracts\Authentication;

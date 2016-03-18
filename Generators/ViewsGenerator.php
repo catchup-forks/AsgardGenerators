@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Asgardgenerators\Generators;
+namespace Modules\AsgardGenerators\Generators;
 
 use Illuminate\Support\Facades\App;
-use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
-use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
-use Modules\Asgardgenerators\Exceptions\DatabaseInformationException;
+use Modules\AsgardGenerators\Contracts\Generators\BaseGenerator;
+use Modules\AsgardGenerators\Contracts\Generators\GeneratorInterface;
+use Modules\AsgardGenerators\Exceptions\DatabaseInformationException;
 
 class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 {
@@ -128,8 +128,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $entity = $this->entityNameFromTable($table);
         $entity = str_plural($entity);
 
-        $base_dir = $this->getFileGenerationPath() . DIRECTORY_SEPARATOR . "{$entity}";
-
+        $base_dir = $this->getFileGenerationPath() . DIRECTORY_SEPARATOR . snake_case($entity);
 
         if (!file_exists($base_dir)) {
             mkdir($base_dir);
@@ -196,6 +195,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
             'LOWERCASE_MODULE_NAME' => $this->module->getLowerName(),
             'PLURAL_LOWERCASE_CLASS_NAME' => str_plural(strtolower($model)),
             'LOWERCASE_CLASS_NAME' => strtolower($model),
+            'SNAKE_CASE_ENTITY' => snake_case(str_plural($model))
         ];
 
         $columns = $this->removeExcluded($columns, $type);
@@ -367,7 +367,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $columns,
         $type_to_create = 'create',
         $is_translation = false
-    ) {
+    )
+    {
         $stub = '';
 
         $module = 'asgardgenerators';
@@ -460,7 +461,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $field_type,
         $module = null,
         $is_translation = false
-    ) {
+    )
+    {
         if (is_null($module)) {
             $module = 'asgardgenerators';
         }
@@ -528,7 +530,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $relationship,
         $module = null,
         $is_translation = false
-    ) {
+    )
+    {
         if (is_null($module)) {
             $module = "asgardgenerators";
         }

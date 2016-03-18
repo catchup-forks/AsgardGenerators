@@ -1,5 +1,5 @@
 {
-    "name": "Asgardgenerators",
+    "name": "AsgardGenerators",
     "alias": "asgardgenerators",
     "description": "",
     "version": "v0.1",
@@ -7,8 +7,8 @@
     "active": 1,
     "order": 1,
     "providers": [
-        "Modules\\Asgardgenerators\\Providers\\AsgardgeneratorsServiceProvider",
-        "Modules\\Asgardgenerators\\Providers\\RouteServiceProvider"
+        "Modules\\AsgardGenerators\\Providers\\AsgardGeneratorsServiceProvider",
+        "Modules\\AsgardGenerators\\Providers\\RouteServiceProvider"
     ],
     "aliases":{},
     "files": [

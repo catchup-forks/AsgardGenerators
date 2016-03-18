@@ -40,7 +40,7 @@
                             <?php foreach (LaravelLocalization::getSupportedLocales() as $locale => $language): ?>
                                 <?php $i++; ?>
                                 <div class="tab-pane {{ App::getLocale() == $locale ? 'active' : '' }}" id="tab_{{ $i }}">
-                                     @include('$LOWERCASE_MODULE_NAME$::admin.$PLURAL_LOWERCASE_CLASS_NAME$.create-translation-fields', ['lang' => $locale])
+                                     @include('$LOWERCASE_MODULE_NAME$::admin.$SNAKE_CASE_ENTITY$.create-translation-fields', ['lang' => $locale])
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -52,7 +52,7 @@
                     <h3 class="box-title">{{ trans('core::core.title.non translatable fields') }}</h3>
                 </div>
                 <div class="box-body">
-                  @include('$LOWERCASE_MODULE_NAME$::admin.$PLURAL_LOWERCASE_CLASS_NAME$.create-fields', ['lang' => $locale])
+                  @include('$LOWERCASE_MODULE_NAME$::admin.$SNAKE_CASE_ENTITY$.create-fields', ['lang' => $locale])
                 </div>
             </div>
             <div class="box-footer">

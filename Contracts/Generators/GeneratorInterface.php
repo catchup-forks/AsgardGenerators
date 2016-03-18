@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Asgardgenerators\Contracts\Generators;
+namespace Modules\AsgardGenerators\Contracts\Generators;
 
 interface GeneratorInterface
 {

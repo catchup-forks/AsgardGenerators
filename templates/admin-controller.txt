@@ -30,7 +30,7 @@ class $CLASS_NAME$Controller extends AdminBaseController
     {
         $data = $this->$LOWERCASE_CLASS_NAME$->all();
 
-        return view('$LOWERCASE_MODULE_NAME$::admin.$PLURAL_LOWERCASE_CLASS_NAME$.index', compact('data'));
+        return view('$LOWERCASE_MODULE_NAME$::admin.$SNAKE_CASE_ENTITY$.index', compact('data'));
     }
 
     /**
@@ -47,7 +47,7 @@ class $CLASS_NAME$Controller extends AdminBaseController
             '$LOWERCASE_CLASS_NAME$' => $$LOWERCASE_CLASS_NAME$,
         ];
 
-        return view('$LOWERCASE_MODULE_NAME$::admin.$PLURAL_LOWERCASE_CLASS_NAME$.create', $variables);
+        return view('$LOWERCASE_MODULE_NAME$::admin.$SNAKE_CASE_ENTITY$.create', $variables);
     }
 
     /**
@@ -80,7 +80,7 @@ class $CLASS_NAME$Controller extends AdminBaseController
             $VARIABLES$
         ];
 
-        return view('$LOWERCASE_MODULE_NAME$::admin.$PLURAL_LOWERCASE_CLASS_NAME$.edit', $variables);
+        return view('$LOWERCASE_MODULE_NAME$::admin.$SNAKE_CASE_ENTITY$.edit', $variables);
     }
 
     /**

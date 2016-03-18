@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\Asgardgenerators\Contracts\Generators;
+namespace Modules\AsgardGenerators\Contracts\Generators;
 
-use Modules\Asgardgenerators\Generators\DatabaseInformation;
+use Modules\AsgardGenerators\Generators\DatabaseInformation;
 use Illuminate\Config\Repository as Config;
 use Pingpong\Modules\Module;
 use Way\Generators\Compilers\TemplateCompiler;

@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Asgardgenerators\Providers;
+namespace Modules\AsgardGenerators\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Modules\Asgardgenerators\Console\GenerateStructureCommand;
+use Modules\AsgardGenerators\Console\GenerateStructureCommand;
 
-class AsgardgeneratorsServiceProvider extends ServiceProvider
+class AsgardGeneratorsServiceProvider extends ServiceProvider
 {
     /**
      * Indicates if loading of the provider is deferred.

@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Asgardgenerators\Exceptions;
+namespace Modules\AsgardGenerators\Exceptions;
 
 class NothingToGenerateException extends \Exception
 {
