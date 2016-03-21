@@ -2,7 +2,7 @@
     @if(isset($is_translation) && $is_translation === 1)
         {!! Form::label("{$lang}[{$name}]", $title) !!}
         {!! Form::textarea("{$lang}[{$name}]",
-            Input::old("{$lang}[{$name}]"),
+            Input::old("{$lang}[{$name}]", isset($value[$lang])?$value[$lang]:'') ,
             ['class' => 'form-control', 'placeholder' => $placeholder ]
             ) !!}
     @else
