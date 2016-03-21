@@ -1,17 +1,17 @@
 <?php
 
-namespace Modules\AsgardGenerators\Console;
+namespace Modules\Asgardgenerators\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
-use Modules\AsgardGenerators\Exceptions\NothingToGenerateException;
-use Modules\AsgardGenerators\Generators\ControllersGenerator;
-use Modules\AsgardGenerators\Generators\DatabaseInformation;
-use Modules\AsgardGenerators\Generators\MigrationsGenerator;
-use Modules\AsgardGenerators\Generators\EloquentModelsGenerator;
-use Modules\AsgardGenerators\Generators\RepositoryGenerator;
-use Modules\AsgardGenerators\Generators\TranslationsGenerator;
-use Modules\AsgardGenerators\Generators\ViewsGenerator;
+use Modules\Asgardgenerators\Exceptions\NothingToGenerateException;
+use Modules\Asgardgenerators\Generators\ControllersGenerator;
+use Modules\Asgardgenerators\Generators\DatabaseInformation;
+use Modules\Asgardgenerators\Generators\MigrationsGenerator;
+use Modules\Asgardgenerators\Generators\EloquentModelsGenerator;
+use Modules\Asgardgenerators\Generators\RepositoryGenerator;
+use Modules\Asgardgenerators\Generators\TranslationsGenerator;
+use Modules\Asgardgenerators\Generators\ViewsGenerator;
 use Pingpong\Modules\Module;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;

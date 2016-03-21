@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\AsgardGenerators\Database\Seeders;
+namespace Modules\Asgardgenerators\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;

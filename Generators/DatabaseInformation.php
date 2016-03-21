@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\AsgardGenerators\Generators;
+namespace Modules\Asgardgenerators\Generators;
 
-use Modules\AsgardGenerators\Exceptions\DatabaseInformationException;
+use Modules\Asgardgenerators\Exceptions\DatabaseInformationException;
 use User11001\EloquentModelGenerator\Console\SchemaGenerator;
 
 class DatabaseInformation
@@ -112,7 +112,7 @@ class DatabaseInformation
      *
      * @return array|string
      *
-     * @throws \Modules\AsgardGenerators\Exceptions\DatabaseInformationException
+     * @throws \Modules\Asgardgenerators\Exceptions\DatabaseInformationException
      */
     public function primaryKey($table)
     {

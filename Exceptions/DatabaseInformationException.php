@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\AsgardGenerators\Exceptions;
+namespace Modules\Asgardgenerators\Exceptions;
 
 class DatabaseInformationException extends \Exception
 {

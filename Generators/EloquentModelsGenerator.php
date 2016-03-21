@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\AsgardGenerators\Generators;
+namespace Modules\Asgardgenerators\Generators;
 
-use Modules\AsgardGenerators\Contracts\Generators\BaseGenerator;
-use Modules\AsgardGenerators\Contracts\Generators\GeneratorInterface;
-use Modules\AsgardGenerators\Exceptions\DatabaseInformationException;
+use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
+use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
+use Modules\Asgardgenerators\Exceptions\DatabaseInformationException;
 use Pingpong\Modules\Module;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
@@ -652,7 +652,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      *
      * @return array
      *
-     * @throws \Modules\AsgardGenerators\Exceptions\DatabaseInformationException
+     * @throws \Modules\Asgardgenerators\Exceptions\DatabaseInformationException
      */
     private function excludedFieldsForTable($table)
     {

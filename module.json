@@ -7,8 +7,8 @@
     "active": 1,
     "order": 1,
     "providers": [
-        "Modules\\AsgardGenerators\\Providers\\AsgardGeneratorsServiceProvider",
-        "Modules\\AsgardGenerators\\Providers\\RouteServiceProvider"
+        "Modules\\Asgardgenerators\\Providers\\AsgardGeneratorsServiceProvider",
+        "Modules\\Asgardgenerators\\Providers\\RouteServiceProvider"
     ],
     "aliases":{},
     "files": [

@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\AsgardGenerators\Providers;
+namespace Modules\Asgardgenerators\Providers;
 
 use Modules\Core\Providers\RoutingServiceProvider as CoreRoutingServiceProvider;
 
@@ -11,7 +11,7 @@ class RouteServiceProvider extends CoreRoutingServiceProvider
      *
      * @var string
      */
-    protected $namespace = 'Modules\AsgardGenerators\Http\Controllers';
+    protected $namespace = 'Modules\Asgardgenerators\Http\Controllers';
 
     /**
      * @return string

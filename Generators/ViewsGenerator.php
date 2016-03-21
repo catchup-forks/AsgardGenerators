@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\AsgardGenerators\Generators;
+namespace Modules\Asgardgenerators\Generators;
 
 use Illuminate\Support\Facades\App;
-use Modules\AsgardGenerators\Contracts\Generators\BaseGenerator;
-use Modules\AsgardGenerators\Contracts\Generators\GeneratorInterface;
-use Modules\AsgardGenerators\Exceptions\DatabaseInformationException;
+use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
+use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
+use Modules\Asgardgenerators\Exceptions\DatabaseInformationException;
 
 class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 {

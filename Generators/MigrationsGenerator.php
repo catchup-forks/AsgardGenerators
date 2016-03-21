@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\AsgardGenerators\Generators;
+namespace Modules\Asgardgenerators\Generators;
 
-use Modules\AsgardGenerators\Contracts\Generators\BaseGenerator;
-use Modules\AsgardGenerators\Contracts\Generators\GeneratorInterface;
+use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
+use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
 use Pingpong\Modules\Module;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;

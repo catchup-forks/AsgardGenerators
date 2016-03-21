@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\AsgardGenerators\Providers;
+namespace Modules\Asgardgenerators\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Modules\AsgardGenerators\Console\GenerateStructureCommand;
+use Modules\Asgardgenerators\Console\GenerateStructureCommand;
 
 class AsgardGeneratorsServiceProvider extends ServiceProvider
 {
