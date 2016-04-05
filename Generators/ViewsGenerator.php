@@ -335,7 +335,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $is_translation = false
     )
     {
-        $stub = '';
+        $stub = [];
 
         $module = 'asgardgenerators';
 
@@ -364,7 +364,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
             }
         }
 
-        return $stub;
+        return implode("\n            ", $stub);
     }
 
     /**
@@ -443,32 +443,35 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         switch (strtolower($field_type)) {
             case 'text':
-                $stub .= "@include('$module::partials.fields.textarea', [
-                      'title' => '$title',
-                      'name' => '$column',
-                      'value' => $value,
-                      'placeholder' => '',
-                      'is_translation' => $is_translation
+                $stub[] = "
+                   @include('$module::partials.fields.textarea', [
+                       'title' => '$title',
+                       'name' => '$column',
+                       'value' => $value,
+                       'placeholder' => '',
+                       'is_translation' => $is_translation
                     ])\n\n";
                 break;
             case 'datetime':
-                $stub .= "@include('$module::partials.fields.date', [
-                      'title' => '$title',
-                      'name' => '$column',
-                      'value' => $value,
-                      'placeholder' => '',
-                      'is_translation' => $is_translation
+                $stub[] = "
+                   @include('$module::partials.fields.date', [
+                       'title' => '$title',
+                       'name' => '$column',
+                       'value' => $value,
+                       'placeholder' => '',
+                       'is_translation' => $is_translation
                     ])\n\n";
                 break;
             case 'string':
             default:
-                $stub .= "@include('$module::partials.fields.text', [
-                      'title' => '$title',
-                      'name' => '$column',
-                      'value' => $value,
-                      'placeholder' => '',
-                      'is_translation' => $is_translation
-                    ])\n\n";
+                $stub[] = "
+                   @include('$module::partials.fields.text', [
+                       'title' => '$title',
+                       'name' => '$column',
+                       'value' => $value,
+                       'placeholder' => '',
+                       'is_translation' => $is_translation
+                   ])\n\n";
         }
     }
 
@@ -561,13 +564,14 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
             $name = $isBelongsToMany ? $function : $relationship[1];
 
-            $stub .= "@include('$module::partials.fields.{$view_name}', [
-                                  'title' => '{$single}',
-                                  'name' => '{$name}', //$function,//'{$relationship[0]}',
-                                  'options' => $options,
-                                  'primary_key' => {$primary_key},
-                                  'selected' => $selected,
-                                ])\n\n";
+            $stub[] = "
+                   @include('$module::partials.fields.{$view_name}', [
+                       'title' => '{$single}',
+                       'name' => '{$name}', //$function,//'{$relationship[0]}',
+                       'options' => $options,
+                       'primary_key' => {$primary_key},
+                       'selected' => $selected,
+                   ])\n\n";
         } else {
             //skipping translation multiple-select field, or hasMany field
         }
