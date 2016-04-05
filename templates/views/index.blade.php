@@ -28,7 +28,7 @@
                     <table class="data-table table table-bordered table-hover">
                         <thead>
                         <tr>
-                        $TABLE_HEADERS$
+                            $TABLE_HEADERS$
                             <th data-sortable="false">{{ trans('core::core.table.actions') }}</th>
                         </tr>
                         </thead>
@@ -36,7 +36,7 @@
                         <?php if (isset($data)): ?>
                         <?php foreach ($data as $$MODEL$): ?>
                         <tr>
-                        $TABLE_CONTENT$
+                            $TABLE_CONTENT$
                             <td>
                                 <div class="btn-group">
                                     <a href="{{ route('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.edit', [$$MODEL$->id]) }}" class="btn btn-default btn-flat"><i class="fa fa-pencil"></i></a>
