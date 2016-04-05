@@ -265,10 +265,21 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $titles = [];
 
         foreach (array_keys($columns['columns']) as $column) {
-            $titles[] = "<th>$column</th>";
+            if($this->isValidHeaderColumn($column)) {
+                $titles[] = "<th>$column</th>";
+            }
         }
 
         return implode("\n", $titles);
+    }
+
+    private function isValidHeaderColumn($column) {
+        if(!ends_with($column, '_id')) {
+            if(!in_array($column, ['created_at', 'updated_at', 'deleted_at'])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -287,7 +298,9 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $model = $this->createDefaultModelNameFromTable($table);
 
         foreach ($columns['columns'] as $column => $datatype) {
-            $line[] = "<td>{{ \${$model}->{$column} }}</td>";
+            if($this->isValidHeaderColumn($column)) {
+                $line[] = "<td>{{ \${$model}->{$column} }}</td>";
+            }
         }
 
         return implode("\n", $line);

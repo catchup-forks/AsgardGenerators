@@ -29,7 +29,6 @@
                         <thead>
                         <tr>
                         $TABLE_HEADERS$
-                            <th>{{ trans('core::core.table.created at') }}</th>
                             <th data-sortable="false">{{ trans('core::core.table.actions') }}</th>
                         </tr>
                         </thead>
@@ -38,11 +37,6 @@
                         <?php foreach ($data as $$MODEL$): ?>
                         <tr>
                         $TABLE_CONTENT$
-                            <td>
-                                <a href="{{ route('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.edit', [$$MODEL$->id]) }}">
-                                    {{ $$MODEL$->created_at }}
-                                </a>
-                            </td>
                             <td>
                                 <div class="btn-group">
                                     <a href="{{ route('admin.$LOWERCASE_MODULE_NAME$.$LOWERCASE_CLASS_NAME$.edit', [$$MODEL$->id]) }}" class="btn btn-default btn-flat"><i class="fa fa-pencil"></i></a>
@@ -55,7 +49,6 @@
                         </tbody>
                         <tfoot>
                         <tr>
-                            <th>{{ trans('core::core.table.created at') }}</th>
                             <th>{{ trans('core::core.table.actions') }}</th>
                         </tr>
                         </tfoot>
