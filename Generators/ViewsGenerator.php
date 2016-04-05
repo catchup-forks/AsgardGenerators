@@ -266,20 +266,12 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         foreach (array_keys($columns['columns']) as $column) {
             if($this->isValidHeaderColumn($column)) {
-                $titles[] = "<th>$column</th>";
+                $col = ucfirst($column);
+                $titles[] = "<th>$col</th>";
             }
         }
 
         return implode("\n", $titles);
-    }
-
-    private function isValidHeaderColumn($column) {
-        if(!ends_with($column, '_id')) {
-            if(!in_array($column, ['created_at', 'updated_at', 'deleted_at'])) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -304,6 +296,15 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         return implode("\n", $line);
+    }
+
+    private function isValidHeaderColumn($column) {
+        if(!ends_with($column, '_id')) {
+            if(!in_array($column, ['created_at', 'updated_at', 'deleted_at'])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
