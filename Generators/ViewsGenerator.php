@@ -375,13 +375,14 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
     private function getListColumn($id, $columns)
     {
         $defaultGuesses = [
-            'name',
             'title',
+            'name',
             'slug',
             'translation',
             'value',
             'status',
         ];
+
 
         foreach ($defaultGuesses as $guess) {
             if (in_array($guess, $columns)) {
@@ -495,7 +496,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $is_translation = false
     )
     {
-        $classes = '':
+        $classes = '';
 
         if (is_null($module)) {
             $module = "asgardgenerators";
@@ -527,7 +528,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $function = ($isHasMany || $isBelongsToMany) ? str_plural($function) : str_singular($function);
         $isTranslationRelation = ends_with($function, 'Translations') || ends_with($function, 'Translation');
 
-        $relatedModelColumns = \Schema::getColumnListing($table);
+        $relatedModelColumns = $this->getRelatedModelColumns($table);
+
 
         //skipping translation fields
         if (!$isTranslationRelation && !$isHasMany) {
@@ -574,10 +576,23 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                        'options' => $options,
                        'primary_key' => {$primary_key},
                        'selected' => $selected,
-                       'classes' => $classes;
+                       'classes' => '$classes',
                    ])\n\n";
         } else {
             //skipping translation multiple-select field, or hasMany field
         }
+    }
+
+    private function getRelatedModelColumns($table) {
+        $cols = \Schema::getColumnListing($table);
+
+        $translationTable = $this->tables->getTranslationTable($table);
+        if($translationTable) {
+            $translationCols = \Schema::getColumnListing($translationTable);
+
+            $cols = array_merge($translationCols, $cols);
+        }
+
+        return $cols;
     }
 }

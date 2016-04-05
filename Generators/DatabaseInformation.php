@@ -81,6 +81,13 @@ class DatabaseInformation
         ];
     }
 
+    public function hasColumn($table, $column) {
+        $info = $this->getTableInformation($table);
+        $cols = $info['columns'];
+
+        return isset($cols[$column]);
+    }
+
     /**
      * Get a flat list of tables.
      *

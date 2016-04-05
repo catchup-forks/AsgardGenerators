@@ -434,10 +434,16 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         // empty string
         $traits = '';
 
+        if($this->tables->hasColumn($table, 'deleted_at')) {
+            $this->addDeletedAdTrait($traits, $table);
+        }
+
         if (isset($rules['translatedAttributes'])) {
             $this->addTranslationTrait($traits, $table,
               $rules['translatedAttributes']);
         }
+        
+
 
         //3. prepare template data
         $templateData = array(
@@ -585,6 +591,10 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         return $translatable;
     }
 
+    private function addDeletedAdTrait(&$traits, $table) {
+        $traits .= "use \\Illuminate\\Database\\Eloquent\\SoftDeletes;\n";
+    }
+
     /**
      * Add the translation trait and property needed for translation.
      *
@@ -613,7 +623,8 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
 
         $translationEntity = "\\Modules\\{$module}\\Entities\\{$translationEntity}::class";
 
-        $traits .= "use \\Dimsav\\Translatable\\Translatable;\n"
+        $traits .= "\n"
+          ."    use \\Dimsav\\Translatable\\Translatable;\n"
           ."    public \$translatedAttributes = ".$this->arrayToString($translatable).";\n"
           ."    public \$translationModel = {$translationEntity};\n";
     }
