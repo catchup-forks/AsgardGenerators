@@ -45,8 +45,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         if ($isTranslation) {
             return [
-                'edit-fields',
-                'create-fields',
+                'fields',
             ];
         }
 
@@ -54,11 +53,9 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
             'index',
             'show',
             'create',
-            'create-fields',
-            'create-translation-fields',
             'edit',
-            'edit-fields',
-            'edit-translation-fields',
+            'fields',
+            'fields-translatable',
         ];
     }
 
@@ -142,9 +139,14 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
             'view'
         )
         ) {
+            $templateData = $this->createData($table, $columns, $name);
+            $hasTranslationFields = !empty($this->tables->getTranslationTable($table));
+            $templateData['HAS_TRANSLATION_FIELDS'] = $hasTranslationFields ? 'true' : 'false';
+            //dd($templateData);
+
             $this->generator->make(
-                $this->getTemplatePath() . DIRECTORY_SEPARATOR . "$name.txt",
-                $this->createData($table, $columns, $name),
+                $this->getTemplatePath() . DIRECTORY_SEPARATOR . "$name.blade.php",
+                $templateData,
                 $file_to_generate
             );
 
@@ -202,31 +204,20 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         switch ($type) {
             case 'index':
-                $data += [
-                    'TABLE_HEADERS' => $this->createIndexTableHeaderData($table,
-                        $columns),
-                    'TABLE_CONTENT' => $this->createIndexTableContentData($table,
-                        $columns),
-                ];
+                $data['TABLE_HEADERS'] = $this->createIndexTableHeaderData($table, $columns);
+                $data['TABLE_CONTENT'] = $this->createIndexTableContentData($table, $columns);
                 break;
             case 'show':
-                $data += [
-                    'TITLE' => 'id',
-                ];
+                $data['TITLE'] = 'id';
                 break;
             case 'edit':
             case 'create':
-                $data += [
-
-                ];
                 break;
-            case 'edit-fields':
-                $data += [
-                    'FIELDS' => $this->createFieldsForForm($table, $columns,
-                        'edit'),
-                ];
+            case 'fields':
+                $fields = $this->createFieldsForForm($table, $columns);
+                $data['FIELDS'] = $fields;
                 break;
-            case 'edit-translation-fields':
+            case 'fields-translatable':
                 $translation_table = $this->tables->getTranslationTable($table);
 
                 if ($translation_table) {
@@ -235,8 +226,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                     $translation_columns = $this->removeExcluded($translation_columns);
 
                     $data += [
-                        'FIELDS' => $this->createFieldsForForm($table, $translation_columns,
-                            'edit-translation', true),
+                        'FIELDS' => $this->createFieldsForForm($table, $translation_columns, true),
                     ];
                 } else {
                     $data += [
@@ -244,32 +234,9 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                     ];
                 }
                 break;
-            case 'create-fields':
-                $data += [
-                    'FIELDS' => $this->createFieldsForForm($table, $columns,
-                        'create'),
-                ];
-                break;
-            case 'create-translation-fields':
-                $translation_table = $this->tables->getTranslationTable($table);
-
-                if ($translation_table) {
-                    $translation_columns = $this->tables->getInfo($translation_table);
-                    $translation_columns = $this->translationFieldsOnly($columns, $translation_columns);
-                    $translation_columns = $this->removeExcluded($translation_columns);
-
-                    $data += [
-                        'FIELDS' => $this->createFieldsForForm($table, $translation_columns,
-                            'create-translation', true),
-                    ];
-                } else {
-                    $data += [
-                        'FIELDS' => "",
-                    ];
-                }
-                break;
+            default:
+                echo("\nUnknown type: $type \n");
         }
-
         return $data;
     }
 
@@ -365,7 +332,6 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
     private function createFieldsForForm(
         $table,
         $columns,
-        $type_to_create = 'create',
         $is_translation = false
     )
     {
@@ -379,7 +345,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         // add the "normal fields"
         foreach ($columns['columns'] as $column => $column_type) {
             if ((!ends_with($column, '_id') && ($column !== 'locale'))) {
-                $this->appendFieldToStub($stub, $type_to_create, $entity, $column, $column_type, $module,
+                $this->appendFieldToStub($stub, $entity, $column, $column_type, $module,
                     $is_translation);
             }
         }
@@ -455,7 +421,6 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      */
     private function appendFieldToStub(
         &$stub,
-        $type_to_create,
         $entity,
         $column,
         $field_type,
@@ -469,12 +434,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         $value = "''";
 
-        if (in_array($type_to_create, [
-            'edit',
-            'edit-translation'
-        ])) {
-            $value = "\${$entity}->{$column}";
-        }
+        $value = "\${$entity}->{$column}";
 
         $title = $this->createTitleFromColumn($column);
 
