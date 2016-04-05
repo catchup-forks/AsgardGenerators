@@ -495,6 +495,8 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $is_translation = false
     )
     {
+        $classes = '':
+
         if (is_null($module)) {
             $module = "asgardgenerators";
         }
@@ -515,6 +517,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
             case 'hasone':
             default:
                 $view_name = 'select';
+                $classes = 'select2';
                 $selected = 'null';
                 break;
         }
@@ -571,6 +574,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
                        'options' => $options,
                        'primary_key' => {$primary_key},
                        'selected' => $selected,
+                       'classes' => $classes;
                    ])\n\n";
         } else {
             //skipping translation multiple-select field, or hasMany field

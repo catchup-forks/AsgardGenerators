@@ -2,12 +2,13 @@
 // check if the options are actually an array
 // if not init an empty array
 $options = is_array($options) ? $options : [];
+$classes = isset($classes) ? $classes : '';
 ?>
 
 <p>
     @if(isset($is_translation) && $is_translation === 1)
         <label for="{{ $lang }}[{{ $name }}]">{{ $title }}</label>
-        <select id="{{ $lang }}[{{ $name }}]" class="form-control multiselect" multiple="multiple"
+        <select id="{{ $lang }}[{{ $name }}]" class="form-control multiselect $classes" multiple="multiple"
                 name="{{ $lang }}[{{ $name }}][]">
             @if(is_array($options))
                 @foreach($options as $optionKey => $option)
@@ -19,7 +20,7 @@ $options = is_array($options) ? $options : [];
         </select>
     @else
         <label for="{{ $name }}">{{ $title }}</label>
-        <select id="{{ $name }}" class="form-control multiselect" multiple="multiple" name="{{ $name }}[]">
+        <select id="{{ $name }}" class="form-control multiselect $classes" multiple="multiple" name="{{ $name }}[]">
             @if(is_array($options))
                 @foreach($options as $optionKey => $option)
                     <option value="{{ $optionKey }}"
