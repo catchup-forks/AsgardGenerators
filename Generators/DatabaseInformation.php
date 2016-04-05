@@ -198,14 +198,21 @@ class DatabaseInformation
      */
     public function getTranslationTable($table)
     {
-        $pattern = implode("|", [
-            "{$table}_translation$",
-            "{$table}_translations$",
-        ]);
+        // the check should not be executed for a translation table
+        if (preg_match('/_translations$/', $table)) {
+            return false;
+        }
 
-        foreach ($this->getTables() as $tableName) {
-            if (preg_match("/$pattern/", $tableName)) {
-                return $tableName;
+        // list all the tables
+        $tables = $this->schemaGenerator->getTables();
+
+        $singular = str_singular($table).'_translations';
+        $plural = str_plural($table).'_translations';
+
+        // check if the translation tables exists
+        foreach ($tables as $table_name) {
+            if ($table_name == $singular || $table_name == $plural) {
+                return $table_name;
             }
         }
 

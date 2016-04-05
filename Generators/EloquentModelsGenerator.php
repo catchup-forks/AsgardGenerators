@@ -552,38 +552,9 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      */
     private function tableHasTranslation($table)
     {
-        return (bool) $this->getTranslationTable($table);
+        return (bool) $this->tables->getTranslationTable($table);
     }
 
-    /**
-     * Retrieve the translation table for a given table, false if not found.
-     *
-     * @param string $table
-     *
-     * @return string|bool
-     */
-    private function getTranslationTable($table)
-    {
-        // the check should not be executed for a translation table
-        if (preg_match('/_translations$/', $table)) {
-            return false;
-        }
-
-        // list all the tables
-        $tables = $this->schemaGenerator->getTables();
-
-        $singular = str_singular($table).'_translations';
-        $plural = str_plural($table).'_translations';
-
-        // check if the translation tables exists
-        foreach ($tables as $table_name) {
-            if ($table_name == $singular || $table_name == $plural) {
-                return $table_name;
-            }
-        }
-
-        return false;
-    }
 
     /**
      * Create a list of columns available on the given table's translation table.
@@ -594,7 +565,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      */
     private function setTranslatable($table)
     {
-        $translate_table = $this->getTranslationTable($table);
+        $translate_table = $this->tables->getTranslationTable($table);
 
         $translatable = [];
 
