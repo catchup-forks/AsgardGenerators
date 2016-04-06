@@ -135,7 +135,7 @@ class GenerateStructureCommand extends Command
         $module = $this->module->getStudlyName();
         $ns = "Modules\\{$module}";
 
-        $this->options = [
+        $options = [
           'connection' => $this->getOption('connection', null),
           'ignore' => $this->getOption('ignore', []),
           'path' => $this->getOption('path', ''),
@@ -145,9 +145,30 @@ class GenerateStructureCommand extends Command
           'defaultIndexNames' => $this->getOption('defaultIndexNames', false),
           'defaultFKNames' => $this->getOption('defaultFKNames', false),
           'overwrite' => $this->getOption('overwrite', false),
+          'config' => $this->getOption('config', false),
         ];
 
+        $options['config'] = $this->parseConfig($options['config']);
+
+        $this->options = $options;
         return $this;
+    }
+
+    private function parseConfig($filename) {
+        $cfg = \Config::get($filename);
+
+        $parsed = [];
+        foreach($cfg as $moduleName => $tables) {
+            foreach($tables as $table) {
+                if(isset($parsed[$table])) {
+                    throw new Exception("Config contains multiple entries for table $table");
+                }
+
+                $parsed[$table] = $moduleName;
+            }
+        }
+
+        return $parsed;
     }
 
     /**
@@ -330,6 +351,12 @@ class GenerateStructureCommand extends Command
             't',
             InputOption::VALUE_OPTIONAL,
             'A list of Tables you wish to Generate Migrations for separated by a comma: users,posts,comments',
+          ],
+          [
+              'config',
+              'cfg',
+              InputOption::VALUE_OPTIONAL,
+              'The modules where each table in the database resides',
           ],
           [
             'ignore',

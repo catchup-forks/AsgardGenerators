@@ -232,6 +232,8 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         }
     }
 
+    
+
     /**
      * Create required belongs to relationship.
      *
@@ -249,9 +251,11 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
 
             $belongsToFunctionName = $this->getSingularFunctionName($belongsToModel, $generatedFunctions);
 
+            $namespace = $this->getModelNamespace($rules[0]);
+
             $function = "
     public function $belongsToFunctionName() {".'
-        return $this->belongsTo'.'(\\'.self::$namespace."\\$belongsToModel::class, '$key1', '$key2');
+        return $this->belongsTo'.'(\\'.$namespace."\\$belongsToModel::class, '$key1', '$key2');
     }
 ";
             $functions .= $function;
@@ -277,9 +281,11 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
 
             $hasManyFunctionName = $this->getPluralFunctionName($hasManyModel, $generatedFunctions);
 
+            $namespace = $this->getModelNamespace($rules[0]);
+
             $function = "
     public function $hasManyFunctionName() {".'
-        return $this->hasMany'.'(\\'.self::$namespace."\\$hasManyModel::class, '$key1', '$key2');
+        return $this->hasMany'.'(\\'.$namespace."\\$hasManyModel::class, '$key1', '$key2');
     }
 ";
             $functions .= $function;
@@ -305,9 +311,11 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
 
             $hasOneFunctionName = $this->getSingularFunctionName($hasOneModel, $generatedFunctions);
 
+            $namespace = $this->getModelNamespace($rules[0]);
+
             $function = "
     public function $hasOneFunctionName() {".'
-        return $this->hasOne'.'(\\'.self::$namespace."\\$hasOneModel::class, '$key1', '$key2');
+        return $this->hasOne'.'(\\'.$namespace."\\$hasOneModel::class, '$key1', '$key2');
     }
 ";
             $functions .= $function;
@@ -334,9 +342,11 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
 
             $belongsToManyFunctionName = $this->getPluralFunctionName($belongsToManyModel, $generatedFunctions);
 
+            $namespace = $this->getModelNamespace($rules[0]);
+
             $function = "
     public function $belongsToManyFunctionName() {".'
-        return $this->belongsToMany'.'(\\'.self::$namespace."\\$belongsToManyModel::class, '$through', '$key1', '$key2');
+        return $this->belongsToMany'.'(\\'.$namespace."\\$belongsToManyModel::class, '$through', '$key1', '$key2');
     }
 ";
             $functions .= $function;
@@ -415,6 +425,10 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         $fillable = implode(', ', $rules['fillable']);
 
         $generatedFunctions = [];
+
+
+
+
 
         $belongsToFunctions = $this->generateBelongsToFunctions($belongsTo, $generatedFunctions);
         $belongsToManyFunctions = $this->generateBelongsToManyFunctions($belongsToMany, $generatedFunctions);
@@ -537,15 +551,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      */
     protected function getNamespace()
     {
-        $ns = $this->options['namespace'];
-
-        if (empty($ns)) {
-            $ns = env('APP_NAME', 'App');
-        }
-
-        //convert forward slashes in the namespace to backslashes
-        $ns = str_replace('/', '\\', $ns);
-
+        $ns = parent::getNamespace();
         return $ns.'\\Entities';
     }
 

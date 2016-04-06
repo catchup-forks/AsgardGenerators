@@ -106,6 +106,20 @@ abstract class BaseGenerator
         return $ns;
     }
 
+    protected function getModelNamespace($modelTable) {
+
+        $module = $this->options['config'][$modelTable];
+
+        $namespace = $this->getNamespace();
+        $nsSplit = explode("\\", $namespace);
+        $nsLength = count($nsSplit);
+
+        $nsSplit[$nsLength-2] = ucfirst($module);
+        $moduleNamespace = implode("\\", $nsSplit);
+
+        return $moduleNamespace;
+    }
+
     /**
      * Create an entity name for the given table.
      *
@@ -175,4 +189,6 @@ abstract class BaseGenerator
 
         return '['.implode(',', $array).']';
     }
+
+
 }
