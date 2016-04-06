@@ -247,7 +247,11 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      */
     private function translationFieldsOnly($columns, $translationColumns)
     {
-        $translationColumns['columns'] = array_except($translationColumns['columns'], array_keys($columns['columns']));
+        if(isset($translationColumns['columns']) && isset($columns['columns'])) {
+            $translationColumns['columns'] = array_except($translationColumns['columns'], array_keys($columns['columns']));
+        } else {
+            $translationColumns['columns'] = [];
+        }
 
         return $translationColumns;
     }
