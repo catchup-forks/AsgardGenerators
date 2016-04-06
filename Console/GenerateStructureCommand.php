@@ -222,8 +222,6 @@ class GenerateStructureCommand extends Command
                 rename($oldPath, $capitalizedPath);
             }
         }
-
-        die($modulePath);
     }
 
     /**
