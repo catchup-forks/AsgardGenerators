@@ -161,6 +161,8 @@ class GenerateStructureCommand extends Command
         // or fail (stop execution)
         $this->module = \Module::findOrFail($this->argument('module'));
 
+        $this->capitalizeServiceProviderFilenames();
+
         // initialize the options with their default values
         $this->initOptions();
 
@@ -198,6 +200,30 @@ class GenerateStructureCommand extends Command
                 $generator->execute();
             }
         }
+
+
+    }
+
+    /**
+     * Ensures all Service Provider filenames start with a capital letter
+     */
+    private function capitalizeServiceProviderFilenames() {
+        $modulePath = $this->module->getPath();
+        $serviceProviderPath = $modulePath . '/Providers';
+
+        $fileNames = scandir($serviceProviderPath);
+
+        foreach($fileNames as $fileName) {
+            if(ends_with($fileName, '.php')) {
+                $capitalized = ucfirst($fileName);
+
+                $oldPath = $serviceProviderPath . '/' . $fileName;
+                $capitalizedPath = $serviceProviderPath . '/' . $capitalized;
+                rename($oldPath, $capitalizedPath);
+            }
+        }
+
+        die($modulePath);
     }
 
     /**
