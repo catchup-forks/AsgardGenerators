@@ -18,6 +18,8 @@ class $CLASS_NAME$Controller extends AdminBaseController
     {
         parent::__construct();
 
+        $RELATIONSHIPS$
+
         $this->$LOWERCASE_CLASS_NAME$ = $$LOWERCASE_CLASS_NAME$;
     }
 
@@ -40,8 +42,6 @@ class $CLASS_NAME$Controller extends AdminBaseController
      */
     public function create($CLASS_NAME$ $$LOWERCASE_CLASS_NAME$)
     {
-        $RELATIONSHIPS$
-
         $variables = [
             $VARIABLES$
             '$LOWERCASE_CLASS_NAME$' => $$LOWERCASE_CLASS_NAME$,
@@ -73,8 +73,6 @@ class $CLASS_NAME$Controller extends AdminBaseController
      */
     public function edit($CLASS_NAME$ $$LOWERCASE_CLASS_NAME$)
     {
-        $RELATIONSHIPS$
-
         $variables = [
             '$LOWERCASE_CLASS_NAME$' => $$LOWERCASE_CLASS_NAME$,
             $VARIABLES$

@@ -156,7 +156,8 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     private function createRelationshipsData($table)
     {
         // init the required values
-        $relationship_data = '';
+        $repositories = [];
+        $allRelationshipData = [];
         $variables = [];
 
         $module = $this->module->getStudlyName();
@@ -180,10 +181,10 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
                             $plurar = str_plural($single);
                             $plurar_lowercase = camel_case($plurar);
 
-                            $relationship_data .= "\${$plurar_lowercase}_repository = app(\\Modules\\{$module}\\Repositories\\{$single}Repository::class);\n        ";
-                            $relationship_data .= "\${$plurar_lowercase} = \${$plurar_lowercase}_repository->all();\n        ";
+                            $repositories[] = '$this->' . "{$plurar_lowercase}_repository = app(\\Modules\\{$module}\\Repositories\\{$single}Repository::class);";
+                            $allRelationshipData[] = '$this->' . "{$plurar_lowercase} = \$this->{$plurar_lowercase}_repository->all();";
 
-                            $variables[] = $plurar_lowercase;
+                            $variables[$plurar_lowercase] = '$this->' . $plurar_lowercase;
                         }
                     }
                     break;
@@ -193,13 +194,17 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         // create the variables line
-        $variables = array_map(function ($item) {
-            return "'$item' => \${$item}";
-        }, $variables);
+        $vars = [];
+        foreach($variables as $key => $val) {
+            $vars[] = "'$key' => $val";
+        }
+
+        $relationship_data = array_merge($repositories, $allRelationshipData);
+        $relationship_data = implode("\n        ", $relationship_data);
 
         return [
             $relationship_data,
-            implode(",\n            ", $variables),
+            implode(",\n            ", $vars),
         ];
     }
 
