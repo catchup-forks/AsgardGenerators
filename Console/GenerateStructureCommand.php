@@ -148,6 +148,7 @@ class GenerateStructureCommand extends Command
           'config' => $this->getOption('config', false),
         ];
 
+        $options['config_location'] = $options['config'];
         $options['config'] = $this->parseConfig($options['config']);
 
         $this->options = $options;
@@ -256,6 +257,21 @@ class GenerateStructureCommand extends Command
         // if so return the tables
         if ($this->tables) {
             return $this->tables;
+        }
+
+
+        //if we provided an options config, grab all the tables out of the module we're generating
+        if($this->options['config_location']) {
+            $loc = $this->options['config_location'];
+            $cfg = \Config::get($loc);
+
+            $module = $this->module->name;
+            if(!isset($cfg[$module])) {
+                throw new \Exception("Could not find $module in $loc config");
+            }
+
+            $tables = $cfg[$module];
+            return $tables;
         }
 
         // read the table argument
