@@ -108,16 +108,23 @@ abstract class BaseGenerator
 
     protected function getModelNamespace($modelTable) {
 
-        $module = $this->options['config'][$modelTable];
+        try {
+            $module = $this->options['config'][$modelTable];
 
-        $namespace = $this->getNamespace();
-        $nsSplit = explode("\\", $namespace);
-        $nsLength = count($nsSplit);
+            $namespace = $this->getNamespace();
+            $nsSplit = explode("\\", $namespace);
+            $nsLength = count($nsSplit);
 
-        $nsSplit[$nsLength-2] = ucfirst($module);
-        $moduleNamespace = implode("\\", $nsSplit);
+            $nsSplit[$nsLength-2] = ucfirst($module);
+            $moduleNamespace = implode("\\", $nsSplit);
 
-        return $moduleNamespace;
+            return $moduleNamespace;
+        } catch(\Exception $e) {
+            var_dump($this->options['config']);
+            echo("Failed to get model namespace for table $modelTable\n");
+            die($e->getMessage());
+        }
+
     }
 
     /**
