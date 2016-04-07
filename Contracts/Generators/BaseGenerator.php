@@ -119,7 +119,7 @@ abstract class BaseGenerator
 
             //the users table is a special case, we always use the sentinel model...
             if($modelTable === 'users') {
-                $nsSplit[$nsLength-1] = 'Sentinel\\' . $nsSplit[$nsLength-1];
+                $nsSplit[$nsLength-1] = $nsSplit[$nsLength-1] . "\\Sentinel";
             }
 
             $moduleNamespace = implode("\\", $nsSplit);
