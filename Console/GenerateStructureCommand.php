@@ -241,9 +241,19 @@ class GenerateStructureCommand extends Command
 
                 $oldPath = $serviceProviderPath . '/' . $fileName;
                 $capitalizedPath = $serviceProviderPath . '/' . $capitalized;
-                rename($oldPath, $capitalizedPath);
+
+                echo("Renaming $oldPath to $capitalizedPath");
+
+                //rename, copy, unlink approach because of quirks otherwise
+                rename($oldPath, $capitalizedPath . 'a');
+                copy($capitalizedPath . 'a', $capitalizedPath);
+                unlink($capitalizedPath . 'a');
+
+                echo("\n");
             }
         }
+
+        //dd(compact('x', 'y'));
     }
 
     /**
