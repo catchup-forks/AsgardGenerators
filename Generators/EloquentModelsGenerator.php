@@ -227,6 +227,9 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
             } catch (\Exception $e) {
                 echo "\nFailed to generate model for table $table\n";
 
+                echo($e->getFile());
+                dd($e->getLine());
+
                 return;
             }
         }
