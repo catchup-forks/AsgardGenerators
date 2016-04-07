@@ -116,6 +116,12 @@ abstract class BaseGenerator
             $nsLength = count($nsSplit);
 
             $nsSplit[$nsLength-2] = ucfirst($module);
+
+            //the users table is a special case, we always use the sentinel model...
+            if($modelTable === 'users') {
+                $nsSplit[$nsLength-1] = 'Sentinel\\' . $nsSplit[$nsLength-1];
+            }
+
             $moduleNamespace = implode("\\", $nsSplit);
 
             return $moduleNamespace;
