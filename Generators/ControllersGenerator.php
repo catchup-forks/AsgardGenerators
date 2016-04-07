@@ -355,7 +355,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         $module = $this->module->getLowerName();
 
-        $data = "\$menu->group('{$module}', function (Group \$group) {";
+        $data = "\$menu->group('{$module}', function (Group \$group) {\n";
 
         // replace the keyed values with their actual value
         foreach ($this->generated as $entity) {
@@ -373,7 +373,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         // add a replacement pointer to the end of the file to ensure further changes
-        $data .= "\n});\n\nreturn \$menu; \n";
+        $data .= "\n        });\n\n        return \$menu; \n";
 
         // write the file
         $file = $this->module->getPath() . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR,
