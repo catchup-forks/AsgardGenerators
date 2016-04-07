@@ -183,8 +183,6 @@ class GenerateStructureCommand extends Command
         // or fail (stop execution)
         $this->module = \Module::findOrFail($this->argument('module'));
 
-        $this->capitalizeServiceProviderFilenames();
-
         // initialize the options with their default values
         $this->initOptions();
 
@@ -224,6 +222,8 @@ class GenerateStructureCommand extends Command
         }
 
 
+
+        $this->capitalizeServiceProviderFilenames();
     }
 
     /**
