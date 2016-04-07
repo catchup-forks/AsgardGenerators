@@ -270,7 +270,10 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
 
         foreach (array_keys($columns['columns']) as $column) {
             if($this->isValidHeaderColumn($column)) {
+                //capitalize
                 $col = ucfirst($column);
+                //underscores to spaces
+                $col = str_replace("_", " ", $col);
                 $titles[] = "<th>$col</th>";
             }
         }
