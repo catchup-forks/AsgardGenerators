@@ -373,7 +373,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         }
 
         // add a replacement pointer to the end of the file to ensure further changes
-        $data .= "\n        });\n\n        return \$menu; \n";
+        $data .= "\n});\n\nreturn \$menu; \n";
 
         // write the file
         $file = $this->module->getPath() . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR,
@@ -401,8 +401,9 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         // @todo: constructor inject the role repository?
         $roleRepository = app(\Modules\User\Repositories\RoleRepository::class);
 
-        $role = $roleRepository->findByName('admin');
+        $role = $roleRepository->all()->where('slug', 'admin')->first();
 
+        //$role = $roleRepository->findBySlug('admin');
         if (!$role) {
             throw new ModelNotFoundException("Admin role not found.");
         }
