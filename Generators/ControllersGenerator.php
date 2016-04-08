@@ -183,10 +183,11 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
                             $relatedModule = $this->options['config'][$row[0]];
 
-                            $repositories[] = '$this->' . "{$plurar_lowercase}_repository = app(\\Modules\\{$relatedModule}\\Repositories\\{$single}Repository::class);";
-                            $allRelationshipData[] = '$this->' . "{$plurar_lowercase} = \$this->{$plurar_lowercase}_repository->all();";
+                            $repositories[] = '$this->' . "{$plurar_lowercase} = app(\\Modules\\{$relatedModule}\\Repositories\\{$single}Repository::class);";
+                            //$allRelationshipData[] = '$this->' . "{$plurar_lowercase} = \$this->{$plurar_lowercase}_repository->all();";
 
-                            $variables[$plurar_lowercase] = '$this->' . $plurar_lowercase;
+                            //$variables[$plurar_lowercase] = '$this->' . $plurar_lowercase;
+                            $variables[$plurar_lowercase] = "\$this->{$plurar_lowercase}->all()";
                         }
                     }
                     break;
@@ -201,13 +202,14 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
             $vars[] = "'$key' => $val";
         }
 
-        $relationship_data = array_merge($repositories, ["\n"], $allRelationshipData);
+        $relationship_data = $repositories;//array_merge($repositories, ["\n"], $allRelationshipData);
         $relationship_data = implode("\n        ", $relationship_data);
 
-        return [
-            $relationship_data,
-            implode(",\n            ", $vars),
+        $data = [
+            $relationship_data, //$RELATIONSHIPS$
+            implode(",\n            ", $vars), //$VARIABLES$
         ];
+        return $data;
     }
 
     /**
