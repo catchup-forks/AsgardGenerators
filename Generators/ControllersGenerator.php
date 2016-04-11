@@ -405,9 +405,10 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         $role = $roleRepository->all()->where('slug', 'admin')->first();
 
-        //$role = $roleRepository->findBySlug('admin');
         if (!$role) {
-            throw new ModelNotFoundException("Admin role not found.");
+            // the admin role was not found
+            // don't do anything
+            return;
         }
 
         $rolePermissions = $role->permissions;
