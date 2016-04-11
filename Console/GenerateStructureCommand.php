@@ -162,7 +162,7 @@ class GenerateStructureCommand extends Command
         foreach($cfg as $moduleName => $tables) {
             foreach($tables as $table) {
                 if(isset($parsed[$table])) {
-                    throw new Exception("Config contains multiple entries for table $table");
+                    throw new \Exception("Config contains multiple entries for table $table");
                 }
 
                 $parsed[$table] = $moduleName;
@@ -204,6 +204,7 @@ class GenerateStructureCommand extends Command
           'controllers' => ControllersGenerator::class,
           'translations' => TranslationsGenerator::class,
         ];
+
 
         foreach ($generators as $name => $class) {
             if ($this->shouldGenerate($name)) {
