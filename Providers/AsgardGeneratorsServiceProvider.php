@@ -4,6 +4,9 @@ namespace Modules\Asgardgenerators\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Modules\Asgardgenerators\Console\GenerateStructureCommand;
+use User11001\EloquentModelGenerator\EloquentModelGeneratorProvider;
+use Way\Generators\GeneratorsServiceProvider;
+use Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider;
 
 class AsgardGeneratorsServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,11 @@ class AsgardGeneratorsServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        // register the required service providers
+        $this->app->register(GeneratorsServiceProvider::class);
+        $this->app->register(MigrationsGeneratorServiceProvider::class);
+        $this->app->register(EloquentModelGeneratorProvider::class);
+
         $this->registerBindings();
         $this->registerViews();
         $this->registerGenerateStructureCommand();

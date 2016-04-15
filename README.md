@@ -42,14 +42,6 @@ You also need to point to the fork of the way/generators repo. See [Xethron/migr
 
 Next, run `composer update`
 
-Next, add the following service providers to your `config/app.php`
-
-```
-Way\Generators\GeneratorsServiceProvider::class,
-Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class,
-User11001\EloquentModelGenerator\EloquentModelGeneratorProvider::class,
-```
-
 ### Todos
 
  - Add tests
