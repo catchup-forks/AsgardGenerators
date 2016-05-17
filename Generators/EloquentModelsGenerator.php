@@ -451,7 +451,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         // empty string
         $traits = '';
 
-        if($this->tables->hasColumn($table, 'deleted_at')) {
+        if ($this->tables->hasColumn($table, 'deleted_at')) {
             $this->addDeletedAdTrait($traits, $table);
         }
 
@@ -600,7 +600,8 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         return $translatable;
     }
 
-    private function addDeletedAdTrait(&$traits, $table) {
+    private function addDeletedAdTrait(&$traits, $table)
+    {
         $traits .= "use \\Illuminate\\Database\\Eloquent\\SoftDeletes;\n";
     }
 

@@ -106,8 +106,8 @@ abstract class BaseGenerator
         return $ns;
     }
 
-    protected function getModelNamespace($modelTable) {
-
+    protected function getModelNamespace($modelTable)
+    {
         try {
             $module = $this->options['config'][$modelTable];
 
@@ -118,19 +118,18 @@ abstract class BaseGenerator
             $nsSplit[$nsLength-2] = ucfirst($module);
 
             //the users table is a special case, we always use the sentinel model...
-            if($modelTable === 'users') {
+            if ($modelTable === 'users') {
                 $nsSplit[$nsLength-1] = $nsSplit[$nsLength-1] . "\\Sentinel";
             }
 
             $moduleNamespace = implode("\\", $nsSplit);
 
             return $moduleNamespace;
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             var_dump($this->options['config']);
             echo("Failed to get model namespace for table $modelTable\n");
             die($e->getMessage());
         }
-
     }
 
     /**
@@ -202,6 +201,4 @@ abstract class BaseGenerator
 
         return '['.implode(',', $array).']';
     }
-
-
 }

@@ -198,7 +198,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
 
         // create the variables line
         $vars = [];
-        foreach($variables as $key => $val) {
+        foreach ($variables as $key => $val) {
             $vars[] = "'$key' => $val";
         }
 

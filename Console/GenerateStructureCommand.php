@@ -155,13 +155,14 @@ class GenerateStructureCommand extends Command
         return $this;
     }
 
-    private function parseConfig($filename) {
+    private function parseConfig($filename)
+    {
         $cfg = \Config::get($filename);
 
         $parsed = [];
-        foreach($cfg as $moduleName => $tables) {
-            foreach($tables as $table) {
-                if(isset($parsed[$table])) {
+        foreach ($cfg as $moduleName => $tables) {
+            foreach ($tables as $table) {
+                if (isset($parsed[$table])) {
                     throw new \Exception("Config contains multiple entries for table $table");
                 }
 
@@ -230,14 +231,15 @@ class GenerateStructureCommand extends Command
     /**
      * Ensures all Service Provider filenames start with a capital letter
      */
-    private function capitalizeServiceProviderFilenames() {
+    private function capitalizeServiceProviderFilenames()
+    {
         $modulePath = $this->module->getPath();
         $serviceProviderPath = $modulePath . '/Providers';
 
         $fileNames = scandir($serviceProviderPath);
 
-        foreach($fileNames as $fileName) {
-            if(ends_with($fileName, '.php')) {
+        foreach ($fileNames as $fileName) {
+            if (ends_with($fileName, '.php')) {
                 $capitalized = ucfirst($fileName);
 
                 $oldPath = $serviceProviderPath . '/' . $fileName;
@@ -272,12 +274,12 @@ class GenerateStructureCommand extends Command
 
 
         //if we provided an options config, grab all the tables out of the module we're generating
-        if($this->options['config_location']) {
+        if ($this->options['config_location']) {
             $loc = $this->options['config_location'];
             $cfg = \Config::get($loc);
 
             $module = $this->module->name;
-            if(!isset($cfg[$module])) {
+            if (!isset($cfg[$module])) {
                 throw new \Exception("Could not find $module in $loc config");
             }
 

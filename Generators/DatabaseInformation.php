@@ -81,7 +81,8 @@ class DatabaseInformation
         ];
     }
 
-    public function hasColumn($table, $column) {
+    public function hasColumn($table, $column)
+    {
         $info = $this->getTableInformation($table);
         $cols = $info['columns'];
 

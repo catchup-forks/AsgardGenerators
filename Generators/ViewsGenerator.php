@@ -247,7 +247,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      */
     private function translationFieldsOnly($columns, $translationColumns)
     {
-        if(isset($translationColumns['columns']) && isset($columns['columns'])) {
+        if (isset($translationColumns['columns']) && isset($columns['columns'])) {
             $translationColumns['columns'] = array_except($translationColumns['columns'], array_keys($columns['columns']));
         } else {
             $translationColumns['columns'] = [];
@@ -269,7 +269,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $titles = [];
 
         foreach (array_keys($columns['columns']) as $column) {
-            if($this->isValidHeaderColumn($column)) {
+            if ($this->isValidHeaderColumn($column)) {
                 //capitalize
                 $col = ucfirst($column);
                 //underscores to spaces
@@ -297,7 +297,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $model = $this->createDefaultModelNameFromTable($table);
 
         foreach ($columns['columns'] as $column => $datatype) {
-            if($this->isValidHeaderColumn($column)) {
+            if ($this->isValidHeaderColumn($column)) {
                 $line[] = "<td>{{ \${$model}->{$column} }}</td>";
             }
         }
@@ -305,9 +305,10 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         return implode("\n", $line);
     }
 
-    private function isValidHeaderColumn($column) {
-        if(!ends_with($column, '_id')) {
-            if(!in_array($column, ['created_at', 'updated_at', 'deleted_at'])) {
+    private function isValidHeaderColumn($column)
+    {
+        if (!ends_with($column, '_id')) {
+            if (!in_array($column, ['created_at', 'updated_at', 'deleted_at'])) {
                 return true;
             }
         }
@@ -354,8 +355,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $table,
         $columns,
         $is_translation = false
-    )
-    {
+    ) {
         $stub = [];
 
         $module = 'asgardgenerators';
@@ -448,8 +448,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $field_type,
         $module = null,
         $is_translation = false
-    )
-    {
+    ) {
         if (is_null($module)) {
             $module = 'asgardgenerators';
         }
@@ -515,8 +514,7 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         $relationship,
         $module = null,
         $is_translation = false
-    )
-    {
+    ) {
         $classes = '';
 
         if (is_null($module)) {
@@ -604,11 +602,12 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
         }
     }
 
-    private function getRelatedModelColumns($table) {
+    private function getRelatedModelColumns($table)
+    {
         $cols = \Schema::getColumnListing($table);
 
         $translationTable = $this->tables->getTranslationTable($table);
-        if($translationTable) {
+        if ($translationTable) {
             $translationCols = \Schema::getColumnListing($translationTable);
 
             $cols = array_merge($translationCols, $cols);

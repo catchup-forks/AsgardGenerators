@@ -5,7 +5,7 @@ namespace Modules\Asgardgenerators\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
-class AsgardGeneratorsDatabaseSeeder extends Seeder
+class AsgardgeneratorsDatabaseSeeder extends Seeder
 {
     /**
      * Run the database seeds.
