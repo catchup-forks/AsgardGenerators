@@ -1,6 +1,6 @@
 <div class="col-xs-12">
     <div class="checkbox">
-        @if(isset($is_translation) && $is_translation === 1)
+        @if(isset($is_translation) && boolval($is_translation) === true)
             <input type="hidden" name="{{ $lang }}[{{ $name }}]" value="0">
 
             <label>
@@ -8,7 +8,7 @@
                         type="checkbox"
                         name="{{ $lang }}[{{ $name }}]"
                         value="{{ $value }}"
-                        @if($checked === true)checked="checked"@endif
+                        @if(boolval($checked) === true)checked="checked"@endif
                 > {{ $title }}
             </label>
         @else
@@ -18,7 +18,7 @@
                         type="checkbox"
                         name="{{ $name }}"
                         value="{{ $value }}"
-                @if($checked === true)checked="checked"@endif
+                @if(boolval($checked) === true)checked="checked"@endif
                 > {{ $title }}
             </label>
 
