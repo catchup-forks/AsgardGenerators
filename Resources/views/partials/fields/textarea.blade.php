@@ -2,15 +2,9 @@
     <?php $classes = isset($classes) ? $classes : 'form-control'; ?>
     @if(isset($is_translation) && $is_translation === 1)
         {!! Form::label("{$lang}[{$name}]", $title) !!}
-        {!! Form::textarea("{$lang}[{$name}]",
-            Input::old("{$lang}[{$name}]", $value),
-            ['class' => $classes, 'placeholder' => $placeholder ]
-            ) !!}
+        <textarea class="{{$classes}}" name="{{$lang}}[{{$name}}]">{{Input::old("{$lang}[{$name}]", $value)}}</textarea>
     @else
         {!! Form::label($name, $title) !!}
-        {!! Form::textarea($name, $value, [
-            'class' => $classes,
-            'placeholder' => $placeholder,
-        ]) !!}
+        <textarea class="{{$classes}}" name="{{$name}}">{{Input::old("$name", $value)}}</textarea>
     @endif
 </p>
