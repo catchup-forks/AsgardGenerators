@@ -12,7 +12,9 @@ $classes = isset($classes) ? $classes : '';
             'class' => "form-control $classes"
         ]) !!}
     @else
-        {!! Form::label($name, $title) !!}
+        @if(!empty($title))
+            {!! Form::label($name, $title) !!}
+        @endif
         {!! Form::select($name, $options, $selected, [
          'class' => "form-control $classes"
      ]) !!}
