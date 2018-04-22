@@ -5,7 +5,7 @@ namespace Modules\Asgardgenerators\Generators;
 use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
 use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
 use Modules\Asgardgenerators\Exceptions\DatabaseInformationException;
-use Pingpong\Modules\Module;
+use Nwidart\Modules\Module;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Generator;
@@ -220,11 +220,16 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
         //0. set namespace
         self::$namespace = $this->getNamespace();
 
+
+
         foreach ($eloquentRules as $table => $rules) {
             try {
                 $this->generateEloquentModel($destinationFolder, $table,
                   $rules);
             } catch (\Exception $e) {
+
+dd($e);
+
                 echo "\nFailed to generate model for table $table\n";
 
                 return;
@@ -498,8 +503,7 @@ class EloquentModelsGenerator extends BaseGenerator implements GeneratorInterfac
      */
     public function getTemplatePath()
     {
-        return $this->getOption('templatePath',
-          config('asgard.asgardgenerators.config.models.template'));
+        return base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'model.txt';
     }
 
     /**

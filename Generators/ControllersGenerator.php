@@ -51,14 +51,10 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
      */
     public function getTemplatePath()
     {
-        $path = $this->getOption('templatePath', null);
 
-        if (is_null($path)) {
             $path = config('asgard.asgardgenerators.config.controllers.template',
-                '');
-        } else {
-            $path .= 'admin-controller.txt';
-        }
+              base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'admin-controller.txt');
+
 
         return $path;
     }
@@ -246,7 +242,7 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
         $data .= "\n// append\n";
 
         // write the file
-        $file = $this->module->getPath() . DIRECTORY_SEPARATOR . 'Http' . DIRECTORY_SEPARATOR . 'backendRoutes.php';
+        $file = $this->module->getPath() . DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'backendRoutes.php';
 
         $content = $this->filesystem->get($file);
         $content = str_replace('// append', $data, $content);
@@ -420,20 +416,20 @@ class ControllersGenerator extends BaseGenerator implements GeneratorInterface
     private function flatPermissionList()
     {
         // @todo: constructor inject the permission manager?
-        $permissions = config("asgard.{$this->module->getLowerName()}.permissions");
+        //$permissions = config("asgard.{$this->module->getLowerName()}.permissions");
 
         $list = [];
 
         $glue = ".";
 
-        foreach ($permissions as $permissionGroup => $permissionGroupValue) {
+        /*foreach ($permissions as $permissionGroup => $permissionGroupValue) {
             foreach ($permissionGroupValue as $permission) {
                 $list[] = implode($glue, [
                     $permissionGroup,
                     $permission
                 ]);
             }
-        }
+        }*/
 
         return $list;
     }

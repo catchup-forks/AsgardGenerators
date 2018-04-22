@@ -4,7 +4,7 @@ namespace Modules\Asgardgenerators\Contracts\Generators;
 
 use Modules\Asgardgenerators\Generators\DatabaseInformation;
 use Illuminate\Config\Repository as Config;
-use Pingpong\Modules\Module;
+use Nwidart\Modules\Module;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Generator;

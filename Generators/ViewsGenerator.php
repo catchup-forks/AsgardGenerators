@@ -69,14 +69,10 @@ class ViewsGenerator extends BaseGenerator implements GeneratorInterface
      */
     public function getTemplatePath()
     {
-        $path = $this->getOption('templatePath', null);
 
-        if (is_null($path)) {
             $path = config('asgard.asgardgenerators.config.views.template',
-                '');
-        } else {
-            $path .= 'views';
-        }
+              base_path('Modules/Asgardgenerators/templates/views'));
+
 
         return $path;
     }

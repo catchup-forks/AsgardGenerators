@@ -4,7 +4,7 @@ namespace Modules\Asgardgenerators\Generators;
 
 use Modules\Asgardgenerators\Contracts\Generators\BaseGenerator;
 use Modules\Asgardgenerators\Contracts\Generators\GeneratorInterface;
-use Pingpong\Modules\Module;
+use Nwidart\Modules\Module;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Generator;
@@ -100,8 +100,11 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
             if ($this->fields) {
                 $filePathToGenerate = $this->getFileGenerationPath();
 
+                //dd($this->getTemplateData());
                 $this->generator->make(
-                  $this->getTemplatePath(),
+                  //$this->getFileGenerationPath(),
+                  //$this->getTemplatePath(),
+base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'migration.txt',
                   $this->getTemplateData(),
                   $filePathToGenerate
                 );
@@ -162,11 +165,10 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
      */
     public function getTemplatePath()
     {
-        if (!empty($this->options['templatePath'])) {
+        /*if (!empty($this->options['templatePath'])) {
             return $this->options['templatePath'];
-        }
-
-        return config('asgard.asgardgenerators.config.migration.template', '');
+        }*/
+        return config('asgard.asgardgenerators.config.migration.template', base_path('Modules/Asgardgenerators/templates'));
     }
 
     /**

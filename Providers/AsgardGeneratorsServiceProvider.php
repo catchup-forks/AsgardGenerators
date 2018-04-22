@@ -41,7 +41,7 @@ class AsgardGeneratorsServiceProvider extends ServiceProvider
      */
     private function registerGenerateStructureCommand()
     {
-        $this->app->bindShared('asgard.generate.structure', function ($app) {
+        $this->app->singleton('asgard.generate.structure', function ($app) {
             return new GenerateStructureCommand(
               $app->make('Way\Generators\Generator'),
               $app->make('Way\Generators\Filesystem\Filesystem'),

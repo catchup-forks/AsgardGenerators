@@ -12,7 +12,7 @@ use Modules\Asgardgenerators\Generators\EloquentModelsGenerator;
 use Modules\Asgardgenerators\Generators\RepositoryGenerator;
 use Modules\Asgardgenerators\Generators\TranslationsGenerator;
 use Modules\Asgardgenerators\Generators\ViewsGenerator;
-use Pingpong\Modules\Module;
+use Nwidart\Modules\Module;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Config\Repository as Config;
@@ -140,8 +140,7 @@ class GenerateStructureCommand extends Command
           'ignore' => $this->getOption('ignore', []),
           'path' => $this->getOption('path', ''),
           'templatePath' => $this->getOption('templatePath', ''),
-          'namespace' => $this->getOption('namespace',
-            $ns),
+          'namespace' => $this->getOption('namespace', $ns),
           'defaultIndexNames' => $this->getOption('defaultIndexNames', false),
           'defaultFKNames' => $this->getOption('defaultFKNames', false),
           'overwrite' => $this->getOption('overwrite', false),
@@ -155,7 +154,7 @@ class GenerateStructureCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
         // create a module object
         // or fail (stop execution)
@@ -180,7 +179,7 @@ class GenerateStructureCommand extends Command
           'repositories' => RepositoryGenerator::class,
           'views' => ViewsGenerator::class,
           'controllers' => ControllersGenerator::class,
-          'translations' => TranslationsGenerator::class,
+          //'translations' => TranslationsGenerator::class,
         ];
 
         foreach ($generators as $name => $class) {
