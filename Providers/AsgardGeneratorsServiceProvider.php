@@ -22,16 +22,29 @@ class AsgardGeneratorsServiceProvider extends ServiceProvider
         $this->registerBindings();
         $this->registerViews();
         $this->registerGenerateStructureCommand();
-
         $this->commands([
           'asgard.generate.structure',
         ]);
     }
 
-    public function boot()
+    /**
+     * Register bindings for this module.
+     */
+    private function registerBindings()
     {
-        $this->mergeConfigFrom(__DIR__.'/../Config/config.php', 'asgard.generators.config');
-        $this->publishes([__DIR__.'/../Config/config.php' => config_path('asgard.generators.config'.'.php')], 'config');
+        // add bindings
+    }
+
+    /**
+     * Register the views for publication.
+     */
+    private function registerViews()
+    {
+        $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'asgardgenerators');
+        $views = realpath(__DIR__ . '/../Resources/views');
+        $this->publishes([
+          $views => $this->app->basePath() . '/resources/views/vendor/asgardgenerators',
+        ]);
     }
 
     /**
@@ -52,25 +65,10 @@ class AsgardGeneratorsServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * Register the views for publication.
-     */
-    private function registerViews()
+    public function boot()
     {
-        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'asgardgenerators');
-
-        $views = realpath(__DIR__.'/../Resources/views');
-
-        $this->publishes([
-          $views => $this->app->basePath().'/resources/views/vendor/asgardgenerators',
-        ]);
-    }
-
-    /**
-     * Register bindings for this module.
-     */
-    private function registerBindings()
-    {
-        // add bindings
+        $this->mergeConfigFrom(__DIR__ . '/../Config/config.php', 'asgard.generators.config');
+        $this->publishes([__DIR__ . '/../Config/config.php' => config_path('asgard.generators.config' . '.php')],
+          'config');
     }
 }

@@ -2,24 +2,23 @@
 
 namespace Modules\Asgardgenerators\Console;
 
+use Illuminate\Config\Repository as Config;
 use Illuminate\Console\Command;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use Modules\Asgardgenerators\Exceptions\NothingToGenerateException;
 use Modules\Asgardgenerators\Generators\ControllersGenerator;
 use Modules\Asgardgenerators\Generators\DatabaseInformation;
-use Modules\Asgardgenerators\Generators\MigrationsGenerator;
 use Modules\Asgardgenerators\Generators\EloquentModelsGenerator;
+use Modules\Asgardgenerators\Generators\MigrationsGenerator;
 use Modules\Asgardgenerators\Generators\RepositoryGenerator;
-use Modules\Asgardgenerators\Generators\TranslationsGenerator;
 use Modules\Asgardgenerators\Generators\ViewsGenerator;
 use Nwidart\Modules\Module;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use Illuminate\Config\Repository as Config;
+use Symfony\Component\Console\Input\InputOption;
+use User11001\EloquentModelGenerator\Console\SchemaGenerator;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Generator;
-use User11001\EloquentModelGenerator\Console\SchemaGenerator;
 
 class GenerateStructureCommand extends Command
 {
@@ -103,11 +102,11 @@ class GenerateStructureCommand extends Command
     /**
      * Create a new command instance.
      *
-     * @param \Way\Generators\Generator                                    $generator
-     * @param \Way\Generators\Filesystem\Filesystem                        $filesystem
-     * @param \Way\Generators\Compilers\TemplateCompiler                   $compiler
+     * @param \Way\Generators\Generator $generator
+     * @param \Way\Generators\Filesystem\Filesystem $filesystem
+     * @param \Way\Generators\Compilers\TemplateCompiler $compiler
      * @param \Illuminate\Database\Migrations\MigrationRepositoryInterface $repository
-     * @param \Illuminate\Config\Repository                                $config
+     * @param \Illuminate\Config\Repository $config
      */
     public function __construct(
       Generator $generator,
@@ -121,32 +120,7 @@ class GenerateStructureCommand extends Command
         $this->compiler = $compiler;
         $this->repository = $repository;
         $this->config = $config;
-
         parent::__construct();
-    }
-
-    /**
-     * Initialize a list of given command options with their default values.
-     *
-     * @return $this
-     */
-    protected function initOptions()
-    {
-        $module = $this->module->getStudlyName();
-        $ns = "Modules\\{$module}";
-
-        $this->options = [
-          'connection' => $this->getOption('connection', null),
-          'ignore' => $this->getOption('ignore', []),
-          'path' => $this->getOption('path', ''),
-          'templatePath' => $this->getOption('templatePath', ''),
-          'namespace' => $this->getOption('namespace', $ns),
-          'defaultIndexNames' => $this->getOption('defaultIndexNames', false),
-          'defaultFKNames' => $this->getOption('defaultFKNames', false),
-          'overwrite' => $this->getOption('overwrite', false),
-        ];
-
-        return $this;
     }
 
     /**
@@ -159,19 +133,15 @@ class GenerateStructureCommand extends Command
         // create a module object
         // or fail (stop execution)
         $this->module = \Module::findOrFail($this->argument('module'));
-
         // initialize the options with their default values
         $this->initOptions();
-
         // create a schema generator
         $this->initSchemaGenerator();
-
         // create a new database information instance
         $this->databaseInformation = new DatabaseInformation(
           $this->schemaGenerator,
           $this->getTables()
         );
-
         // the available generators
         $generators = [
           'migrations' => MigrationsGenerator::class,
@@ -179,9 +149,8 @@ class GenerateStructureCommand extends Command
           'repositories' => RepositoryGenerator::class,
           'views' => ViewsGenerator::class,
           'controllers' => ControllersGenerator::class,
-          //'translations' => TranslationsGenerator::class,
+            //'translations' => TranslationsGenerator::class,
         ];
-
         foreach ($generators as $name => $class) {
             if ($this->shouldGenerate($name)) {
                 $generator = new $class(
@@ -193,10 +162,59 @@ class GenerateStructureCommand extends Command
                   $this->databaseInformation,
                   $this->options
                 );
-
                 $generator->execute();
             }
         }
+    }
+
+    /**
+     * Initialize a list of given command options with their default values.
+     *
+     * @return $this
+     */
+    protected function initOptions()
+    {
+        $module = $this->module->getStudlyName();
+        $ns = "Modules\\{$module}";
+        $this->options = [
+          'connection' => $this->getOption('connection', null),
+          'ignore' => $this->getOption('ignore', []),
+          'path' => $this->getOption('path', ''),
+          'templatePath' => $this->getOption('templatePath', ''),
+          'namespace' => $this->getOption('namespace', $ns),
+          'defaultIndexNames' => $this->getOption('defaultIndexNames', false),
+          'defaultFKNames' => $this->getOption('defaultFKNames', false),
+          'overwrite' => $this->getOption('overwrite', false),
+        ];
+        return $this;
+    }
+
+    /**
+     * Retrieve the value of an option or default value for the key.
+     *
+     * @param string $key
+     * @param null $default
+     */
+    private function getOption($key, $default = null)
+    {
+        return $this->option($key) ?: $default;
+    }
+
+    /**
+     * Initialize a schemaGenerator object.
+     *
+     * @return \User11001\EloquentModelGenerator\Console\SchemaGenerator
+     */
+    private function initSchemaGenerator()
+    {
+        if (!$this->schemaGenerator) {
+            $this->schemaGenerator = new SchemaGenerator(
+              $this->option('connection'),
+              $this->option('defaultIndexNames'),
+              $this->option('defaultFKNames')
+            );
+        }
+        return $this->schemaGenerator;
     }
 
     /**
@@ -211,16 +229,12 @@ class GenerateStructureCommand extends Command
         if ($this->tables) {
             return $this->tables;
         }
-
         // read the table argument
         // if table argument empty get list of all tables in db
         $this->initSchemaGenerator();
-
         $tables_in_db = $this->schemaGenerator->getTables();
-
         if ($this->option('tables')) {
             $tables = explode(',', $this->option('tables'));
-
             foreach ($tables as $index => $table) {
                 if (!in_array($table, $tables_in_db)) {
                     unset($tables[$index]);
@@ -229,14 +243,11 @@ class GenerateStructureCommand extends Command
         } else {
             $tables = $tables_in_db;
         }
-
         // return array of creatable tables
         $tables = $this->removeExcludedTables($tables);
-
         if (empty($tables)) {
             throw new NothingToGenerateException('There is nothing to generate.');
         }
-
         return $tables;
     }
 
@@ -251,7 +262,6 @@ class GenerateStructureCommand extends Command
     {
         $excludes = $this->getExcludedTables();
         $tables = array_diff($tables, $excludes);
-
         return $tables;
     }
 
@@ -266,8 +276,28 @@ class GenerateStructureCommand extends Command
         if (!empty($ignore)) {
             return array_merge($this->excludes, explode(',', $ignore));
         }
-
         return $this->excludes;
+    }
+
+    /**
+     * Check if the requested migration should be run or skipped.
+     *
+     * @param string $string
+     *
+     * @return bool
+     */
+    private function shouldGenerate($string)
+    {
+        $only_generate = $this->getOption('only', null);
+        // no restriction was provided
+        // generate everything
+        if (is_null($only_generate)) {
+            return true;
+        }
+        // because the input is a comma separated string force to an array
+        $only_generate = explode(',', $only_generate);
+        // check if the string is in the array
+        return in_array($string, $only_generate);
     }
 
     /**
@@ -357,58 +387,5 @@ class GenerateStructureCommand extends Command
             'Don\'t use db foreign key names for migrations',
           ],
         ];
-    }
-
-    /**
-     * Retrieve the value of an option or default value for the key.
-     *
-     * @param string $key
-     * @param null   $default
-     */
-    private function getOption($key, $default = null)
-    {
-        return $this->option($key) ?: $default;
-    }
-
-    /**
-     * Initialize a schemaGenerator object.
-     *
-     * @return \User11001\EloquentModelGenerator\Console\SchemaGenerator
-     */
-    private function initSchemaGenerator()
-    {
-        if (!$this->schemaGenerator) {
-            $this->schemaGenerator = new SchemaGenerator(
-              $this->option('connection'),
-              $this->option('defaultIndexNames'),
-              $this->option('defaultFKNames')
-            );
-        }
-
-        return $this->schemaGenerator;
-    }
-
-    /**
-     * Check if the requested migration should be run or skipped.
-     *
-     * @param string $string
-     *
-     * @return bool
-     */
-    private function shouldGenerate($string)
-    {
-        $only_generate = $this->getOption('only', null);
-
-        // no restriction was provided
-        // generate everything
-        if (is_null($only_generate)) {
-            return true;
-        }
-
-        // because the input is a comma separated string force to an array
-        $only_generate = explode(',', $only_generate);
-
-        // check if the string is in the array
-        return in_array($string, $only_generate);
     }
 }

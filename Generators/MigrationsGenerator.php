@@ -23,11 +23,11 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
     protected $schemaGenerator;
 
     /**
-     * @param \Way\Generators\Generator             $generator
+     * @param \Way\Generators\Generator $generator
      * @param \Way\Generators\Filesystem\Filesystem $filesystem
-     * @param \Illuminate\Config\Repository         $config
-     * @param DatabaseInformation                   $tables
-     * @param array                                 $options
+     * @param \Illuminate\Config\Repository $config
+     * @param DatabaseInformation $tables
+     * @param array $options
      */
     public function __construct(
       Module $module,
@@ -47,7 +47,6 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
           $tables,
           $options
         );
-
         $this->schemaGenerator = new SchemaGenerator(
           $this->options['connection'],
           $this->options['defaultIndexNames'],
@@ -63,10 +62,8 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
         echo "\nGenerating Migrations\n";
         $this->datePrefix = date('Y_m_d_His');
         $this->generate('create', $this->tables->getTables());
-
         $this->datePrefix = date('Y_m_d_His', strtotime('+1 second'));
         $this->generate('foreign_keys', $this->tables->getTables());
-
         $this->addToPublishList();
     }
 
@@ -74,7 +71,7 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
      * Generate the migration for the given tables.
      *
      * @param string $method
-     * @param array  $tables
+     * @param array $tables
      *
      * @throws \Xethron\MigrationsGenerator\MethodNotFoundException
      */
@@ -90,25 +87,21 @@ class MigrationsGenerator extends BaseGenerator implements GeneratorInterface
         } else {
             throw new MethodNotFoundException($method);
         }
-
         foreach ($tables as $table) {
-            $this->migrationName = $prefix.'_'.$table.'_table';
+            $this->migrationName = $prefix . '_' . $table . '_table';
             $this->method = $method;
             $this->table = $table;
             $this->fields = $this->schemaGenerator->{$function}($table);
-
             if ($this->fields) {
                 $filePathToGenerate = $this->getFileGenerationPath();
-
                 //dd($this->getTemplateData());
                 $this->generator->make(
-                  //$this->getFileGenerationPath(),
-                  //$this->getTemplatePath(),
-base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'migration.txt',
+                //$this->getFileGenerationPath(),
+                //$this->getTemplatePath(),
+                  base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'migration.txt',
                   $this->getTemplateData(),
                   $filePathToGenerate
                 );
-
                 echo "File {$filePathToGenerate} generated.\n";
             }
         }
@@ -122,15 +115,23 @@ base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'migrati
     public function getFileGenerationPath()
     {
         // retrieve the generation path from the path option if exists
-        $path = $this->module->getPath().DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR,
+        $path = $this->module->getPath() . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR,
             [
               'Database',
               'Migrations',
             ]);
-
-        $fileName = $this->getDatePrefix().'_'.$this->migrationName.'.php';
-
+        $fileName = $this->getDatePrefix() . '_' . $this->migrationName . '.php';
         return "{$path}/{$fileName}";
+    }
+
+    /**
+     * Get the date prefix for the migration.
+     *
+     * @return string
+     */
+    protected function getDatePrefix()
+    {
+        return $this->datePrefix;
     }
 
     /**
@@ -150,12 +151,36 @@ base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'migrati
             $down = (new RemoveForeignKeysFromTable($this->filesystem,
               $this->compiler))->run($this->fields, $this->table);
         }
-
         return [
           'CLASS' => ucwords(camel_case($this->migrationName)),
           'UP' => $up,
           'DOWN' => $down,
         ];
+    }
+
+    /**
+     * Ensure the database migrations are being publishable.
+     *
+     * @throws \Way\Generators\Filesystem\FileAlreadyExists
+     * @throws \Way\Generators\Filesystem\FileNotFound
+     */
+    private function addToPublishList()
+    {
+        $replace = '// add bindings';
+        $data = "\$migrations = realpath(__DIR__.'/../Database/Migrations');\n\n"
+          . "\$this->publishes([
+          \$migrations => \$this->app->databasePath().'/migrations',
+        ], 'migrations');\n\n";
+        // add a replacement pointer to the end of the file to ensure further changes
+        $data .= "\n$replace\n";
+        // write the file
+        $file = $this->module->getPath() . DIRECTORY_SEPARATOR . 'Providers' . DIRECTORY_SEPARATOR . $this->module->getName() . 'ServiceProvider.php';
+        $content = $this->filesystem->get($file);
+        $content = str_replace("$replace", $data, $content);
+        if ($this->filesystem->exists($file)) {
+            unlink($file);
+        }
+        $this->filesystem->make($file, $content);
     }
 
     /**
@@ -168,47 +193,7 @@ base_path('Modules/Asgardgenerators/templates') . DIRECTORY_SEPARATOR . 'migrati
         /*if (!empty($this->options['templatePath'])) {
             return $this->options['templatePath'];
         }*/
-        return config('asgard.asgardgenerators.config.migration.template', base_path('Modules/Asgardgenerators/templates'));
-    }
-
-    /**
-     * Get the date prefix for the migration.
-     *
-     * @return string
-     */
-    protected function getDatePrefix()
-    {
-        return $this->datePrefix;
-    }
-
-    /**
-     * Ensure the database migrations are being publishable.
-     *
-     * @throws \Way\Generators\Filesystem\FileAlreadyExists
-     * @throws \Way\Generators\Filesystem\FileNotFound
-     */
-    private function addToPublishList()
-    {
-        $replace = '// add bindings';
-
-        $data = "\$migrations = realpath(__DIR__.'/../Database/Migrations');\n\n"
-          ."\$this->publishes([
-          \$migrations => \$this->app->databasePath().'/migrations',
-        ], 'migrations');\n\n";
-
-        // add a replacement pointer to the end of the file to ensure further changes
-        $data .= "\n$replace\n";
-
-        // write the file
-        $file = $this->module->getPath().DIRECTORY_SEPARATOR.'Providers'.DIRECTORY_SEPARATOR.$this->module->getName().'ServiceProvider.php';
-
-        $content = $this->filesystem->get($file);
-        $content = str_replace("$replace", $data, $content);
-
-        if ($this->filesystem->exists($file)) {
-            unlink($file);
-        }
-
-        $this->filesystem->make($file, $content);
+        return config('asgard.asgardgenerators.config.migration.template',
+          base_path('Modules/Asgardgenerators/templates'));
     }
 }

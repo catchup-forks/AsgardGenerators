@@ -23,41 +23,6 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
-     * Full path to the required template file.
-     *
-     * @return string
-     */
-    public function getTemplatePath()
-    {
-        $path = config('asgard.asgardgenerators.config.repositories.template',
-          base_path('Modules/Asgardgenerators/templates'));
-        //repository-interface.txt
-        return $path;
-    }
-
-    /**
-     * Create the data used in the template file.
-     *
-     * @return array
-     */
-    public function getTemplateData()
-    {
-        return [
-        ];
-    }
-
-    /**
-     * Full path to the output file.
-     *
-     * @return string
-     */
-    public function getFileGenerationPath()
-    {
-        $path = $this->module->getPath() . DIRECTORY_SEPARATOR . 'Repositories';
-        return $path;
-    }
-
-    /**
      * @param string $entity
      */
     public function generateRepositoriesFor($entity)
@@ -155,6 +120,30 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
     }
 
     /**
+     * Full path to the output file.
+     *
+     * @return string
+     */
+    public function getFileGenerationPath()
+    {
+        $path = $this->module->getPath() . DIRECTORY_SEPARATOR . 'Repositories';
+        return $path;
+    }
+
+    /**
+     * Full path to the required template file.
+     *
+     * @return string
+     */
+    public function getTemplatePath()
+    {
+        $path = config('asgard.asgardgenerators.config.repositories.template',
+          base_path('Modules/Asgardgenerators/templates'));
+        //repository-interface.txt
+        return $path;
+    }
+
+    /**
      * Register the created repositories with the service provider.
      *
      * @throws \Way\Generators\Filesystem\FileAlreadyExists
@@ -189,5 +178,16 @@ class RepositoryGenerator extends BaseGenerator implements GeneratorInterface
             unlink($file);
         }
         $this->filesystem->make($file, $content);
+    }
+
+    /**
+     * Create the data used in the template file.
+     *
+     * @return array
+     */
+    public function getTemplateData()
+    {
+        return [
+        ];
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Modules\Asgardgenerators\Contracts\Generators;
 
-use Modules\Asgardgenerators\Generators\DatabaseInformation;
 use Illuminate\Config\Repository as Config;
+use Modules\Asgardgenerators\Generators\DatabaseInformation;
 use Nwidart\Modules\Module;
 use Way\Generators\Compilers\TemplateCompiler;
 use Way\Generators\Filesystem\Filesystem;
@@ -45,12 +45,12 @@ abstract class BaseGenerator
 
     /**
      * @param \Pingpong\Modules\Module $module
-     * @param Generator                $generator
-     * @param Filesystem               $filesystem
-     * @param TemplateCompiler         $compiler
-     * @param Config                   $config
-     * @param DatabaseInformation      $tables
-     * @param array                    $options
+     * @param Generator $generator
+     * @param Filesystem $filesystem
+     * @param TemplateCompiler $compiler
+     * @param Config $config
+     * @param DatabaseInformation $tables
+     * @param array $options
      */
     public function __construct(
       Module $module,
@@ -73,7 +73,7 @@ abstract class BaseGenerator
     /**
      * Get an option if it's defined in the options bag.
      *
-     * @param string     $key
+     * @param string $key
      * @param null|mixed $default
      *
      * @return null|mixed
@@ -83,7 +83,6 @@ abstract class BaseGenerator
         if (isset($this->options[$key]) && !empty($this->options[$key])) {
             return $this->options[$key];
         }
-
         return $default;
     }
 
@@ -95,14 +94,11 @@ abstract class BaseGenerator
     protected function getNamespace()
     {
         $ns = $this->options['namespace'];
-
         if (empty($ns)) {
             $ns = env('APP_NAME', 'App');
         }
-
         //convert forward slashes in the namespace to backslashes
         $ns = str_replace('/', '\\', $ns);
-
         return $ns;
     }
 
@@ -116,7 +112,6 @@ abstract class BaseGenerator
     protected function entityNameFromTable($table)
     {
         $table = camel_case(str_singular($table));
-
         return ucwords($table);
     }
 
@@ -130,7 +125,7 @@ abstract class BaseGenerator
 
     /**
      * @param string $file
-     * @param bool   $overwrite
+     * @param bool $overwrite
      *
      * @return bool
      */
@@ -141,16 +136,13 @@ abstract class BaseGenerator
                 $deleted = unlink($file);
                 if (!$deleted) {
                     echo "\nFailed to delete existing model $file\n";
-
                     return false;
                 }
             } else {
                 echo "\nSkipped {$type} generation, file already exists. (force using --overwrite) {$file}\n";
-
                 return false;
             }
         }
-
         return true;
     }
 
@@ -167,12 +159,10 @@ abstract class BaseGenerator
         if (!is_array($array)) {
             $array = [$array];
         }
-
         // add quotes
         $array = array_map(function ($item) {
             return "\"$item\"";
         }, $array);
-
-        return '['.implode(',', $array).']';
+        return '[' . implode(',', $array) . ']';
     }
 }
